@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "description": "%MOD_NAME_JSON%",
+    "pack_format": %FORGE_PACK_FORMAT%
+  }
+}
