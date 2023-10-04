@@ -47,7 +47,12 @@ pub const MINECRAFT_1_20_1: MinecraftVersion = MinecraftVersion::new("1.20.1")
     .forge_major_version("47")
     .architectury_api_version("9");
 
+pub const MINECRAFT_1_20_2: MinecraftVersion = MinecraftVersion::new("1.20.2")
+    .forge_major_version("48")
+    .architectury_api_version("10");
+
 pub const ALL_MINECRAFT_VERSIONS: &'static [MinecraftVersion] = &[
+    MINECRAFT_1_20_2,
     MINECRAFT_1_20_1,
     MINECRAFT_1_19_4,
     MINECRAFT_1_19_3,
