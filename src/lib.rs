@@ -1,4 +1,5 @@
 pub mod app;
+pub mod app2;
 pub mod async_support;
 pub mod mod_ids;
 pub mod requests;
