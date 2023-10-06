@@ -1,15 +1,18 @@
 pub mod app;
 pub mod focus;
 pub mod screen;
+pub mod widget;
 
 use std::io::Stderr;
+use crossterm::event::{Event, KeyCode, KeyEvent};
 use ratatui::prelude::*;
 use ratatui::{Frame, Terminal};
 use ratatui::widgets::{Block, Borders, Paragraph};
-use tui_textarea::{Input, Key, TextArea};
+use tui_textarea::TextArea;
 use app::*;
 use focus::*;
 use screen::*;
+use widget::*;
 
 const HIGHLIGHTED_BLOCK_STYLE: Style = Style::new().fg(Color::LightBlue);
 
@@ -30,7 +33,7 @@ impl<'a> MainScreen<'a> {
         }
     }
 
-    fn focus_targets(&mut self) -> Vec<Option<&mut TextArea<'a>>> {
+    fn focus_targets(&mut self) -> Vec<Option<&mut dyn Widget>> {
         vec![
             Some(&mut self.mod_name_area),
             Some(&mut self.mod_id_area),
@@ -125,15 +128,15 @@ impl<'a> Screen for MainScreen<'a> {
         f.render_widget(Paragraph::new("The official obfuscation maps published by Mojang."), mappings_layout[2]);
     }
 
-    fn input(&mut self, input: Input) -> Option<Message> {
-        match input {
-            Input { key: Key::Tab, .. } => self.focus.cycle(),
-            Input { key: Key::Esc, .. } => return Some(Message::CloseScreen),
-            input => {
+    fn input(&mut self, event: Event) -> Option<Message> {
+        match event {
+            Event::Key(KeyEvent { code: KeyCode::Tab, .. }) => self.focus.cycle(),
+            Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => return Some(Message::CloseScreen),
+            event => {
                 let selected_focus_target = self.focus.selected();
 
-                if let Some(text_area) = &mut self.focus_targets()[selected_focus_target] {
-                    text_area.input(input);
+                if let Some(widget) = &mut self.focus_targets()[selected_focus_target] {
+                    widget.input(event);
                 }
             },
         }

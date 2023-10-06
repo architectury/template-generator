@@ -1,7 +1,6 @@
 use miette::{IntoDiagnostic, Result};
 use ratatui::prelude::CrosstermBackend;
 use ratatui::Terminal;
-use tui_textarea::Input;
 use super::screen::{Message, Screen};
 
 pub struct App {
@@ -32,8 +31,8 @@ impl App {
             self.terminal.draw(|f| screen.view(f))
                 .into_diagnostic()?;
 
-            let input: Input = crossterm::event::read().into_diagnostic()?.into();
-            if let Some(message) = screen.input(input) {
+            let event = crossterm::event::read().into_diagnostic()?;
+            if let Some(message) = screen.input(event) {
                 match message {
                     Message::OpenScreen(next) => self.screen_stack.push(next),
                     Message::CloseScreen => {
