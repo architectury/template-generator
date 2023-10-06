@@ -140,9 +140,9 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
                     &context,
                     engine::read_template(&file_data.content).unwrap(),
                 )
-                    .iter()
-                    .map(|line| line.to_owned() + "\n")
-                    .collect();
+                .iter()
+                .map(|line| line.to_owned() + "\n")
+                .collect();
                 filer.save(path.as_str(), content.as_str()).tap(|result| {
                     if let Err(err) = result {
                         eprintln!("Could not save {}: {:?}", path, err);
@@ -151,7 +151,8 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
             }
 
             Ok(())
-        }).await
+        })
+        .await
     })
 }
 

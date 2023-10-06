@@ -1,12 +1,14 @@
+use std::cell::RefCell;
 use std::io::Stderr;
+use std::rc::Rc;
 
 use crossterm::event::Event;
-use ratatui::Frame;
 use ratatui::prelude::CrosstermBackend;
+use ratatui::Frame;
 
 pub enum Message {
-    OpenScreen(Box<dyn Screen>),
-    CloseScreen
+    OpenScreen(Rc<RefCell<dyn Screen>>),
+    CloseScreen,
 }
 
 pub trait Screen {

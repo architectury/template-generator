@@ -5,10 +5,7 @@ pub struct Focus {
 
 impl Focus {
     pub fn new(count: usize) -> Self {
-        Focus {
-            count,
-            selected: 0,
-        }
+        Focus { count, selected: 0 }
     }
 
     pub fn cycle(&mut self) {

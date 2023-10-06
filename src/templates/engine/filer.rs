@@ -1,7 +1,7 @@
-use std::collections::HashSet;
-use std::io::{Cursor, Seek, Write};
 use miette::{IntoDiagnostic, Result};
 use rfd::AsyncFileDialog;
+use std::collections::HashSet;
+use std::io::{Cursor, Seek, Write};
 use zip::write::FileOptions;
 
 pub trait Filer {
@@ -9,14 +9,16 @@ pub trait Filer {
 }
 
 pub struct ZipFiler<'a, W>
-where W: Write + Seek
+where
+    W: Write + Seek,
 {
     writer: &'a mut zip::ZipWriter<W>,
     directories: HashSet<String>,
 }
 
 impl<'a, W> ZipFiler<'a, W>
-where W: Write + Seek
+where
+    W: Write + Seek,
 {
     pub fn new(writer: &'a mut zip::ZipWriter<W>) -> Self {
         Self {
@@ -27,7 +29,8 @@ where W: Write + Seek
 }
 
 impl<'a, W> Filer for ZipFiler<'a, W>
-where W: Write + Seek
+where
+    W: Write + Seek,
 {
     fn save(&mut self, path: &str, content: &str) -> Result<()> {
         let parts: Vec<_> = path.split("/").collect();
@@ -36,13 +39,18 @@ where W: Write + Seek
             let directory = format!("{}/", parts[0..=i].join("/"));
 
             if self.directories.insert(directory.clone()) {
-                self.writer.add_directory(directory, FileOptions::default())
+                self.writer
+                    .add_directory(directory, FileOptions::default())
                     .into_diagnostic()?;
             }
         }
 
-        self.writer.start_file(path, FileOptions::default()).into_diagnostic()?;
-        self.writer.write_all(content.as_bytes()).into_diagnostic()?;
+        self.writer
+            .start_file(path, FileOptions::default())
+            .into_diagnostic()?;
+        self.writer
+            .write_all(content.as_bytes())
+            .into_diagnostic()?;
         Ok(())
     }
 }
