@@ -130,18 +130,21 @@ impl<'a> Screen for MainScreen<'a> {
 
     fn input(&mut self, event: Event) -> Option<Message> {
         match event {
-            Event::Key(KeyEvent { code: KeyCode::Tab, .. }) => self.focus.cycle(),
-            Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => return Some(Message::CloseScreen),
+            Event::Key(KeyEvent { code: KeyCode::Tab, .. }) => {
+                self.focus.cycle();
+                None
+            },
+            Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => Some(Message::CloseScreen),
             event => {
                 let selected_focus_target = self.focus.selected();
 
                 if let Some(widget) = &mut self.focus_targets()[selected_focus_target] {
-                    widget.input(event);
+                    widget.input(event)
+                } else {
+                    None
                 }
             },
         }
-
-        None
     }
 }
 
