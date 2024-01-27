@@ -1,0 +1,72 @@
+:root {
+    font-family: sans-serif;
+    cursor: default;
+    user-select: none;
+}
+
+fieldset {
+    border-radius: 1ex;
+    margin: 1ex;
+}
+
+fieldset h2 {
+    margin-bottom: 0.5ex;
+}
+
+fieldset > h2:first-of-type, h3:first-of-type {
+    margin-top: 0;
+}
+
+input[type = "text"] {
+    display: block;
+    width: 24em;
+    padding: 0.5ex;
+}
+
+select {
+    padding: 1ex;
+}
+
+.label-heading {
+    font-weight: bold;
+}
+
+.property-description {
+    display: block;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
+.multicol, .horizontal-flow {
+    display: flex;
+    flex-direction: row;
+}
+
+.multicol > * {
+    margin: 1ex;
+}
+
+.horizontal-flow {
+    align-items: start;
+}
+
+.toggle-button {
+    display: inline-block;
+    margin: 0.5ex;
+    padding: 0.7ex;
+    border: solid 1px blue;
+}
+
+.toggle-button:hover {
+    background-color: #BBBBFF;
+}
+
+.toggle-button:has(input:checked) {
+    background-color: blue;
+    color: white;
+}
+
+.toggle-button input {
+    appearance: none;
+    margin: 0;
+}
