@@ -1,4 +1,5 @@
 pub mod app;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod app2;
 pub mod async_support;
 pub mod mod_ids;
