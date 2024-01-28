@@ -30,9 +30,28 @@ macro_rules! file_data {
 
         #[cfg(target_arch = "wasm32")]
         async fn $fn_name(
-            _client: std::sync::Arc<reqwest::Client>,
+            client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            todo!()
+            use miette::{IntoDiagnostic, miette};
+
+            let mut path = String::from("templates/");
+            if !$dir.is_empty() {
+                path += $dir;
+                path += "/";
+            }
+            path += $file_name;
+
+            let response = client.get(&path).send().await.into_diagnostic()?;
+            if !response.status().is_success() {
+                return Err(miette!(
+                    "Could not download {}: got status code {}",
+                    path,
+                    response.status()
+                ));
+            }
+
+            let content = response.text().await.into_diagnostic()?;
+            Ok(crate::templates::FileData { path, content })
         }
     };
 }
