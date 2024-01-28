@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-mod generator;
+pub mod generator;
 pub mod versions;
 
 pub const SUBHEADING_STYLE: &'static str = "subheading";

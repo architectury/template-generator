@@ -34,14 +34,14 @@
             <h2>Mappings</h2>
             <span class="property-description">The set of names used for Minecraft code.</span>
             <div>
-                <input type="radio" name="mappings" id="mojang-mappings-input" checked>
+                <input type="radio" name="mappings" id="mojang-mappings-input" mappingset="Mojang" checked>
                 <label for="mojang-mappings-input">
                     <span class="label-heading">Official Mojang mappings</span>
                     <span class="property-description">The official obfuscation maps published by Mojang.</span>
                 </label>
             </div>
             <div>
-                <input type="radio" name="mappings" id="yarn-input">
+                <input type="radio" name="mappings" mappingset="Yarn" id="yarn-input">
                 <label for="yarn-input">
                     <span class="label-heading">Yarn</span>
                     <span class="property-description">A libre mapping set maintained by FabricMC.</span>
@@ -49,61 +49,72 @@
             </div>
         </fieldset>
 
-        <fieldset>
-            <legend>Mod loaders</legend>
+        <div class="vertical-flow">
+            <fieldset>
+                <legend>Mod loaders</legend>
 
-            <h2>Project type</h2>
-            <div id="project-type-toggles">
-                <label class="toggle-button">
-                    <input type="radio" name="project-type" id="multiplatform-input" checked>Multiplatform
-                </label><label class="toggle-button">
-                    <input type="radio" name="project-type" id="neoforge-project-input">NeoForge
-                </label><label class="toggle-button">
-                    <input type="radio" name="project-type" id="forge-project-input">Forge
-                </label>
-            </div>
-
-            <div id="multiplatform-settings">
-                <h2>Subprojects</h2>
-                <div class="multicol">
-                    <div>
-                        <div>
-                            <input type="checkbox" id="fabric-loader-input">
-                            <label for="fabric-loader-input">Fabric</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="forge-loader-input">
-                            <label for="forge-loader-input">Forge</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="neoforge-loader-input">
-                            <label for="neoforge-loader-input">NeoForge</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="quilt-loader-input">
-                            <label for="quilt-loader-input">Quilt</label>
-                        </div>
-                    </div>
-                    <hr>
-                    <div>
-                        <h3>Additional subprojects</h3>
-                        <div>
-                            <input type="checkbox" id="fabric-like-input">
-                            <label for="fabric-like-input">
-                                <span class="label-heading">Fabric-like</span>
-                                <span class="property-description">Shared code between Fabric and Quilt.</span>
-                            </label>
-                        </div>
-                    </div>
+                <h2>Project type</h2>
+                <div id="project-type-toggles">
+                    <label class="toggle-button">
+                        <input type="radio" name="project-type" id="multiplatform-input" projecttype="Multiplatform"
+                            checked>Multiplatform
+                    </label><label class="toggle-button">
+                        <input type="radio" name="project-type" id="neoforge-project-input"
+                            projecttype="NeoForge">NeoForge
+                    </label><label class="toggle-button">
+                        <input type="radio" name="project-type" id="forge-project-input" projecttype="Forge">Forge
+                    </label>
                 </div>
 
-                <h2>Dependencies</h2>
-                <div>
-                    <input type="checkbox" id="architectury-api-input" checked>
-                    <label for="architectury-api-input">Architectury API</label>
+                <div id="multiplatform-settings">
+                    <h2>Subprojects</h2>
+                    <div class="multicol">
+                        <div>
+                            <div>
+                                <input type="checkbox" id="fabric-loader-input">
+                                <label for="fabric-loader-input">Fabric</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="forge-loader-input">
+                                <label for="forge-loader-input">Forge</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="neoforge-loader-input">
+                                <label for="neoforge-loader-input">NeoForge</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="quilt-loader-input">
+                                <label for="quilt-loader-input">Quilt</label>
+                            </div>
+                        </div>
+                        <hr>
+                        <div>
+                            <h3>Additional subprojects</h3>
+                            <div>
+                                <input type="checkbox" id="fabric-like-input">
+                                <label for="fabric-like-input">
+                                    <span class="label-heading">Fabric-like</span>
+                                    <span class="property-description">Shared code between Fabric and Quilt.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Dependencies</h2>
+                    <div>
+                        <input type="checkbox" id="architectury-api-input" checked>
+                        <label for="architectury-api-input">Architectury API</label>
+                    </div>
                 </div>
-            </div>
-        </fieldset>
+            </fieldset>
+
+            <fieldset>
+                <legend>Generate</legend>
+
+                <button id="generate-button">Generate template</button>
+                <div id="error-message-container" class="hidden"></div>
+            </fieldset>
+        </div>
     </div>
 
     <script type="module" src="script.js"></script>

@@ -2,6 +2,8 @@
     font-family: sans-serif;
     cursor: default;
     user-select: none;
+
+    --error-color: #BB0000;
 }
 
 fieldset {
@@ -42,6 +44,12 @@ select {
     flex-direction: row;
 }
 
+.vertical-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
 .multicol > * {
     margin: 1ex;
 }
@@ -78,5 +86,20 @@ select {
 label[error]::after {
     display: block;
     content: "❌ " attr(error);
-    color: #BB0000;
+    color: var(--error-color);
+}
+
+#error-message-container::before {
+    content: "❌ ";
+    color: var(--error-color);
+}
+
+#error-message-container {
+    color: var(--error-color);
+}
+
+button {
+    width: 100%;
+    height: 3em;
+    font-size: 1em;
 }

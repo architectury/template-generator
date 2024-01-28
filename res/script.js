@@ -1,8 +1,7 @@
-import init, { create_state, is_valid_mod_id, list_all_minecraft_versions, to_mod_id, validate_mod_id } from "./templateer.js";
+import init, { create_state, generate, is_valid_mod_id, list_all_minecraft_versions, to_mod_id, validate_mod_id } from "./templateer.js";
 await init();
 
 const state = create_state();
-console.log(state);
 
 // Set up Minecraft version dropdown with contents
 const mcSelect = document.getElementById("minecraft-version-select");
@@ -12,10 +11,6 @@ for (const version of list_all_minecraft_versions().reverse()) {
     option.textContent = version;
     mcSelect.appendChild(option);
 }
-
-mcSelect.onchange = (event) => {
-    state.game_version = event.target.value;
-};
 
 // Hide multiplatform settings when deselected
 const projectTypeToggles = document.getElementById("project-type-toggles").getElementsByTagName("input");
@@ -36,10 +31,14 @@ for (const input of projectTypeToggles) {
 const modNameInput = document.getElementById("mod-name-input");
 const modIdInput = document.getElementById("mod-id-input");
 
-modNameInput.oninput = (event) => {
-    modIdInput.placeholder = to_mod_id(event.target.value) ?? "";
+modNameInput.oninput = () => {
+    refreshModIdPlaceholder();
     validateModId();
 };
+
+function refreshModIdPlaceholder() {
+    modIdInput.placeholder = to_mod_id(modNameInput.value) ?? "";
+}
 
 // Validate mod ids
 const modIdLabel = document.getElementById("mod-id-label");
@@ -66,3 +65,69 @@ function getModId() {
     }
     return value;
 }
+
+function getProjectType() {
+    for (const input of projectTypeToggles) {
+        if (input.checked) {
+            return input.getAttribute("projecttype");
+        }
+    }
+}
+
+function getMappingSet() {
+    for (const input of document.getElementsByTagName("input")) {
+        if (input.name !== "mappings") continue;
+        if (input.checked) {
+            return input.getAttribute("mappingset");
+        }
+    }
+}
+
+function updateState() {
+    state.mod_name = modNameInput.value;
+    state.mod_id = getModId();
+    state.package_name = document.getElementById("package-input").value;
+    state.game_version = mcSelect.value;
+    state.project_type = getProjectType();
+    state.mapping_set = getMappingSet();
+    state.subprojects.fabric = document.getElementById("fabric-loader-input").checked;
+    state.subprojects.forge = document.getElementById("forge-loader-input").checked;
+    state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked;
+    state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
+    state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked;
+    state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked;
+}
+
+function showError(error) {
+    let container = document.getElementById("error-message-container");
+    container.textContent = error;
+    container.classList.remove("hidden");
+}
+
+function clearError(error) {
+    let container = document.getElementById("error-message-container");
+    container.textContent = "";
+    container.classList.add("hidden");
+}
+
+document.getElementById("generate-button").onclick = () => {
+    updateState();
+
+    if (state.mod_name === "") {
+        showError("Mod name is empty");
+        return;
+    } else if (!isModIdValid()) {
+        showError("Mod ID is not valid");
+        return;
+    }
+
+    clearError();
+    generate(state);
+};
+
+// Apply initial state
+modNameInput.value = state.mod_name;
+modIdInput.value = state.mod_id;
+refreshModIdPlaceholder();
+document.getElementById("package-input").value = state.package_name;
+document.getElementById("architectury-api-input").checked = state.dependencies.architectury_api;
