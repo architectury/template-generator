@@ -1,6 +1,8 @@
 # Build files
 /.cargo/
 /target/
+/.gradle/
+/build/
 
 # IDE files
 /.idea/
