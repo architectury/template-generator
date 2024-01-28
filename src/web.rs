@@ -26,3 +26,29 @@ pub fn list_all_minecraft_versions() -> Array {
         .map(|x| JsValue::from_str(x))
         .collect()
 }
+
+#[wasm_bindgen]
+pub fn to_mod_id(mod_name: &str) -> String {
+    crate::mod_ids::to_mod_id(mod_name)
+}
+
+#[wasm_bindgen]
+pub fn is_valid_mod_id(mod_id: &str) -> bool {
+    crate::mod_ids::is_valid_mod_id(mod_id)
+}
+
+#[wasm_bindgen]
+pub fn validate_mod_id(mod_id: &str) -> Array {
+    let result = crate::mod_ids::validate_mod_id(mod_id);
+    let array = Array::new();
+    match result {
+        Ok(_) => {
+            array.push(&JsValue::TRUE);
+        }
+        Err(err) => {
+            array.push(&JsValue::FALSE);
+            array.push(&JsValue::from(format!("{}", err)));
+        }
+    }
+    array
+}

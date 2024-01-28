@@ -4,12 +4,12 @@ mod generator;
 pub mod versions;
 
 pub const SUBHEADING_STYLE: &'static str = "subheading";
-const GROUP_SPACING: f32 = 7.0;
 
 #[derive(Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ProjectType {
     #[default]
     Multiplatform,
+    NeoForge,
     Forge,
 }
 

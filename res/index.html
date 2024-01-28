@@ -20,7 +20,7 @@
             <input type="text" id="mod-name-input">
 
             <h2>Mod ID (optional)</h2>
-            <label for="mod-id-input" class="property-description">A unique ID for your mod.</label>
+            <label for="mod-id-input" id="mod-id-label" class="property-description">A unique ID for your mod.</label>
             <input type="text" id="mod-id-input">
 
             <h2>Package name</h2>
@@ -53,13 +53,15 @@
             <legend>Mod loaders</legend>
 
             <h2>Project type</h2>
-            <label class="toggle-button">
-                <input type="radio" name="project-type" id="multiplatform-input" checked>Multiplatform
-            </label><label class="toggle-button">
-                <input type="radio" name="project-type" id="neoforge-project-input">NeoForge
-            </label><label class="toggle-button">
-                <input type="radio" name="project-type" id="forge-project-input">Forge
-            </label>
+            <div id="project-type-toggles">
+                <label class="toggle-button">
+                    <input type="radio" name="project-type" id="multiplatform-input" checked>Multiplatform
+                </label><label class="toggle-button">
+                    <input type="radio" name="project-type" id="neoforge-project-input">NeoForge
+                </label><label class="toggle-button">
+                    <input type="radio" name="project-type" id="forge-project-input">Forge
+                </label>
+            </div>
 
             <div id="multiplatform-settings">
                 <h2>Subprojects</h2>

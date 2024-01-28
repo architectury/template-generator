@@ -19,7 +19,7 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
     context.put("PACKAGE_DIR", &app.package_name.replace(".", "/"));
     let mut mod_id: String = app.mod_id.clone();
     if mod_id.is_empty() {
-        mod_id = crate::mod_ids::to_mod_id(&app.mod_name).unwrap();
+        mod_id = crate::mod_ids::to_mod_id(&app.mod_name);
     }
     context.put("MOD_ID", mod_id);
     // TODO: Escape
@@ -116,6 +116,7 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
                 )));
             }
         }
+        ProjectType::NeoForge => {}
         ProjectType::Forge => {}
     }
 

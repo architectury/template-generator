@@ -70,3 +70,13 @@ select {
     appearance: none;
     margin: 0;
 }
+
+.hidden {
+    display: none;
+}
+
+label[error]::after {
+    display: block;
+    content: "❌ " attr(error);
+    color: #BB0000;
+}
