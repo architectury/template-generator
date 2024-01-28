@@ -5,7 +5,7 @@
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
-pub const LOOM_VERSION: &'static str = "1.3-SNAPSHOT";
+pub const LOOM_VERSION: &'static str = "1.5-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
 #[derive(Clone, Copy, Serialize, Deserialize, EnumIter)]
