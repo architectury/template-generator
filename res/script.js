@@ -119,6 +119,9 @@ document.getElementById("generate-button").onclick = async () => {
     } else if (!isModIdValid()) {
         showError("Mod ID is not valid");
         return;
+    } else if (state.package_name === "") {
+        showError("Package name is empty");
+        return;
     }
 
     clearError();
