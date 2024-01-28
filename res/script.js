@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 import init, { create_state, generate, is_valid_mod_id, list_all_minecraft_versions, to_mod_id, validate_mod_id } from "./templateer.js";
 await init();
 
