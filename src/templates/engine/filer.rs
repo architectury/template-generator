@@ -35,7 +35,7 @@ where
     fn save(&mut self, path: &str, content: &str) -> Result<()> {
         let parts: Vec<_> = path.split("/").collect();
 
-        for i in 0..parts.len() {
+        for i in 0..(parts.len() - 1) {
             let directory = format!("{}/", parts[0..=i].join("/"));
 
             if self.directories.insert(directory.clone()) {
@@ -106,8 +106,7 @@ pub async fn use_zip_filer<F>(block: F) -> Result<()>
 where
     F: FnOnce(&mut dyn Filer) -> Result<()>,
 {
-    let buf: &mut [u8] = &mut [];
-    let mut cursor = Cursor::new(buf);
+    let mut cursor = Cursor::new(Vec::new());
 
     // Create and use the zip writer and filer.
     // This is its own scope in order to drop the borrow to the cursor.
@@ -123,7 +122,8 @@ where
     let saved = AsyncFileDialog::new()
         .set_title("Choose where to save the template")
         .add_filter("Zip file", &["zip"])
-        .pick_file()
+        .set_file_name("template.zip")
+        .save_file()
         .await;
 
     if let Some(file) = saved {
