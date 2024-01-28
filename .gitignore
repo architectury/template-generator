@@ -1,6 +1,8 @@
 # Build files
+/.cargo/
 /target/
 
 # IDE files
 /.idea/
+/.vscode/
 *.iml

@@ -28,16 +28,16 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
 
     // Game version-specific
     let game_version = app.game_version;
-    context.put("MINECRAFT_VERSION", game_version.version);
+    context.put("MINECRAFT_VERSION", game_version.version());
     context.put(
         "GRADLE_JAVA_VERSION",
-        game_version.java_version.gradle_java_version(),
+        game_version.java_version().gradle_java_version(),
     );
     context.put(
         "JAVA_MAJOR_VERSION",
-        game_version.java_version.java_major_version().to_string(),
+        game_version.java_version().java_major_version().to_string(),
     );
-    context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version);
+    context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
 
     // Constants
     context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
@@ -59,7 +59,7 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
                 FABRIC_MAVEN,
                 "net.fabricmc",
                 "yarn",
-                |version| version.starts_with(&format!("{}+", game_version.version)),
+                |version| version.starts_with(&format!("{}+", game_version.version())),
             )));
         }
     }
@@ -85,7 +85,7 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
                     FABRIC_MAVEN,
                     "net.fabricmc.fabric-api",
                     "fabric-api",
-                    |version| version.ends_with(&format!("+{}", game_version.fabric_api_branch)),
+                    |version| version.ends_with(&format!("+{}", game_version.fabric_api_branch())),
                 )));
             }
 
@@ -108,10 +108,10 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
                     &client,
                     "ARCHITECTURY_API_VERSION",
                     ARCHITECTURY_MAVEN,
-                    game_version.architectury_package,
+                    game_version.architectury_package(),
                     "architectury",
                     |version| {
-                        version.starts_with(&format!("{}.", game_version.architectury_api_version))
+                        version.starts_with(&format!("{}.", game_version.architectury_api_version()))
                     },
                 )));
             }

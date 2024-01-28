@@ -1,71 +1,115 @@
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
+
 pub const LOOM_VERSION: &'static str = "1.3-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
-pub const MINECRAFT_1_16_5: MinecraftVersion = MinecraftVersion::new("1.16.5")
-    .java_version(JavaVersion::Java8)
-    .fabric_api_branch("1.16")
-    .old_architectury_package()
-    .forge_major_version("36")
-    .architectury_api_version("1");
+#[derive(Clone, Copy, Serialize, Deserialize, EnumIter)]
+pub enum MinecraftVersion {
+    #[serde(rename = "1.16.5")]
+    Minecraft1_16_5,
+    #[serde(rename = "1.17.1")]
+    Minecraft1_17_1,
+    #[serde(rename = "1.18.1")]
+    Minecraft1_18_1,
+    #[serde(rename = "1.18.2")]
+    Minecraft1_18_2,
+    #[serde(rename = "1.19")]
+    Minecraft1_19,
+    #[serde(rename = "1.19.1")]
+    Minecraft1_19_1,
+    #[serde(rename = "1.19.2")]
+    Minecraft1_19_2,
+    #[serde(rename = "1.19.3")]
+    Minecraft1_19_3,
+    #[serde(rename = "1.19.4")]
+    Minecraft1_19_4,
+    #[serde(rename = "1.20.1")]
+    Minecraft1_20_1,
+    #[serde(rename = "1.20.2")]
+    Minecraft1_20_2,
+}
 
-pub const MINECRAFT_1_17_1: MinecraftVersion = MinecraftVersion::new("1.17.1")
-    .java_version(JavaVersion::Java9OrNewer(16))
-    .fabric_api_branch("1.17")
-    .forge_major_version("37")
-    .architectury_api_version("2");
+impl MinecraftVersion {
+    pub fn latest() -> Self {
+        use strum::IntoEnumIterator;
+        Self::iter().last().unwrap()
+    }
 
-pub const MINECRAFT_1_18_1: MinecraftVersion = MinecraftVersion::new("1.18.1")
-    .fabric_api_branch("1.18")
-    .forge_major_version("39")
-    .architectury_api_version("3");
+    pub fn version(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "1.16.5",
+            MinecraftVersion::Minecraft1_17_1 => "1.17.1",
+            MinecraftVersion::Minecraft1_18_1 => "1.18.1",
+            MinecraftVersion::Minecraft1_18_2 => "1.18.2",
+            MinecraftVersion::Minecraft1_19 => "1.19",
+            MinecraftVersion::Minecraft1_19_1 => "1.19.1",
+            MinecraftVersion::Minecraft1_19_2 => "1.19.2",
+            MinecraftVersion::Minecraft1_19_3 => "1.19.3",
+            MinecraftVersion::Minecraft1_19_4 => "1.19.4",
+            MinecraftVersion::Minecraft1_20_1 => "1.20.1",
+            MinecraftVersion::Minecraft1_20_2 => "1.20.2",
+        }
+    }
 
-pub const MINECRAFT_1_18_2: MinecraftVersion = MinecraftVersion::new("1.18.2")
-    .forge_major_version("40")
-    .architectury_api_version("4");
+    pub fn java_version(&self) -> JavaVersion {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => JavaVersion::Java8,
+            MinecraftVersion::Minecraft1_17_1 => JavaVersion::Java9OrNewer(16),
+            _ => JavaVersion::Java9OrNewer(17),
+        }
+    }
 
-pub const MINECRAFT_1_19: MinecraftVersion = MinecraftVersion::new("1.19")
-    .forge_major_version("41")
-    .architectury_api_version("5");
+    pub fn architectury_package(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "me.shedaniel.architectury",
+            _ => "dev.architectury",
+        }
+    }
 
-pub const MINECRAFT_1_19_1: MinecraftVersion = MinecraftVersion::new("1.19.1")
-    .forge_major_version("42")
-    .architectury_api_version("6.3");
+    pub fn fabric_api_branch(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "1.16",
+            MinecraftVersion::Minecraft1_17_1 => "1.17",
+            MinecraftVersion::Minecraft1_18_1 => "1.18",
+            _ => self.version(),
+        }
+    }
 
-pub const MINECRAFT_1_19_2: MinecraftVersion = MinecraftVersion::new("1.19.2")
-    .forge_major_version("43")
-    .architectury_api_version("6");
+    pub fn forge_major_version(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "36",
+            MinecraftVersion::Minecraft1_17_1 => "37",
+            MinecraftVersion::Minecraft1_18_1 => "39",
+            MinecraftVersion::Minecraft1_18_2 => "40",
+            MinecraftVersion::Minecraft1_19 => "41",
+            MinecraftVersion::Minecraft1_19_1 => "42",
+            MinecraftVersion::Minecraft1_19_2 => "43",
+            MinecraftVersion::Minecraft1_19_3 => "44",
+            MinecraftVersion::Minecraft1_19_4 => "45",
+            MinecraftVersion::Minecraft1_20_1 => "47",
+            MinecraftVersion::Minecraft1_20_2 => "48",
+        }
+    }
 
-pub const MINECRAFT_1_19_3: MinecraftVersion = MinecraftVersion::new("1.19.3")
-    .forge_major_version("44")
-    .architectury_api_version("7");
+    pub fn architectury_api_version(self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "1",
+            MinecraftVersion::Minecraft1_17_1 => "2",
+            MinecraftVersion::Minecraft1_18_1 => "3",
+            MinecraftVersion::Minecraft1_18_2 => "4",
+            MinecraftVersion::Minecraft1_19 => "5",
+            MinecraftVersion::Minecraft1_19_1 => "6.3",
+            MinecraftVersion::Minecraft1_19_2 => "6",
+            MinecraftVersion::Minecraft1_19_3 => "7",
+            MinecraftVersion::Minecraft1_19_4 => "8",
+            MinecraftVersion::Minecraft1_20_1 => "9",
+            MinecraftVersion::Minecraft1_20_2 => "10",
+        }
+    }
+}
 
-pub const MINECRAFT_1_19_4: MinecraftVersion = MinecraftVersion::new("1.19.4")
-    .forge_major_version("45")
-    .architectury_api_version("8");
-
-pub const MINECRAFT_1_20_1: MinecraftVersion = MinecraftVersion::new("1.20.1")
-    .forge_major_version("47")
-    .architectury_api_version("9");
-
-pub const MINECRAFT_1_20_2: MinecraftVersion = MinecraftVersion::new("1.20.2")
-    .forge_major_version("48")
-    .architectury_api_version("10");
-
-pub const ALL_MINECRAFT_VERSIONS: &'static [MinecraftVersion] = &[
-    MINECRAFT_1_20_2,
-    MINECRAFT_1_20_1,
-    MINECRAFT_1_19_4,
-    MINECRAFT_1_19_3,
-    MINECRAFT_1_19_2,
-    MINECRAFT_1_19_1,
-    MINECRAFT_1_19,
-    MINECRAFT_1_18_2,
-    MINECRAFT_1_18_1,
-    MINECRAFT_1_17_1,
-    MINECRAFT_1_16_5,
-];
-
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Copy)]
 pub enum JavaVersion {
     Java8,
     Java9OrNewer(u32),
@@ -84,61 +128,5 @@ impl JavaVersion {
             Self::Java8 => 8,
             Self::Java9OrNewer(version) => *version,
         }
-    }
-}
-
-#[derive(Eq)]
-pub struct MinecraftVersion<'a> {
-    pub version: &'a str,
-    pub java_version: JavaVersion,
-    pub architectury_package: &'a str,
-    pub fabric_api_branch: &'a str,
-    pub forge_major_version: &'a str,
-    pub architectury_api_version: &'a str,
-}
-
-impl MinecraftVersion<'static> {
-    pub const fn new(version: &'static str) -> Self {
-        MinecraftVersion {
-            version,
-            java_version: JavaVersion::Java9OrNewer(17),
-            architectury_package: "dev.architectury",
-            fabric_api_branch: version,
-            forge_major_version: "",
-            architectury_api_version: "",
-        }
-    }
-}
-
-impl<'a> MinecraftVersion<'a> {
-    pub const fn java_version(mut self, version: JavaVersion) -> Self {
-        self.java_version = version;
-        self
-    }
-
-    pub const fn old_architectury_package(mut self) -> Self {
-        self.architectury_package = "me.shedaniel.architectury";
-        self
-    }
-
-    pub const fn fabric_api_branch(mut self, branch: &'a str) -> Self {
-        self.fabric_api_branch = branch;
-        self
-    }
-
-    pub const fn forge_major_version(mut self, version: &'a str) -> Self {
-        self.forge_major_version = version;
-        self
-    }
-
-    pub const fn architectury_api_version(mut self, version: &'a str) -> Self {
-        self.architectury_api_version = version;
-        self
-    }
-}
-
-impl<'a> PartialEq for MinecraftVersion<'a> {
-    fn eq(&self, other: &Self) -> bool {
-        self.version == other.version
     }
 }
