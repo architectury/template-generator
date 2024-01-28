@@ -41,5 +41,6 @@ features = [
     "Node",
     "NodeList",
     "SupportedType",
+    "Window",
     "console",
 ]

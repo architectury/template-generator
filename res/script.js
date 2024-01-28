@@ -110,7 +110,7 @@ function clearError(error) {
     container.classList.add("hidden");
 }
 
-document.getElementById("generate-button").onclick = () => {
+document.getElementById("generate-button").onclick = async () => {
     updateState();
 
     if (state.mod_name === "") {
@@ -122,7 +122,7 @@ document.getElementById("generate-button").onclick = () => {
     }
 
     clearError();
-    generate(state);
+    await generate(state);
 };
 
 // Apply initial state

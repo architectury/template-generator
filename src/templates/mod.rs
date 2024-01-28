@@ -8,6 +8,43 @@ pub struct FileData {
     pub content: String,
 }
 
+pub fn compose_file_path(dir: &str, file_name: &str) -> String {
+    let mut path = String::from(dir);
+    if !dir.is_empty() {
+        path += "/";
+    }
+    path += file_name;
+    path
+}
+
+#[cfg(target_arch = "wasm32")]
+pub async fn download_relative_file(client: std::sync::Arc<reqwest::Client>, url: &str) -> miette::Result<String> {
+    use miette::{miette, IntoDiagnostic};
+    use crate::web::ResultExt;
+
+    let document = web_sys::window().ok_or_else(|| miette!("Could not find window"))?
+        .document().ok_or_else(|| miette!("Could not find document"))?;
+    let document_url = document.url().to_miette()?;
+    let base_url = if let Some(slash_index) = document_url.rfind("/") {
+        &document_url[0..=slash_index]
+    } else {
+        &document_url
+    };
+    let base = reqwest::Url::parse(base_url).into_diagnostic()?;
+    let parsed_url = reqwest::Url::options().base_url(Some(&base)).parse(url).into_diagnostic()?;
+    let response = client.get(parsed_url).send().await.into_diagnostic()?;
+
+    if !response.status().is_success() {
+        return Err(miette!(
+            "Could not download {}: got status code {}",
+            url,
+            response.status()
+        ));
+    }
+
+    response.text().await.into_diagnostic()
+}
+
 macro_rules! file_data {
     ($const_name:ident $fn_name:ident, $dir:expr, $file_name:expr) => {
         #[cfg(not(target_arch = "wasm32"))]
@@ -17,11 +54,7 @@ macro_rules! file_data {
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            let mut path = String::from($dir);
-            if !$dir.is_empty() {
-                path += "/";
-            }
-            path += $file_name;
+            let path = crate::templates::compose_file_path($dir, $file_name);
             Ok(crate::templates::FileData {
                 path,
                 content: $const_name.to_owned(),
@@ -32,25 +65,10 @@ macro_rules! file_data {
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            use miette::{IntoDiagnostic, miette};
-
-            let mut path = String::from("templates/");
-            if !$dir.is_empty() {
-                path += $dir;
-                path += "/";
-            }
-            path += $file_name;
-
-            let response = client.get(&path).send().await.into_diagnostic()?;
-            if !response.status().is_success() {
-                return Err(miette!(
-                    "Could not download {}: got status code {}",
-                    path,
-                    response.status()
-                ));
-            }
-
-            let content = response.text().await.into_diagnostic()?;
+            let path = crate::templates::compose_file_path($dir, $file_name);
+            let dir = if $dir.is_empty() { "multiplatform" } else { $dir };
+            let url = format!("templates/{}/{}", dir, $file_name);
+            let content = crate::templates::download_relative_file(client, &url).await?;
             Ok(crate::templates::FileData { path, content })
         }
     };

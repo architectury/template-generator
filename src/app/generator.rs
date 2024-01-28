@@ -12,7 +12,7 @@ use std::sync::Arc;
 const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
 const ARCHITECTURY_MAVEN: &'static str = "https://maven.architectury.dev";
 
-pub fn generate(app: &super::GeneratorApp) -> Result<()> {
+pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     let mut context = engine::Context::new();
     // Mod properties
     context.put("PACKAGE_NAME", &app.package_name);
@@ -120,41 +120,38 @@ pub fn generate(app: &super::GeneratorApp) -> Result<()> {
         ProjectType::Forge => {}
     }
 
-    crate::async_support::block_on(async {
-        // Resolve versions
-        let (files, variables) = join!(join_all(files), join_all(variables));
-        let files: Vec<FileData> = files
-            .into_iter()
-            .collect::<Result<Vec<Vec<FileData>>>>()?
-            .into_iter()
-            .flatten()
-            .collect();
-        for result in variables {
-            let (key, value) = result?;
-            context.put(key, value);
-        }
+    // Resolve versions
+    let (files, variables) = join!(join_all(files), join_all(variables));
+    let files: Vec<FileData> = files
+        .into_iter()
+        .collect::<Result<Vec<Vec<FileData>>>>()?
+        .into_iter()
+        .flatten()
+        .collect();
+    for result in variables {
+        let (key, value) = result?;
+        context.put(key, value);
+    }
 
-        engine::filer::use_filer(|filer| {
-            for file_data in files {
-                let path = engine::apply_variables(&context, file_data.path.as_str(), false);
-                let content: String = engine::apply_template(
-                    &context,
-                    engine::read_template(&file_data.content).unwrap(),
-                )
+    engine::filer::use_filer(|filer| {
+        for file_data in files {
+            let path = engine::apply_variables(&context, file_data.path.as_str(), false);
+            let content: String = engine::apply_template(
+                &context,
+                engine::read_template(&file_data.content).unwrap(),
+            )
                 .iter()
                 .map(|line| line.to_owned() + "\n")
                 .collect();
-                filer.save(path.as_str(), content.as_str()).tap(|result| {
-                    if let Err(err) = result {
-                        eprintln!("Could not save {}: {:?}", path, err);
-                    }
-                })?;
-            }
+            filer.save(path.as_str(), content.as_str()).tap(|result| {
+                if let Err(err) = result {
+                    eprintln!("Could not save {}: {:?}", path, err);
+                }
+            })?;
+        }
 
-            Ok(())
-        })
-        .await
-    })
+        Ok(())
+    }).await
 }
 
 async fn resolve_matching_version<F>(
