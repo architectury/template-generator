@@ -60,5 +60,7 @@ pub fn validate_mod_id(mod_id: &str) -> Array {
 #[wasm_bindgen]
 pub async fn generate(state: JsValue) -> Result<(), JsValue> {
     let app: crate::app::GeneratorApp = serde_wasm_bindgen::from_value(state)?;
-    crate::app::generator::generate(&app).await.map_err(|err| JsValue::from(format!("{}", err)))
+    crate::app::generator::generate(&app)
+        .await
+        .map_err(|err| JsValue::from(format!("{}", err)))
 }

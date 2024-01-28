@@ -22,12 +22,17 @@ pub fn compose_file_path(dir: &str, file_name: &str) -> String {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub async fn download_relative_file(client: std::sync::Arc<reqwest::Client>, url: &str) -> miette::Result<String> {
-    use miette::{miette, IntoDiagnostic};
+pub async fn download_relative_file(
+    client: std::sync::Arc<reqwest::Client>,
+    url: &str,
+) -> miette::Result<String> {
     use crate::web::ResultExt;
+    use miette::{miette, IntoDiagnostic};
 
-    let document = web_sys::window().ok_or_else(|| miette!("Could not find window"))?
-        .document().ok_or_else(|| miette!("Could not find document"))?;
+    let document = web_sys::window()
+        .ok_or_else(|| miette!("Could not find window"))?
+        .document()
+        .ok_or_else(|| miette!("Could not find document"))?;
     let document_url = document.url().to_miette()?;
     let base_url = if let Some(slash_index) = document_url.rfind("/") {
         &document_url[0..=slash_index]
@@ -35,7 +40,10 @@ pub async fn download_relative_file(client: std::sync::Arc<reqwest::Client>, url
         &document_url
     };
     let base = reqwest::Url::parse(base_url).into_diagnostic()?;
-    let parsed_url = reqwest::Url::options().base_url(Some(&base)).parse(url).into_diagnostic()?;
+    let parsed_url = reqwest::Url::options()
+        .base_url(Some(&base))
+        .parse(url)
+        .into_diagnostic()?;
     let response = client.get(parsed_url).send().await.into_diagnostic()?;
 
     if !response.status().is_success() {
@@ -70,7 +78,11 @@ macro_rules! file_data {
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
             let path = crate::templates::compose_file_path($dir, $file_name);
-            let dir = if $dir.is_empty() { "multiplatform" } else { $dir };
+            let dir = if $dir.is_empty() {
+                "multiplatform"
+            } else {
+                $dir
+            };
             let url = format!("templates/{}/{}", dir, $file_name);
             let content = crate::templates::download_relative_file(client, &url).await?;
             Ok(crate::templates::FileData { path, content })

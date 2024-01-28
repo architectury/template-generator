@@ -115,7 +115,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                     game_version.architectury_package(),
                     "architectury",
                     |version| {
-                        version.starts_with(&format!("{}.", game_version.architectury_api_version()))
+                        version
+                            .starts_with(&format!("{}.", game_version.architectury_api_version()))
                     },
                 )));
             }
@@ -144,9 +145,9 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 &context,
                 engine::read_template(&file_data.content).unwrap(),
             )
-                .iter()
-                .map(|line| line.to_owned() + "\n")
-                .collect();
+            .iter()
+            .map(|line| line.to_owned() + "\n")
+            .collect();
             filer.save(path.as_str(), content.as_str()).tap(|result| {
                 if let Err(err) = result {
                     eprintln!("Could not save {}: {:?}", path, err);
@@ -155,7 +156,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         }
 
         Ok(())
-    }).await
+    })
+    .await
 }
 
 async fn resolve_matching_version<F>(

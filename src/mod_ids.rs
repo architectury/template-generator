@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{Result, miette};
+use miette::{miette, Result};
 
 const MIN_LENGTH: usize = 2;
 const MAX_LENGTH: usize = 64;
@@ -18,7 +18,11 @@ fn is_valid_in_id(c: char) -> bool {
 pub fn validate_mod_id<S: AsRef<str>>(id: S) -> Result<()> {
     let id = id.as_ref();
     if id.len() < MIN_LENGTH || id.len() > MAX_LENGTH {
-        return Err(miette!("Length must be between {} and {}", MIN_LENGTH, MAX_LENGTH));
+        return Err(miette!(
+            "Length must be between {} and {}",
+            MIN_LENGTH,
+            MAX_LENGTH
+        ));
     }
 
     let mut chars = id.chars();
@@ -38,7 +42,7 @@ pub fn validate_mod_id<S: AsRef<str>>(id: S) -> Result<()> {
 }
 
 pub fn is_valid_mod_id<S: AsRef<str>>(id: S) -> bool {
-    return validate_mod_id(id).is_ok()
+    validate_mod_id(id).is_ok()
 }
 
 pub fn to_mod_id<S: AsRef<str>>(name: S) -> String {

@@ -86,7 +86,7 @@ pub use web::read_node;
 mod web {
     use super::XmlNode;
     use crate::web::ResultExt;
-    use miette::{miette, Result};
+    use miette::Result;
     use std::iter::Map;
     use std::vec::IntoIter;
     use wasm_bindgen::JsCast;
