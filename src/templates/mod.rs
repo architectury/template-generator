@@ -6,19 +6,19 @@ pub mod engine;
 pub mod fabric;
 pub mod forge;
 pub mod multiplatform;
+pub mod shared;
 
 pub struct FileData {
     pub path: String,
     pub content: String,
 }
 
-pub fn compose_file_path(dir: &str, file_name: &str) -> String {
-    let mut path = String::from(dir);
-    if !dir.is_empty() {
-        path += "/";
+pub fn compose_file_path(dir: &str, file_name: &str, include_dir: bool) -> String {
+    if include_dir && !dir.is_empty() {
+        format!("{}/{}", dir, file_name)
+    } else {
+        String::from(file_name)
     }
-    path += file_name;
-    path
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -58,7 +58,7 @@ pub async fn download_relative_file(
 }
 
 macro_rules! file_data {
-    ($const_name:ident $fn_name:ident, $dir:expr, $file_name:expr) => {
+    ($const_name:ident $fn_name:ident, $dir:expr, $include_dir_in_target:expr, $file_name:expr) => {
         #[cfg(not(target_arch = "wasm32"))]
         const $const_name: &'static str = include_str!($file_name);
 
@@ -66,7 +66,7 @@ macro_rules! file_data {
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            let path = crate::templates::compose_file_path($dir, $file_name);
+            let path = crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
             Ok(crate::templates::FileData {
                 path,
                 content: $const_name.to_owned(),
@@ -77,13 +77,8 @@ macro_rules! file_data {
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            let path = crate::templates::compose_file_path($dir, $file_name);
-            let dir = if $dir.is_empty() {
-                "multiplatform"
-            } else {
-                $dir
-            };
-            let url = format!("templates/{}/{}", dir, $file_name);
+            let path = crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
+            let url = format!("templates/{}/{}", $dir, $file_name);
             let content = crate::templates::download_relative_file(client, &url).await?;
             Ok(crate::templates::FileData { path, content })
         }

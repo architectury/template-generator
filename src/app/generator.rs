@@ -48,8 +48,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     context.put("PLUGIN_VERSION", crate::versions::PLUGIN_VERSION);
 
     // Setup version resolving
-    let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> = Vec::new();
     let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);
+    let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> = vec![Box::pin(shared::shared_files(client.clone()))];
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();
 
     // Mappings
