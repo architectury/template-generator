@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use js_sys::Array;
+use js_sys::{Array, JsString};
 use miette::{miette, Result};
 use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
@@ -14,6 +14,21 @@ pub trait ResultExt<T> {
 impl<T> ResultExt<T> for std::result::Result<T, wasm_bindgen::JsValue> {
     fn to_miette(self) -> Result<T> {
         self.map_err(|err| miette!("{:?}", err))
+    }
+}
+
+fn ok_or_display_error<T, E>(result: Result<T, E>) -> Option<T>
+where
+    E: std::fmt::Display,
+{
+    match result {
+        Ok(value) => Some(value),
+        Err(err) => {
+            if let Some(window) = web_sys::window() {
+                let _ = window.alert_with_message(&err.to_string());
+            }
+            None
+        }
     }
 }
 
@@ -58,7 +73,12 @@ pub fn validate_mod_id(mod_id: &str) -> Array {
 }
 
 #[wasm_bindgen]
-pub async fn generate(state: JsValue) -> Result<(), JsValue> {
+pub async fn generate(state: JsValue) {
+    let result = generate_inner(state).await;
+    ok_or_display_error(result.map_err(|err| JsString::from(err)));
+}
+
+async fn generate_inner(state: JsValue) -> Result<(), JsValue> {
     let app: crate::app::GeneratorApp = serde_wasm_bindgen::from_value(state)?;
     crate::app::generator::generate(&app)
         .await
