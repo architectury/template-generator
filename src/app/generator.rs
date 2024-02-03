@@ -42,6 +42,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         game_version.java_version().java_major_version().to_string(),
     );
     context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
+    context.maybe_put("NEOFORGE_LOADER_MAJOR", game_version.neoforge_loader_major());
+    context.maybe_put("NEOFORGE_MAJOR", game_version.neoforge_major());
 
     // Constants
     context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
@@ -100,6 +102,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
             if app.subprojects.neoforge {
                 context.define("neoforge");
+                files.push(Box::pin(neoforge::all_files(client.clone())));
             }
 
             if app.subprojects.quilt {

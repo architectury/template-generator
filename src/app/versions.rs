@@ -32,6 +32,8 @@ pub enum MinecraftVersion {
     Minecraft1_20_1,
     #[serde(rename = "1.20.2")]
     Minecraft1_20_2,
+    #[serde(rename = "1.20.4")]
+    Minecraft1_20_4,
 }
 
 impl MinecraftVersion {
@@ -53,6 +55,7 @@ impl MinecraftVersion {
             MinecraftVersion::Minecraft1_19_4 => "1.19.4",
             MinecraftVersion::Minecraft1_20_1 => "1.20.1",
             MinecraftVersion::Minecraft1_20_2 => "1.20.2",
+            MinecraftVersion::Minecraft1_20_4 => "1.20.4",
         }
     }
 
@@ -93,6 +96,7 @@ impl MinecraftVersion {
             MinecraftVersion::Minecraft1_19_4 => "45",
             MinecraftVersion::Minecraft1_20_1 => "47",
             MinecraftVersion::Minecraft1_20_2 => "48",
+            MinecraftVersion::Minecraft1_20_4 => "49",
         }
     }
 
@@ -109,6 +113,21 @@ impl MinecraftVersion {
             MinecraftVersion::Minecraft1_19_4 => "8",
             MinecraftVersion::Minecraft1_20_1 => "9",
             MinecraftVersion::Minecraft1_20_2 => "10",
+            MinecraftVersion::Minecraft1_20_4 => "11",
+        }
+    }
+
+    pub fn neoforge_loader_major(self) -> Option<&'static str> {
+        match self {
+            MinecraftVersion::Minecraft1_20_4 => Some("2"),
+            _ => None,
+        }
+    }
+
+    pub fn neoforge_major(self) -> Option<&'static str> {
+        match self {
+            MinecraftVersion::Minecraft1_20_4 => Some("20.4"),
+            _ => None,
         }
     }
 }

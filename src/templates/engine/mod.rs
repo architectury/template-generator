@@ -97,6 +97,16 @@ impl Context {
             .insert(key.as_ref().to_owned(), value.as_ref().to_owned());
     }
 
+    pub fn maybe_put<K, V>(&mut self, key: K, value: Option<V>)
+    where
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
+        if let Some(value) = value {
+            self.put(key, value)
+        }
+    }
+
     pub fn define<F: AsRef<str>>(&mut self, flag: F) {
         self.flags.insert(flag.as_ref().to_owned());
     }

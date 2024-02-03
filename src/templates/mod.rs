@@ -6,6 +6,7 @@ pub mod engine;
 pub mod fabric;
 pub mod forge;
 pub mod multiplatform;
+pub mod neoforge;
 pub mod shared;
 
 pub struct FileData {
