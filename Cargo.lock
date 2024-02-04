@@ -1536,6 +1536,7 @@ dependencies = [
  "rfd",
  "serde",
  "serde-wasm-bindgen",
+ "serde_json",
  "strum",
  "tokio",
  "tui-textarea",

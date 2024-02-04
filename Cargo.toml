@@ -45,6 +45,7 @@ futures = "0.3"
 rfd = "0.12"
 zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 serde = { workspace = true }
+serde_json = { workspace = true }
 strum = { workspace = true }
 version_resolver = { path = "version_resolver" }
 

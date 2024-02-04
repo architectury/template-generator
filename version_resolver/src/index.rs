@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 
 use crate::minecraft::MinecraftVersion;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {
     #[serde(flatten)]
     pub versions: HashMap<MinecraftVersion, Versions>,
@@ -31,7 +31,7 @@ impl VersionIndex {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Versions {
     pub architectury_api: String,
     pub forge: String,

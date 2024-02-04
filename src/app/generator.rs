@@ -51,6 +51,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
     // Setup version resolving
     let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);
+    let versions = crate::app::versions::get_version_index(client.clone(), &game_version).await?;
     let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> =
         vec![Box::pin(shared::shared_files(client.clone()))];
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();
@@ -92,11 +93,21 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             if app.subprojects.forge {
                 context.define("forge");
                 files.push(Box::pin(forge::all_files(client.clone())));
+                variables.push(Box::pin(add_key(
+                    "FORGE_VERSION",
+                    std::future::ready(Ok(versions.forge)),
+                )));
             }
 
             if app.subprojects.neoforge {
                 context.define("neoforge");
                 files.push(Box::pin(neoforge::all_files(client.clone())));
+                if let Some(version) = versions.neoforge {
+                   variables.push(Box::pin(add_key(
+                        "NEOFORGE_VERSION",
+                        std::future::ready(Ok(version)),
+                    )));
+                }
             }
 
             if app.subprojects.quilt {
@@ -107,16 +118,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 context.define("architectury_api");
                 variables.push(Box::pin(add_key(
                     "ARCHITECTURY_API_VERSION",
-                    resolve_matching_version(
-                        &client,
-                        MavenLibrary::architectury_api(&game_version),
-                        |version| {
-                            version.starts_with(&format!(
-                                "{}.",
-                                game_version.architectury_api_version()
-                            ))
-                        },
-                    ),
+                    std::future::ready(Ok(versions.architectury_api)),
                 )));
             }
         }
