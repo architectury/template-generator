@@ -8,6 +8,8 @@ use reqwest::Client;
 
 const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
 const ARCHITECTURY_MAVEN: &'static str = "https://maven.architectury.dev";
+const FORGE_MAVEN: &'static str = "https://maven.minecraftforge.net";
+const NEOFORGE_MAVEN: &'static str = "https://maven.neoforged.net/releases";
 
 pub struct MavenLibrary {
     repository: MavenRepository,
@@ -56,6 +58,16 @@ impl MavenLibrary {
     pub fn architectury_api(game_version: &MinecraftVersion) -> Self {
         Self::new(MavenRepository::Architectury, game_version.architectury_maven_group(), "architectury")
     }
+
+    // Forge libraries
+    pub fn forge() -> Self {
+        Self::new(MavenRepository::Forge, "net.minecraftforge", "forge")
+    }
+
+    // NeoForge libraries
+    pub fn neoforge() -> Self {
+        Self::new(MavenRepository::NeoForge, "net.neoforged", "neoforge")
+    }
 }
 
 impl std::fmt::Display for MavenLibrary {
@@ -67,6 +79,8 @@ impl std::fmt::Display for MavenLibrary {
 pub enum MavenRepository {
     Fabric,
     Architectury,
+    Forge,
+    NeoForge,
 }
 
 impl MavenRepository {
@@ -74,13 +88,8 @@ impl MavenRepository {
         match self {
             Self::Fabric => FABRIC_MAVEN,
             Self::Architectury => ARCHITECTURY_MAVEN,
-        }
-    }
-
-    pub fn allows_cross_origin(&self) -> bool {
-        match self {
-            Self::Fabric => true,
-            Self::Architectury => false,
+            Self::Forge => FORGE_MAVEN,
+            Self::NeoForge => NEOFORGE_MAVEN,
         }
     }
 }
