@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::xml::{read_node, XmlNode};
+use crate::{minecraft::MinecraftVersion, xml::{read_node, XmlNode}};
 use miette::{miette, IntoDiagnostic, Result};
 use reqwest::Client;
 
@@ -53,8 +53,8 @@ impl MavenLibrary {
     }
 
     // Architectury libraries
-    pub fn architectury_api() -> Self {
-        Self::new(MavenRepository::Architectury, "dev.architectury", "architectury-api")
+    pub fn architectury_api(game_version: &MinecraftVersion) -> Self {
+        Self::new(MavenRepository::Architectury, game_version.architectury_maven_group(), "architectury")
     }
 }
 

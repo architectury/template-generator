@@ -6,12 +6,12 @@ use crate::tap::Tap;
 use crate::templates::*;
 use crate::{MappingSet, ProjectType};
 use futures::future::join_all;
-use futures::{FutureExt, join};
+use futures::{join, FutureExt};
 use miette::{IntoDiagnostic, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use version_resolver::maven::{MavenLibrary, resolve_latest_version, resolve_matching_version};
+use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
 pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     let mut context = engine::Context::new();
@@ -39,7 +39,10 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         game_version.java_version().java_major_version().to_string(),
     );
     context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
-    context.maybe_put("NEOFORGE_LOADER_MAJOR", game_version.neoforge_loader_major());
+    context.maybe_put(
+        "NEOFORGE_LOADER_MAJOR",
+        game_version.neoforge_loader_major(),
+    );
     context.maybe_put("NEOFORGE_MAJOR", game_version.neoforge_major());
 
     // Constants
@@ -48,7 +51,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
     // Setup version resolving
     let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);
-    let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> = vec![Box::pin(shared::shared_files(client.clone()))];
+    let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> =
+        vec![Box::pin(shared::shared_files(client.clone()))];
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();
 
     // Mappings
@@ -56,11 +60,12 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         MappingSet::Mojang => context.define("mojang_mappings"),
         MappingSet::Yarn => {
             context.define("yarn");
-            variables.push(Box::pin(add_key("YARN_MAPPINGS", resolve_matching_version(
-                &client,
-                MavenLibrary::yarn(),
-                |version| version.starts_with(&format!("{}+", game_version.version())),
-            ))));
+            variables.push(Box::pin(add_key(
+                "YARN_MAPPINGS",
+                resolve_matching_version(&client, MavenLibrary::yarn(), |version| {
+                    version.starts_with(&format!("{}+", game_version.version()))
+                }),
+            )));
         }
     }
 
@@ -68,19 +73,20 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     match app.project_type {
         ProjectType::Multiplatform => {
             files.push(Box::pin(multiplatform::all_files(client.clone())));
-            variables.push(Box::pin(add_key("FABRIC_LOADER_VERSION", resolve_latest_version(
-                &client,
-                MavenLibrary::fabric_loader()
-            ))));
+            variables.push(Box::pin(add_key(
+                "FABRIC_LOADER_VERSION",
+                resolve_latest_version(&client, MavenLibrary::fabric_loader()),
+            )));
 
             if app.subprojects.fabric {
                 context.define("fabric");
                 files.push(Box::pin(fabric::all_files(client.clone())));
-                variables.push(Box::pin(add_key("FABRIC_API_VERSION", resolve_matching_version(
-                    &client,
-                    MavenLibrary::fabric_api(),
-                    |version| version.ends_with(&format!("+{}", game_version.fabric_api_branch())),
-                ))));
+                variables.push(Box::pin(add_key(
+                    "FABRIC_API_VERSION",
+                    resolve_matching_version(&client, MavenLibrary::fabric_api(), |version| {
+                        version.ends_with(&format!("+{}", game_version.fabric_api_branch()))
+                    }),
+                )));
             }
 
             if app.subprojects.forge {
@@ -99,14 +105,19 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
             if app.dependencies.architectury_api {
                 context.define("architectury_api");
-                variables.push(Box::pin(add_key("ARCHITECTURY_API_VERSION", resolve_matching_version(
-                    &client,
-                    MavenLibrary::architectury_api(),
-                    |version| {
-                        version
-                            .starts_with(&format!("{}.", game_version.architectury_api_version()))
-                    },
-                ))));
+                variables.push(Box::pin(add_key(
+                    "ARCHITECTURY_API_VERSION",
+                    resolve_matching_version(
+                        &client,
+                        MavenLibrary::architectury_api(&game_version),
+                        |version| {
+                            version.starts_with(&format!(
+                                "{}.",
+                                game_version.architectury_api_version()
+                            ))
+                        },
+                    ),
+                )));
             }
         }
         ProjectType::NeoForge => {}

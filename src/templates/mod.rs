@@ -67,7 +67,8 @@ macro_rules! file_data {
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            let path = crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
+            let path =
+                crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
             Ok(crate::templates::FileData {
                 path,
                 content: $const_name.to_owned(),
@@ -78,7 +79,8 @@ macro_rules! file_data {
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
-            let path = crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
+            let path =
+                crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
             let url = format!("templates/{}/{}", $dir, $file_name);
             let content = crate::templates::download_relative_file(client, &url).await?;
             Ok(crate::templates::FileData { path, content })

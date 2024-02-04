@@ -5,7 +5,7 @@
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
-#[derive(Clone, Copy, Serialize, Deserialize, EnumIter)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize, EnumIter)]
 pub enum MinecraftVersion {
     #[serde(rename = "1.16.5")]
     Minecraft1_16_5,
@@ -67,6 +67,13 @@ impl MinecraftVersion {
     pub fn architectury_package(&self) -> &'static str {
         match self {
             MinecraftVersion::Minecraft1_16_5 => "me.shedaniel.architectury",
+            _ => "dev.architectury",
+        }
+    }
+
+    pub fn architectury_maven_group(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "me.shedaniel",
             _ => "dev.architectury",
         }
     }

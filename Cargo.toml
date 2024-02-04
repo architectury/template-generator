@@ -14,7 +14,9 @@ wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
 js-sys = "0.3.64"
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 strum = { version = "0.25", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
@@ -47,7 +49,8 @@ strum = { workspace = true }
 version_resolver = { path = "version_resolver" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1", features = ["full"] }
+miette = { features = ["fancy"] }
+tokio = { workspace = true }
 ratatui = "0.23.0"
 crossterm = "0.27.0"
 tui-textarea = { version = "0.2.2", default-features = false, features = ["ratatui-crossterm"] }
