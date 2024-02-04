@@ -6,7 +6,7 @@ use crate::xml::{read_node, XmlNode};
 use miette::{miette, IntoDiagnostic, Result};
 use reqwest::Client;
 
-pub async fn download_maven_metadata(
+async fn download_maven_metadata(
     client: &Client,
     repository: &str,
     group: &str,
@@ -32,14 +32,14 @@ pub async fn download_maven_metadata(
     read_node(text.as_str())
 }
 
-pub fn get_latest_version<N: XmlNode>(node: &N) -> Option<String> {
+fn get_latest_version<N: XmlNode>(node: &N) -> Option<String> {
     node.get_first_child("metadata")?
         .get_first_child("versioning")?
         .get_first_child("latest")?
         .text()
 }
 
-pub fn get_latest_version_matching<N, F>(node: &N, filter: F) -> Option<String>
+fn get_latest_version_matching<N, F>(node: &N, filter: F) -> Option<String>
 where
     N: XmlNode,
     F: Fn(&str) -> bool,
@@ -54,4 +54,42 @@ where
         .collect();
     matching.sort_by(|a, b| flexver_rs::compare(a.as_str(), b.as_str()).reverse());
     matching.first().cloned()
+}
+
+pub async fn resolve_matching_version<F>(
+    client: &reqwest::Client,
+    repository: &str,
+    group: &str,
+    name: &str,
+    filter: F,
+) -> Result<String>
+where
+    F: Fn(&str) -> bool,
+{
+    let metadata = download_maven_metadata(client, repository, group, name).await?;
+    get_latest_version_matching(&metadata, filter).ok_or_else(|| {
+        miette!(
+            "Could not find latest version for {}:{} in {}",
+            group,
+            name,
+            repository
+        )
+    })
+}
+
+pub async fn resolve_latest_version(
+    client: &reqwest::Client,
+    repository: &str,
+    group: &str,
+    name: &str,
+) -> Result<String> {
+    let metadata = download_maven_metadata(client, repository, group, name).await?;
+    get_latest_version(&metadata).ok_or_else(|| {
+        miette!(
+            "Could not find latest version for {}:{} in {}",
+            group,
+            name,
+            repository
+        )
+    })
 }

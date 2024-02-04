@@ -1,0 +1,19 @@
+[package]
+name = "version_resolver"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+miette = { workspace = true }
+reqwest = { workspace = true }
+strum = { version = "0.25", features = ["derive"] }
+xml_dom = { workspace = true }
+flexver-rs = "0.1.2"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+xml_dom = { workspace = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
+web-sys = { workspace = true }

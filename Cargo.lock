@@ -1353,7 +1353,6 @@ name = "templateer"
 version = "0.1.0"
 dependencies = [
  "crossterm",
- "flexver-rs",
  "futures",
  "js-sys",
  "miette",
@@ -1365,10 +1364,10 @@ dependencies = [
  "strum",
  "tokio",
  "tui-textarea",
+ "version_resolver",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "xml_dom",
  "zip",
 ]
 
@@ -1592,6 +1591,20 @@ name = "version-compare"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "579a42fc0b8e0c63b76519a339be31bed574929511fa53c1a3acae26eb258f29"
+
+[[package]]
+name = "version_resolver"
+version = "1.0.0"
+dependencies = [
+ "flexver-rs",
+ "js-sys",
+ "miette",
+ "reqwest",
+ "strum",
+ "wasm-bindgen",
+ "web-sys",
+ "xml_dom",
+]
 
 [[package]]
 name = "want"

@@ -3,35 +3,18 @@ name = "templateer"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = ["version_resolver"]
 
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
+[workspace.dependencies]
 miette = "5.10"
 reqwest = "0.11"
-flexver-rs = "0.1.2"
-futures = "0.3"
-rfd = "0.12"
-zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
-serde = { version = "1.0", features = ["derive"] }
-strum = { version = "0.25", features = ["derive"] }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1", features = ["full"] }
 xml_dom = "0.2.6"
-ratatui = "0.23.0"
-crossterm = "0.27.0"
-tui-textarea = { version = "0.2.2", default-features = false, features = ["ratatui-crossterm"] }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.87"
-wasm-bindgen-futures = "0.4.37"
 js-sys = "0.3.64"
-serde-wasm-bindgen = "0.4"
+serde = { version = "1.0", features = ["derive"] }
 
-[target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
+[workspace.dependencies.web-sys]
 version = "0.3.64"
 features = [
     "Document",
@@ -44,3 +27,31 @@ features = [
     "Window",
     "console",
 ]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+miette = { workspace = true }
+reqwest = { workspace = true }
+futures = "0.3"
+rfd = "0.12"
+zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
+serde = { workspace = true }
+strum = { version = "0.25", features = ["derive"] }
+version_resolver = { path = "version_resolver" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1", features = ["full"] }
+ratatui = "0.23.0"
+crossterm = "0.27.0"
+tui-textarea = { version = "0.2.2", default-features = false, features = ["ratatui-crossterm"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = "0.4.37"
+js-sys = { workspace = true }
+web-sys = { workspace = true }
+serde-wasm-bindgen = "0.4"

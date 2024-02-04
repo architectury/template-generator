@@ -2,16 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::requests::*;
 use crate::tap::Tap;
 use crate::templates::*;
 use crate::{MappingSet, ProjectType};
 use futures::future::join_all;
-use futures::join;
-use miette::{miette, IntoDiagnostic, Result};
+use futures::{FutureExt, join};
+use miette::{IntoDiagnostic, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use version_resolver::maven::{resolve_latest_version, resolve_matching_version};
 
 const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
 const ARCHITECTURY_MAVEN: &'static str = "https://maven.architectury.dev";
@@ -59,14 +59,13 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         MappingSet::Mojang => context.define("mojang_mappings"),
         MappingSet::Yarn => {
             context.define("yarn");
-            variables.push(Box::pin(resolve_matching_version(
+            variables.push(Box::pin(add_key("YARN_MAPPINGS", resolve_matching_version(
                 &client,
-                "YARN_MAPPINGS",
                 FABRIC_MAVEN,
                 "net.fabricmc",
                 "yarn",
                 |version| version.starts_with(&format!("{}+", game_version.version())),
-            )));
+            ))));
         }
     }
 
@@ -74,25 +73,23 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     match app.project_type {
         ProjectType::Multiplatform => {
             files.push(Box::pin(multiplatform::all_files(client.clone())));
-            variables.push(Box::pin(resolve_latest_version(
+            variables.push(Box::pin(add_key("FABRIC_LOADER_VERSION", resolve_latest_version(
                 &client,
-                "FABRIC_LOADER_VERSION",
                 FABRIC_MAVEN,
                 "net.fabricmc",
                 "fabric-loader",
-            )));
+            ))));
 
             if app.subprojects.fabric {
                 context.define("fabric");
                 files.push(Box::pin(fabric::all_files(client.clone())));
-                variables.push(Box::pin(resolve_matching_version(
+                variables.push(Box::pin(add_key("FABRIC_API_VERSION", resolve_matching_version(
                     &client,
-                    "FABRIC_API_VERSION",
                     FABRIC_MAVEN,
                     "net.fabricmc.fabric-api",
                     "fabric-api",
                     |version| version.ends_with(&format!("+{}", game_version.fabric_api_branch())),
-                )));
+                ))));
             }
 
             if app.subprojects.forge {
@@ -111,9 +108,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
             if app.dependencies.architectury_api {
                 context.define("architectury_api");
-                variables.push(Box::pin(resolve_matching_version(
+                variables.push(Box::pin(add_key("ARCHITECTURY_API_VERSION", resolve_matching_version(
                     &client,
-                    "ARCHITECTURY_API_VERSION",
                     ARCHITECTURY_MAVEN,
                     game_version.architectury_package(),
                     "architectury",
@@ -121,7 +117,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                         version
                             .starts_with(&format!("{}.", game_version.architectury_api_version()))
                     },
-                )));
+                ))));
             }
         }
         ProjectType::NeoForge => {}
@@ -163,44 +159,9 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     .await
 }
 
-async fn resolve_matching_version<F>(
-    client: &reqwest::Client,
-    variable: &str,
-    repository: &str,
-    group: &str,
-    name: &str,
-    filter: F,
-) -> Result<(String, String)>
+fn add_key<F>(key: &'static str, future: F) -> impl Future<Output = Result<(String, String)>>
 where
-    F: Fn(&str) -> bool,
+    F: Future<Output = Result<String>>,
 {
-    let metadata = download_maven_metadata(client, repository, group, name).await?;
-    let version = get_latest_version_matching(&metadata, filter).ok_or_else(|| {
-        miette!(
-            "Could not find latest version for {}:{} in {}",
-            group,
-            name,
-            repository
-        )
-    })?;
-    Ok((variable.to_owned(), version))
-}
-
-async fn resolve_latest_version(
-    client: &reqwest::Client,
-    variable: &str,
-    repository: &str,
-    group: &str,
-    name: &str,
-) -> Result<(String, String)> {
-    let metadata = download_maven_metadata(client, repository, group, name).await?;
-    let version = get_latest_version(&metadata).ok_or_else(|| {
-        miette!(
-            "Could not find latest version for {}:{} in {}",
-            group,
-            name,
-            repository
-        )
-    })?;
-    Ok((variable.to_owned(), version))
+    future.map(|result| result.map(|version| (key.to_owned(), version)))
 }
