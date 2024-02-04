@@ -3,5 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 pub mod maven;
+pub mod minecraft;
 pub(crate) mod web;
 pub(crate) mod xml;

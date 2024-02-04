@@ -14,6 +14,7 @@ wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
 js-sys = "0.3.64"
 serde = { version = "1.0", features = ["derive"] }
+strum = { version = "0.25", features = ["derive"] }
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
@@ -42,7 +43,7 @@ futures = "0.3"
 rfd = "0.12"
 zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 serde = { workspace = true }
-strum = { version = "0.25", features = ["derive"] }
+strum = { workspace = true }
 version_resolver = { path = "version_resolver" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

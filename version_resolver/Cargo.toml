@@ -6,7 +6,8 @@ edition = "2021"
 [dependencies]
 miette = { workspace = true }
 reqwest = { workspace = true }
-strum = { version = "0.25", features = ["derive"] }
+serde = { workspace = true }
+strum = { workspace = true }
 xml_dom = { workspace = true }
 flexver-rs = "0.1.2"
 

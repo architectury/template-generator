@@ -40,7 +40,7 @@ pub fn create_state() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub fn list_all_minecraft_versions() -> Array {
-    crate::app::versions::MinecraftVersion::iter()
+    version_resolver::minecraft::MinecraftVersion::iter()
         .map(|version| version.version())
         .map(|x| JsValue::from_str(x))
         .collect()

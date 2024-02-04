@@ -1600,6 +1600,7 @@ dependencies = [
  "js-sys",
  "miette",
  "reqwest",
+ "serde",
  "strum",
  "wasm-bindgen",
  "wasm-bindgen-futures",
