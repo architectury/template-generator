@@ -1,5 +1,6 @@
 val wasmDir = layout.buildDirectory.dir("wasm")
 val outputDir = layout.buildDirectory.dir("web")
+val versionIndex = layout.buildDirectory.file("version_index.json")
 
 val compileWasm = tasks.register<Exec>("compileWasm") {
     commandLine("wasm-pack", "build", "--target", "web", "-d", wasmDir.get().asFile.absolutePath)
@@ -8,8 +9,14 @@ val compileWasm = tasks.register<Exec>("compileWasm") {
     outputs.dir(wasmDir)
 }
 
+val generateVersionIndex = tasks.register<Exec>("generateVersionIndex") {
+    inputs.dir("version_resolver/src")
+    commandLine("cargo", "run", "-p", "version_resolver", "--", "-o", versionIndex.get().asFile.absolutePath)
+    outputs.file(versionIndex)
+}
+
 val buildWeb = tasks.register<Copy>("buildWeb") {
-    dependsOn(compileWasm)
+    dependsOn(compileWasm, generateVersionIndex)
     from(fileTree(wasmDir)) {
         include("*.wasm", "*.js")
     }
@@ -19,6 +26,7 @@ val buildWeb = tasks.register<Copy>("buildWeb") {
         exclude("**/*.rs")
         includeEmptyDirs = false
     }
+    from(versionIndex)
 
     into(outputDir)
 
