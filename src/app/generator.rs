@@ -11,10 +11,7 @@ use miette::{IntoDiagnostic, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use version_resolver::maven::{resolve_latest_version, resolve_matching_version};
-
-const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
-const ARCHITECTURY_MAVEN: &'static str = "https://maven.architectury.dev";
+use version_resolver::maven::{MavenLibrary, resolve_latest_version, resolve_matching_version};
 
 pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     let mut context = engine::Context::new();
@@ -61,9 +58,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             context.define("yarn");
             variables.push(Box::pin(add_key("YARN_MAPPINGS", resolve_matching_version(
                 &client,
-                FABRIC_MAVEN,
-                "net.fabricmc",
-                "yarn",
+                MavenLibrary::yarn(),
                 |version| version.starts_with(&format!("{}+", game_version.version())),
             ))));
         }
@@ -75,9 +70,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             files.push(Box::pin(multiplatform::all_files(client.clone())));
             variables.push(Box::pin(add_key("FABRIC_LOADER_VERSION", resolve_latest_version(
                 &client,
-                FABRIC_MAVEN,
-                "net.fabricmc",
-                "fabric-loader",
+                MavenLibrary::fabric_loader()
             ))));
 
             if app.subprojects.fabric {
@@ -85,9 +78,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 files.push(Box::pin(fabric::all_files(client.clone())));
                 variables.push(Box::pin(add_key("FABRIC_API_VERSION", resolve_matching_version(
                     &client,
-                    FABRIC_MAVEN,
-                    "net.fabricmc.fabric-api",
-                    "fabric-api",
+                    MavenLibrary::fabric_api(),
                     |version| version.ends_with(&format!("+{}", game_version.fabric_api_branch())),
                 ))));
             }
@@ -110,9 +101,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 context.define("architectury_api");
                 variables.push(Box::pin(add_key("ARCHITECTURY_API_VERSION", resolve_matching_version(
                     &client,
-                    ARCHITECTURY_MAVEN,
-                    game_version.architectury_package(),
-                    "architectury",
+                    MavenLibrary::architectury_api(),
                     |version| {
                         version
                             .starts_with(&format!("{}.", game_version.architectury_api_version()))

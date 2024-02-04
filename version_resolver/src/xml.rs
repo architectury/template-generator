@@ -84,8 +84,9 @@ pub use web::read_node;
 
 #[cfg(target_arch = "wasm32")]
 mod web {
+    use crate::web::ResultExt;
     use super::XmlNode;
-    use miette::{miette, Result};
+    use miette::Result;
     use std::iter::Map;
     use std::vec::IntoIter;
     use wasm_bindgen::JsCast;
@@ -119,10 +120,10 @@ mod web {
     }
 
     pub fn read_node(input: &str) -> Result<impl XmlNode> {
-        let parser = DomParser::new().map_err(|err| miette!("{:?}", err))?;
+        let parser = DomParser::new().to_miette()?;
         let document = parser
             .parse_from_string(input, SupportedType::ApplicationXml)
-            .map_err(|err| miette!("{:?}", err))?;
+            .to_miette()?;
         Ok(XmlNodeImpl(document.into()))
     }
 

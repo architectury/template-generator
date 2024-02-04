@@ -6,17 +6,94 @@ use crate::xml::{read_node, XmlNode};
 use miette::{miette, IntoDiagnostic, Result};
 use reqwest::Client;
 
+const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
+const ARCHITECTURY_MAVEN: &'static str = "https://maven.architectury.dev";
+
+pub struct MavenLibrary {
+    repository: MavenRepository,
+    group: String,
+    name: String,
+}
+
+impl MavenLibrary {
+    pub fn new<S>(repository: MavenRepository, group: S, name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        Self {
+            repository,
+            group: group.as_ref().to_owned(),
+            name: name.as_ref().to_owned(),
+        }
+    }
+
+    pub fn repository(&self) -> &MavenRepository {
+        &self.repository
+    }
+
+    pub fn group(&self) -> &str {
+        &self.group
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    // Fabric libraries
+    pub fn yarn() -> Self {
+        Self::new(MavenRepository::Fabric, "net.fabricmc", "yarn")
+    }
+
+    pub fn fabric_loader() -> Self {
+        Self::new(MavenRepository::Fabric, "net.fabricmc", "fabric-loader")
+    }
+
+    pub fn fabric_api() -> Self {
+        Self::new(MavenRepository::Fabric, "net.fabricmc.fabric-api", "fabric-api")
+    }
+
+    // Architectury libraries
+    pub fn architectury_api() -> Self {
+        Self::new(MavenRepository::Architectury, "dev.architectury", "architectury-api")
+    }
+}
+
+impl std::fmt::Display for MavenLibrary {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}:{} in {}", self.group, self.name, self.repository.url())
+    }
+}
+
+pub enum MavenRepository {
+    Fabric,
+    Architectury,
+}
+
+impl MavenRepository {
+    pub fn url(&self) -> &'static str {
+        match self {
+            Self::Fabric => FABRIC_MAVEN,
+            Self::Architectury => ARCHITECTURY_MAVEN,
+        }
+    }
+
+    pub fn allows_cross_origin(&self) -> bool {
+        match self {
+            Self::Fabric => true,
+            Self::Architectury => false,
+        }
+    }
+}
+
 async fn download_maven_metadata(
     client: &Client,
-    repository: &str,
-    group: &str,
-    artifact: &str,
+    library: &MavenLibrary,
 ) -> Result<impl XmlNode> {
     let url = format!(
         "{}/{}/{}/maven-metadata.xml",
-        repository,
-        group.replace(".", "/"),
-        artifact
+        library.repository().url(),
+        library.group().replace(".", "/"),
+        library.name()
     );
     let response = client.get(&url).send().await.into_diagnostic()?;
 
@@ -58,38 +135,24 @@ where
 
 pub async fn resolve_matching_version<F>(
     client: &reqwest::Client,
-    repository: &str,
-    group: &str,
-    name: &str,
+    library: MavenLibrary,
     filter: F,
 ) -> Result<String>
 where
     F: Fn(&str) -> bool,
 {
-    let metadata = download_maven_metadata(client, repository, group, name).await?;
+    let metadata = download_maven_metadata(client, &library).await?;
     get_latest_version_matching(&metadata, filter).ok_or_else(|| {
-        miette!(
-            "Could not find latest version for {}:{} in {}",
-            group,
-            name,
-            repository
-        )
+        miette!("Could not find latest version for {}", library)
     })
 }
 
 pub async fn resolve_latest_version(
     client: &reqwest::Client,
-    repository: &str,
-    group: &str,
-    name: &str,
+    library: MavenLibrary,
 ) -> Result<String> {
-    let metadata = download_maven_metadata(client, repository, group, name).await?;
+    let metadata = download_maven_metadata(client, &library).await?;
     get_latest_version(&metadata).ok_or_else(|| {
-        miette!(
-            "Could not find latest version for {}:{} in {}",
-            group,
-            name,
-            repository
-        )
+        miette!("Could not find latest version for {}", library)
     })
 }
