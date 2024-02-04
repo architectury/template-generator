@@ -15,7 +15,7 @@ pub async fn get_version_index(client: std::sync::Arc<Client>, game_version: &Mi
     use miette::{IntoDiagnostic, miette};
     use version_resolver::index::VersionIndex;
 
-    let json = crate::templates::download_relative_file(client, "version_index.json").await?;
+    let json = crate::templates::download_relative_text(client, "version_index.json").await?;
     let index: VersionIndex = serde_json::from_str(&json).into_diagnostic()?;
     index.versions
         .get(game_version)

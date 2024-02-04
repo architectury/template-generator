@@ -5,6 +5,7 @@
 use crate::tap::Tap;
 use crate::templates::*;
 use crate::{MappingSet, ProjectType};
+use bytes::Bytes;
 use futures::future::join_all;
 use futures::{join, FutureExt};
 use miette::{IntoDiagnostic, Result};
@@ -142,14 +143,21 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     engine::filer::use_filer(|filer| {
         for file_data in files {
             let path = engine::apply_variables(&context, file_data.path.as_str(), false);
-            let content: String = engine::apply_template(
-                &context,
-                engine::read_template(&file_data.content).unwrap(),
-            )
-            .iter()
-            .map(|line| line.to_owned() + "\n")
-            .collect();
-            filer.save(path.as_str(), content.as_str()).tap(|result| {
+            let content: Bytes = match &file_data.content {
+                FileContent::Binary(bytes) => bytes.clone(),
+                FileContent::Text(text) => {
+                    let applied: String = engine::apply_template(
+                        &context,
+                        engine::read_template(text).unwrap(),
+                    )
+                    .iter()
+                    .map(|line| line.to_owned() + "\n")
+                    .collect();
+                    Bytes::from(applied)
+                }
+            };
+
+            filer.save(path.as_str(), &content).tap(|result| {
                 if let Err(err) = result {
                     eprintln!("Could not save {}: {:?}", path, err);
                 }

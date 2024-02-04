@@ -9,7 +9,7 @@ use std::io::{Cursor, Seek, Write};
 use zip::write::FileOptions;
 
 pub trait Filer {
-    fn save(&mut self, path: &str, content: &str) -> Result<()>;
+    fn save(&mut self, path: &str, content: &[u8]) -> Result<()>;
 }
 
 pub struct ZipFiler<'a, W>
@@ -36,7 +36,7 @@ impl<'a, W> Filer for ZipFiler<'a, W>
 where
     W: Write + Seek,
 {
-    fn save(&mut self, path: &str, content: &str) -> Result<()> {
+    fn save(&mut self, path: &str, content: &[u8]) -> Result<()> {
         let parts: Vec<_> = path.split("/").collect();
 
         for i in 0..(parts.len() - 1) {
@@ -53,7 +53,7 @@ where
             .start_file(path, FileOptions::default())
             .into_diagnostic()?;
         self.writer
-            .write_all(content.as_bytes())
+            .write_all(content)
             .into_diagnostic()?;
         Ok(())
     }
@@ -92,7 +92,7 @@ mod native {
     }
 
     impl<'a> super::Filer for DirectoryFiler<'a> {
-        fn save(&mut self, path: &str, content: &str) -> Result<()> {
+        fn save(&mut self, path: &str, content: &[u8]) -> Result<()> {
             let mut full_path = path::PathBuf::from(self.path);
             full_path.push(path);
 
