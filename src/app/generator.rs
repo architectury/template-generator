@@ -45,6 +45,12 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         game_version.neoforge_loader_major(),
     );
     context.maybe_put("NEOFORGE_MAJOR", game_version.neoforge_major());
+    context.put("FORGE_PACK_FORMAT", game_version.forge_pack_version());
+
+    if let Some((data_pack_format_key, data_pack_format)) = game_version.forge_server_pack_version() {
+        context.put("FORGE_DATA_PACK_FORMAT_KEY", data_pack_format_key);
+        context.put("FORGE_DATA_PACK_FORMAT", data_pack_format);
+    }
 
     // Constants
     context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
@@ -124,7 +130,13 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             }
         }
         ProjectType::NeoForge => {}
-        ProjectType::Forge => {}
+        ProjectType::Forge => {
+            files.push(Box::pin(forge_only::all_files(client.clone())));
+            variables.push(Box::pin(add_key(
+                "FORGE_VERSION",
+                std::future::ready(Ok(versions.forge)),
+            )));
+        }
     }
 
     // Resolve versions

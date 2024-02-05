@@ -104,7 +104,7 @@ impl MinecraftVersion {
         }
     }
 
-    pub fn architectury_api_version(self) -> &'static str {
+    pub fn architectury_api_version(&self) -> &'static str {
         match self {
             MinecraftVersion::Minecraft1_16_5 => "1",
             MinecraftVersion::Minecraft1_17_1 => "2",
@@ -121,16 +121,46 @@ impl MinecraftVersion {
         }
     }
 
-    pub fn neoforge_loader_major(self) -> Option<&'static str> {
+    pub fn neoforge_loader_major(&self) -> Option<&'static str> {
         match self {
             MinecraftVersion::Minecraft1_20_4 => Some("2"),
             _ => None,
         }
     }
 
-    pub fn neoforge_major(self) -> Option<&'static str> {
+    pub fn neoforge_major(&self) -> Option<&'static str> {
         match self {
             MinecraftVersion::Minecraft1_20_4 => Some("20.4"),
+            _ => None,
+        }
+    }
+
+    pub fn forge_pack_version(&self) -> &'static str {
+        match self {
+            MinecraftVersion::Minecraft1_16_5 => "6",
+            MinecraftVersion::Minecraft1_17_1 => "7",
+            MinecraftVersion::Minecraft1_18_1 => "8",
+            MinecraftVersion::Minecraft1_18_2 => "8",
+            MinecraftVersion::Minecraft1_19 => "9",
+            MinecraftVersion::Minecraft1_19_1 => "9",
+            MinecraftVersion::Minecraft1_19_2 => "9",
+            MinecraftVersion::Minecraft1_19_3 => "12",
+            MinecraftVersion::Minecraft1_19_4 => "13",
+            MinecraftVersion::Minecraft1_20_1 => "15",
+            MinecraftVersion::Minecraft1_20_2 => "18",
+            MinecraftVersion::Minecraft1_20_4 => "22",
+        }
+    }
+
+    pub fn forge_server_pack_version(&self) -> Option<(&'static str, &'static str)> {
+        match self {
+            MinecraftVersion::Minecraft1_18_2 => Some(("forge:data_pack_format", "9")),
+            MinecraftVersion::Minecraft1_19 => Some(("forge:data_pack_format", "10")),
+            MinecraftVersion::Minecraft1_19_1 => Some(("forge:data_pack_format", "10")),
+            MinecraftVersion::Minecraft1_19_2 => Some(("forge:data_pack_format", "10")),
+            MinecraftVersion::Minecraft1_19_3 => Some(("forge:data_pack_format", "10")),
+            MinecraftVersion::Minecraft1_19_4 => Some(("forge:server_data_pack_format", "11")),
+            MinecraftVersion::Minecraft1_20_1 => Some(("forge:server_data_pack_format", "15")),
             _ => None,
         }
     }

@@ -7,6 +7,7 @@ use bytes::Bytes;
 pub mod engine;
 pub mod fabric;
 pub mod forge;
+pub mod forge_only;
 pub mod multiplatform;
 pub mod neoforge;
 pub mod shared;

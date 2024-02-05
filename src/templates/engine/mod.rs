@@ -85,7 +85,8 @@ impl Context {
     }
 
     pub fn has<K: AsRef<str>>(&self, key: K) -> bool {
-        self.flags.contains(&key.as_ref().to_owned())
+        let key = key.as_ref().to_owned();
+        self.flags.contains(&key) || self.variables.contains_key(&key)
     }
 
     pub fn put<K, V>(&mut self, key: K, value: V)
