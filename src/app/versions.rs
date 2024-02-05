@@ -10,7 +10,7 @@ use reqwest::Client;
 use version_resolver::index::Versions;
 use version_resolver::minecraft::MinecraftVersion;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub async fn get_version_index(
     client: std::sync::Arc<Client>,
     game_version: &MinecraftVersion,
@@ -32,7 +32,7 @@ pub async fn get_version_index(
         .cloned()
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub async fn get_version_index(
     client: std::sync::Arc<Client>,
     game_version: &MinecraftVersion,

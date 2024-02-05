@@ -57,10 +57,10 @@ where
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub use native::use_filer;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 mod native {
     use miette::{IntoDiagnostic, Result};
     use rfd::FileDialog;
@@ -135,10 +135,10 @@ where
     Ok(())
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use web::use_filer;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 mod web {
     use miette::Result;
 

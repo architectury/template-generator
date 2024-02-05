@@ -3,14 +3,14 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 pub mod app;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub mod app2;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub mod async_support;
 pub mod mod_ids;
 pub mod tap;
 pub mod templates;
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub mod web;
 
 pub use app::*;

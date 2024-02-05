@@ -5,6 +5,6 @@
 pub mod index;
 pub mod maven;
 pub mod minecraft;
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub(crate) mod web;
 pub(crate) mod xml;

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 fn main() -> Result<()> {
     use miette::{IntoDiagnostic, Result};
     use ratatui::prelude::*;
@@ -31,5 +31,5 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 fn main() {}

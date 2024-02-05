@@ -29,7 +29,7 @@ pub fn compose_file_path(dir: &str, file_name: &str, include_dir: bool) -> Strin
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub fn compose_relative_url(url: &str) -> miette::Result<reqwest::Url> {
     use crate::web::ResultExt;
     use miette::{miette, IntoDiagnostic};
@@ -51,7 +51,7 @@ pub fn compose_relative_url(url: &str) -> miette::Result<reqwest::Url> {
         .into_diagnostic()
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub async fn download_relative_text(
     client: std::sync::Arc<reqwest::Client>,
     url: &str,
@@ -72,7 +72,7 @@ pub async fn download_relative_text(
     response.text().await.into_diagnostic()
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub async fn download_relative_binary(
     client: std::sync::Arc<reqwest::Client>,
     url: &str,
@@ -95,10 +95,10 @@ pub async fn download_relative_binary(
 
 macro_rules! file_data {
     ($const_name:ident $fn_name:ident, $dir:expr, $include_dir_in_target:expr, $file_name:expr) => {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         const $const_name: &'static str = include_str!($file_name);
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
@@ -110,7 +110,7 @@ macro_rules! file_data {
             })
         }
 
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
@@ -126,10 +126,10 @@ macro_rules! file_data {
 
 macro_rules! binary_file_data {
     ($const_name:ident $fn_name:ident, $dir:expr, $include_dir_in_target:expr, $file_name:expr) => {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         const $const_name: &'static [u8] = include_bytes!($file_name);
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {
@@ -141,7 +141,7 @@ macro_rules! binary_file_data {
             })
         }
 
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
         ) -> miette::Result<crate::templates::FileData> {

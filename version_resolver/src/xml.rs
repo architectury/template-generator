@@ -17,10 +17,10 @@ pub trait XmlNode: std::fmt::Debug {
     fn text(&self) -> Option<String>;
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub use native::read_node;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 mod native {
     use super::XmlNode;
     use miette::{IntoDiagnostic, Result};
@@ -79,10 +79,10 @@ mod native {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use web::read_node;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 mod web {
     use super::XmlNode;
     use crate::web::ResultExt;
