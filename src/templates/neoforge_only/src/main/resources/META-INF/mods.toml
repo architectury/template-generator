@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[%NEOFORGE_LOADER_MAJOR%,)"
+#issueTrackerURL = ""
+license = "Insert License Here"
+
+[[mods]]
+modId = "%MOD_ID%"
+version = "${version}"
+displayName = "%MOD_NAME_TOML%"
+authors = "Me!"
+description = '''
+This is an example description! Tell everyone what your mod is about!
+'''
+#logoFile = ""
+
+[[dependencies.%MOD_ID%]]
+modId = "neoforge"
+type = "required"
+versionRange = "[%NEOFORGE_MAJOR%,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.%MOD_ID%]]
+modId = "minecraft"
+type = "required"
+versionRange = "[%MINECRAFT_VERSION%,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "%MOD_ID%.mixins.json"

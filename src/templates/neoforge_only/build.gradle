@@ -10,13 +10,13 @@ base {
     archivesName = project.archives_name
 }
 
-loom {
-    forge {
-        mixinConfig '%MOD_ID%.mixins.json'
-    }
-}
-
 repositories {
+    // Add NeoForged repository.
+    maven {
+        name = 'NeoForged'
+        url = 'https://maven.neoforged.net/releases'
+    }
+
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -32,7 +32,7 @@ dependencies {
 //% if mojang_mappings
     mappings loom.officialMojangMappings()
 //% end
-    forge "net.minecraftforge:forge:$project.forge_version"
+    neoForge "net.neoforged:neoforge:$project.neoforge_version"
 }
 
 processResources {

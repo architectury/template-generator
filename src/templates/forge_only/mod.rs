@@ -10,6 +10,7 @@ super::file_data!(SETTINGS_GRADLE settings_gradle, "forge_only", false, "setting
 // Code
 super::file_data!(PACK_MCMETA pack_mcmeta, "forge_only", false, "src/main/resources/pack.mcmeta");
 super::file_data!(MODS_TOML mods_toml, "forge_only", false, "src/main/resources/META-INF/mods.toml");
+super::file_data!(MIXINS mixins, "forge_only", false, "src/main/resources/MOD_ID.mixins.json");
 super::file_data!(MOD_CLASS mod_class, "forge_only", false, "src/main/java/PACKAGE_DIR/ExampleMod.java");
 
 super::file_list!(pub all_files,
@@ -18,5 +19,6 @@ super::file_list!(pub all_files,
     settings_gradle
     pack_mcmeta
     mods_toml
+    mixins
     mod_class
 );

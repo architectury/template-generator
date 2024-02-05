@@ -129,7 +129,15 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 )));
             }
         }
-        ProjectType::NeoForge => {}
+        ProjectType::NeoForge => {
+            files.push(Box::pin(neoforge_only::all_files(client.clone())));
+            if let Some(version) = versions.neoforge {
+                variables.push(Box::pin(add_key(
+                    "NEOFORGE_VERSION",
+                    std::future::ready(Ok(version)),
+                )));
+            }
+        }
         ProjectType::Forge => {
             files.push(Box::pin(forge_only::all_files(client.clone())));
             variables.push(Box::pin(add_key(

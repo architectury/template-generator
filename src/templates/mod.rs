@@ -10,6 +10,7 @@ pub mod forge;
 pub mod forge_only;
 pub mod multiplatform;
 pub mod neoforge;
+pub mod neoforge_only;
 pub mod shared;
 
 pub struct FileData {
