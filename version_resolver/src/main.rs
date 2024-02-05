@@ -8,7 +8,7 @@ use clap::Parser;
 #[derive(Parser)]
 struct Cli {
     #[arg(short, long, value_name = "FILE")]
-    output: Option<std::path::PathBuf>
+    output: Option<std::path::PathBuf>,
 }
 
 #[tokio::main]
@@ -20,7 +20,9 @@ async fn main() -> miette::Result<()> {
     let client = reqwest::Client::new();
     let index = VersionIndex::resolve(&client).await?;
     let json = serde_json::to_string_pretty(&index).map_err(|err| miette::miette!("{}", err))?;
-    let path = cli.output.unwrap_or(std::path::PathBuf::from("version_index.json"));
+    let path = cli
+        .output
+        .unwrap_or(std::path::PathBuf::from("version_index.json"));
 
     if let Some(parent) = path.parent() {
         if !parent.exists() {

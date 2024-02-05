@@ -52,9 +52,7 @@ where
         self.writer
             .start_file(path, FileOptions::default())
             .into_diagnostic()?;
-        self.writer
-            .write_all(content)
-            .into_diagnostic()?;
+        self.writer.write_all(content).into_diagnostic()?;
         Ok(())
     }
 }

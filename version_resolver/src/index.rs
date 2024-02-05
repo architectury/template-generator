@@ -22,12 +22,13 @@ impl VersionIndex {
 
         // TODO: Iterate in parallel?
         for game_version in MinecraftVersion::iter() {
-            versions.insert(game_version, Versions::resolve(client, &game_version).await?);
+            versions.insert(
+                game_version,
+                Versions::resolve(client, &game_version).await?,
+            );
         }
 
-        Ok(Self {
-            versions
-        })
+        Ok(Self { versions })
     }
 }
 
@@ -39,17 +40,16 @@ pub struct Versions {
 }
 
 impl Versions {
-    pub async fn resolve(client: &reqwest::Client, game_version: &MinecraftVersion) -> Result<Self> {
+    pub async fn resolve(
+        client: &reqwest::Client,
+        game_version: &MinecraftVersion,
+    ) -> Result<Self> {
         let architectury_api = crate::maven::resolve_matching_version(
             &client,
             crate::maven::MavenLibrary::architectury_api(game_version),
-            |version| {
-                version.starts_with(&format!(
-                    "{}.",
-                    game_version.architectury_api_version()
-                ))
-            },
-        ).await?;
+            |version| version.starts_with(&format!("{}.", game_version.architectury_api_version())),
+        )
+        .await?;
 
         let forge = crate::maven::resolve_matching_version(
             &client,
@@ -61,16 +61,18 @@ impl Versions {
                     game_version.forge_major_version()
                 ))
             },
-        ).await?;
+        )
+        .await?;
 
         let neoforge = if let Some(major) = game_version.neoforge_major() {
-            Some(crate::maven::resolve_matching_version(
-                &client,
-                crate::maven::MavenLibrary::neoforge(),
-                |version| {
-                    version.starts_with(&format!("{}.", major))
-                },
-            ).await?)
+            Some(
+                crate::maven::resolve_matching_version(
+                    &client,
+                    crate::maven::MavenLibrary::neoforge(),
+                    |version| version.starts_with(&format!("{}.", major)),
+                )
+                .await?,
+            )
         } else {
             None
         };

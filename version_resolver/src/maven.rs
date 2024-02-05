@@ -2,7 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::{minecraft::MinecraftVersion, xml::{read_node, XmlNode}};
+use crate::{
+    minecraft::MinecraftVersion,
+    xml::{read_node, XmlNode},
+};
 use miette::{miette, IntoDiagnostic, Result};
 use reqwest::Client;
 
@@ -51,12 +54,20 @@ impl MavenLibrary {
     }
 
     pub fn fabric_api() -> Self {
-        Self::new(MavenRepository::Fabric, "net.fabricmc.fabric-api", "fabric-api")
+        Self::new(
+            MavenRepository::Fabric,
+            "net.fabricmc.fabric-api",
+            "fabric-api",
+        )
     }
 
     // Architectury libraries
     pub fn architectury_api(game_version: &MinecraftVersion) -> Self {
-        Self::new(MavenRepository::Architectury, game_version.architectury_maven_group(), "architectury")
+        Self::new(
+            MavenRepository::Architectury,
+            game_version.architectury_maven_group(),
+            "architectury",
+        )
     }
 
     // Forge libraries
@@ -72,7 +83,13 @@ impl MavenLibrary {
 
 impl std::fmt::Display for MavenLibrary {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{} in {}", self.group, self.name, self.repository.url())
+        write!(
+            f,
+            "{}:{} in {}",
+            self.group,
+            self.name,
+            self.repository.url()
+        )
     }
 }
 
@@ -94,10 +111,7 @@ impl MavenRepository {
     }
 }
 
-async fn download_maven_metadata(
-    client: &Client,
-    library: &MavenLibrary,
-) -> Result<impl XmlNode> {
+async fn download_maven_metadata(client: &Client, library: &MavenLibrary) -> Result<impl XmlNode> {
     let url = format!(
         "{}/{}/{}/maven-metadata.xml",
         library.repository().url(),
@@ -151,9 +165,8 @@ where
     F: Fn(&str) -> bool,
 {
     let metadata = download_maven_metadata(client, &library).await?;
-    get_latest_version_matching(&metadata, filter).ok_or_else(|| {
-        miette!("Could not find latest version for {}", library)
-    })
+    get_latest_version_matching(&metadata, filter)
+        .ok_or_else(|| miette!("Could not find latest version for {}", library))
 }
 
 pub async fn resolve_latest_version(
@@ -161,7 +174,6 @@ pub async fn resolve_latest_version(
     library: MavenLibrary,
 ) -> Result<String> {
     let metadata = download_maven_metadata(client, &library).await?;
-    get_latest_version(&metadata).ok_or_else(|| {
-        miette!("Could not find latest version for {}", library)
-    })
+    get_latest_version(&metadata)
+        .ok_or_else(|| miette!("Could not find latest version for {}", library))
 }

@@ -104,7 +104,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 context.define("neoforge");
                 files.push(Box::pin(neoforge::all_files(client.clone())));
                 if let Some(version) = versions.neoforge {
-                   variables.push(Box::pin(add_key(
+                    variables.push(Box::pin(add_key(
                         "NEOFORGE_VERSION",
                         std::future::ready(Ok(version)),
                     )));
@@ -146,13 +146,11 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             let content: Bytes = match &file_data.content {
                 FileContent::Binary(bytes) => bytes.clone(),
                 FileContent::Text(text) => {
-                    let applied: String = engine::apply_template(
-                        &context,
-                        engine::read_template(text).unwrap(),
-                    )
-                    .iter()
-                    .map(|line| line.to_owned() + "\n")
-                    .collect();
+                    let applied: String =
+                        engine::apply_template(&context, engine::read_template(text).unwrap())
+                            .iter()
+                            .map(|line| line.to_owned() + "\n")
+                            .collect();
                     Bytes::from(applied)
                 }
             };

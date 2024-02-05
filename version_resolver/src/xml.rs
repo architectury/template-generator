@@ -84,8 +84,8 @@ pub use web::read_node;
 
 #[cfg(target_arch = "wasm32")]
 mod web {
-    use crate::web::ResultExt;
     use super::XmlNode;
+    use crate::web::ResultExt;
     use miette::Result;
     use std::iter::Map;
     use std::vec::IntoIter;
