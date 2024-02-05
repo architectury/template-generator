@@ -15,23 +15,24 @@ struct Cli {
 #[tokio::main]
 #[cfg(not(target_arch = "wasm32"))]
 async fn main() -> miette::Result<()> {
+    use miette::IntoDiagnostic;
     use version_resolver::index::VersionIndex;
 
     let cli = Cli::parse();
     let client = reqwest::Client::new();
     let index = VersionIndex::resolve(&client).await?;
-    let json = serde_json::to_string_pretty(&index).map_err(|err| miette::miette!("{}", err))?;
+    let json = serde_json::to_string_pretty(&index).into_diagnostic()?;
     let path = cli
         .output
         .unwrap_or(std::path::PathBuf::from("version_index.json"));
 
     if let Some(parent) = path.parent() {
         if !parent.exists() {
-            std::fs::create_dir_all(parent).map_err(|err| miette::miette!("{}", err))?;
+            std::fs::create_dir_all(parent).into_diagnostic()?;
         }
     }
 
-    std::fs::write(path, json).map_err(|err| miette::miette!("{}", err))?;
+    std::fs::write(path, json).into_diagnostic()?;
     Ok(())
 }
 
