@@ -5,6 +5,7 @@
 #[cfg(not(target_arch = "wasm32"))]
 use clap::Parser;
 
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Parser)]
 struct Cli {
     #[arg(short, long, value_name = "FILE")]
@@ -33,3 +34,6 @@ async fn main() -> miette::Result<()> {
     std::fs::write(path, json).map_err(|err| miette::miette!("{}", err))?;
     Ok(())
 }
+
+#[cfg(target_arch = "wasm32")]
+fn main() {}

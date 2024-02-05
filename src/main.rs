@@ -2,12 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{IntoDiagnostic, Result};
-use ratatui::prelude::*;
-use templateer::app2::create_app;
-
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> Result<()> {
+    use miette::{IntoDiagnostic, Result};
+    use ratatui::prelude::*;
+    use templateer::app2::create_app;
+
     // Set up Crossterm
     crossterm::terminal::enable_raw_mode().into_diagnostic()?;
     crossterm::execute!(std::io::stderr(), crossterm::terminal::EnterAlternateScreen)
@@ -30,3 +30,6 @@ fn main() -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(target_arch = "wasm32")]
+fn main() {}
