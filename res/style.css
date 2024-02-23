@@ -80,6 +80,11 @@ select {
     color: white;
 }
 
+.toggle-button:has(input:disabled) {
+    background-color: #CCCCCC;
+    border-color: #888888;
+}
+
 .toggle-button input {
     appearance: none;
     margin: 0;

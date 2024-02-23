@@ -2,13 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import init, { create_state, generate, is_valid_mod_id, list_all_minecraft_versions, to_mod_id, validate_mod_id } from "./templateer.js";
+import init, { create_state, generate, is_valid_mod_id, list_all_minecraft_versions, supports_neoforge, to_mod_id, validate_mod_id } from "./templateer.js";
 await init();
 
 const state = create_state();
 
 // Set up Minecraft version dropdown with contents
 const mcSelect = document.getElementById("minecraft-version-select");
+mcSelect.onchange = refreshAvailablePlatforms;
 
 for (const version of list_all_minecraft_versions().reverse()) {
     const option = document.createElement("option");
@@ -22,13 +23,7 @@ const multiplatformInput = document.getElementById("multiplatform-input");
 const multiplatformSettings = document.getElementById("multiplatform-settings");
 
 for (const input of projectTypeToggles) {
-    input.onchange = () => {
-        if (multiplatformInput.checked) {
-            multiplatformSettings.classList.remove("hidden");
-        } else {
-            multiplatformSettings.classList.add("hidden");
-        }
-    }
+    input.onchange = refreshDisplayedProjectType;
 };
 
 // Add generated mod id placeholder when not specified manually
@@ -96,7 +91,7 @@ function updateState() {
     state.mapping_set = getMappingSet();
     state.subprojects.fabric = document.getElementById("fabric-loader-input").checked;
     state.subprojects.forge = document.getElementById("forge-loader-input").checked;
-    state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked;
+    state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked && isNeoForgeAvailable();
     state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
     state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked;
     state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked;
@@ -108,10 +103,38 @@ function showError(error) {
     container.classList.remove("hidden");
 }
 
-function clearError(error) {
+function clearError() {
     let container = document.getElementById("error-message-container");
     container.textContent = "";
     container.classList.add("hidden");
+}
+
+function refreshDisplayedProjectType() {
+    if (multiplatformInput.checked) {
+        multiplatformSettings.classList.remove("hidden");
+    } else {
+        multiplatformSettings.classList.add("hidden");
+    }
+}
+
+function isNeoForgeAvailable() {
+    const version = mcSelect.value;
+    return supports_neoforge(version);
+}
+
+function refreshAvailablePlatforms() {
+    const hasNeoForge = isNeoForgeAvailable();
+    const neoForgeProjectInput = document.getElementById("neoforge-project-input");
+    const neoForgeLoaderInput = document.getElementById("neoforge-loader-input");
+    neoForgeProjectInput.disabled = !hasNeoForge;
+    neoForgeLoaderInput.disabled = !hasNeoForge;
+
+    // Change project type if Neo is not available.
+    if (!hasNeoForge && neoForgeProjectInput.checked) {
+        multiplatformInput.checked = true;
+        neoForgeProjectInput.checked = false;
+        refreshDisplayedProjectType();
+    }
 }
 
 document.getElementById("generate-button").onclick = async () => {
