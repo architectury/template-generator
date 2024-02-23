@@ -1,5 +1,5 @@
 architectury {
-    common %ARCHITECTURY_PLATFORMS%
+    common rootProject.enabled_platforms.split(',')
 }
 
 dependencies {

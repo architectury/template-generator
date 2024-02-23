@@ -39,6 +39,10 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         "JAVA_MAJOR_VERSION",
         game_version.java_version().java_major_version().to_string(),
     );
+    context.put(
+        "MIXIN_COMPAT_LEVEL",
+        game_version.java_version().mixin_compat_level()
+    );
     context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
     context.maybe_put(
         "NEOFORGE_LOADER_MAJOR",
@@ -80,6 +84,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     // Project-type specific
     match app.project_type {
         ProjectType::Multiplatform => {
+            let mut platforms: Vec<&'static str> = vec![];
             files.push(Box::pin(multiplatform::all_files(client.clone())));
             variables.push(Box::pin(add_key(
                 "FABRIC_LOADER_VERSION",
@@ -95,6 +100,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                         version.ends_with(&format!("+{}", game_version.fabric_api_branch()))
                     }),
                 )));
+                platforms.push("fabric");
             }
 
             if app.subprojects.forge {
@@ -104,6 +110,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                     "FORGE_VERSION",
                     std::future::ready(Ok(versions.forge)),
                 )));
+                platforms.push("forge");
             }
 
             if app.subprojects.neoforge {
@@ -115,11 +122,16 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                         std::future::ready(Ok(version)),
                     )));
                 }
+                platforms.push("neoforge");
             }
 
             if app.subprojects.quilt {
                 context.define("quilt");
+                platforms.push("quilt");
             }
+
+            let platforms = platforms.join(",");
+            context.put("ARCHITECTURY_PLATFORMS", platforms);
 
             if app.dependencies.architectury_api {
                 context.define("architectury_api");

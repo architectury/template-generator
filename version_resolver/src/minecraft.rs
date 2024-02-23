@@ -186,4 +186,11 @@ impl JavaVersion {
             Self::Java9OrNewer(version) => *version,
         }
     }
+
+    pub fn mixin_compat_level(&self) -> String {
+        match self {
+            Self::Java8 => "JAVA_8".to_owned(),
+            Self::Java9OrNewer(version) => format!("JAVA_{}", version),
+        }
+    }
 }
