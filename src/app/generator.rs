@@ -128,6 +128,17 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
 
             if app.subprojects.quilt {
                 context.define("quilt");
+                files.push(Box::pin(quilt::all_files(client.clone())));
+                variables.push(Box::pin(add_key(
+                    "QUILT_LOADER_VERSION",
+                    resolve_latest_version(&client, MavenLibrary::quilt_loader())
+                )));
+                variables.push(Box::pin(add_key(
+                    "QUILTED_FABRIC_API_VERSION",
+                    resolve_matching_version(&client, MavenLibrary::quilted_fabric_api(), |version| {
+                        version.ends_with(&format!("-{}", game_version.version()))
+                    }),
+                )));
                 platforms.push("quilt");
             }
 
