@@ -43,6 +43,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         "MIXIN_COMPAT_LEVEL",
         game_version.java_version().mixin_compat_level()
     );
+    context.put("ARCHITECTURY_GROUP", game_version.architectury_maven_group());
     context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
     context.maybe_put(
         "NEOFORGE_LOADER_MAJOR",
