@@ -8,13 +8,25 @@
     font-family: sans-serif;
     cursor: default;
     user-select: none;
+    background-color: #F0F0F0;
 
     --error-color: #BB0000;
+    --border-color: #888888;
 }
 
 fieldset {
     border-radius: 1ex;
     margin: 1ex;
+}
+
+fieldset, fieldset > legend {
+    background-color: white;
+    border: solid 1px var(--border-color);
+}
+
+fieldset > legend {
+    padding: 0.7ex;
+    border-radius: 0.5ex;
 }
 
 fieldset h2 {
@@ -69,6 +81,8 @@ select {
     margin: 0.5ex;
     padding: 0.7ex;
     border: solid 1px blue;
+    border-radius: 0.5ex;
+    transition: background-color 0.1s;
 }
 
 .toggle-button:hover {
@@ -82,7 +96,7 @@ select {
 
 .toggle-button:has(input:disabled) {
     background-color: #CCCCCC;
-    border-color: #888888;
+    border-color: var(--border-color);
 }
 
 .toggle-button input {
