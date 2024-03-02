@@ -1,0 +1,16 @@
+name: Build
+on: [push, pull_request]
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
+      - uses: actions/setup-java@v4 # set up Java for Gradle
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Install wasm-pack
+        run: npm install -g wasm-pack
+      - name: Build
+        run: ./gradlew buildWeb
