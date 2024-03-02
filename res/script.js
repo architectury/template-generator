@@ -26,6 +26,12 @@ for (const input of projectTypeToggles) {
     input.onchange = refreshDisplayedProjectType;
 };
 
+// Add listeners to Fabric and Quilt checkboxes for controlling the Fabric-like checkbox,
+// and refresh the Fabric-like status according to the default state.
+document.getElementById("fabric-loader-input").onchange = refreshFabricLikeCheckbox;
+document.getElementById("quilt-loader-input").onchange = refreshFabricLikeCheckbox;
+refreshFabricLikeCheckbox();
+
 // Add generated mod id placeholder when not specified manually
 const modNameInput = document.getElementById("mod-name-input");
 const modIdInput = document.getElementById("mod-id-input");
@@ -93,7 +99,7 @@ function updateState() {
     state.subprojects.forge = document.getElementById("forge-loader-input").checked;
     state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked && isNeoForgeAvailable();
     state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
-    state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked;
+    state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked && isFabricLikeAvailable();
     state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked;
 }
 
@@ -117,6 +123,12 @@ function refreshDisplayedProjectType() {
     }
 }
 
+function isFabricLikeAvailable() {
+    const fabricInput = document.getElementById("fabric-loader-input");
+    const quiltInput = document.getElementById("quilt-loader-input");
+    return fabricInput.checked && quiltInput.checked;
+}
+
 function isNeoForgeAvailable() {
     const version = mcSelect.value;
     return supports_neoforge(version);
@@ -135,6 +147,13 @@ function refreshAvailablePlatforms() {
         neoForgeProjectInput.checked = false;
         refreshDisplayedProjectType();
     }
+}
+
+// Enables/disables the Fabric-like checkbox based on whether it can be selected for the current state.
+function refreshFabricLikeCheckbox() {
+    const hasFabricLike = isFabricLikeAvailable();
+    const fabricLikeInput = document.getElementById("fabric-like-input");
+    fabricLikeInput.disabled = !hasFabricLike;
 }
 
 document.getElementById("generate-button").onclick = async () => {
