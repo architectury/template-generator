@@ -6,6 +6,7 @@ use bytes::Bytes;
 
 pub mod engine;
 pub mod fabric;
+pub mod fabric_like;
 pub mod forge;
 pub mod forge_only;
 pub mod multiplatform;
@@ -119,7 +120,7 @@ macro_rules! file_data {
         ) -> miette::Result<crate::templates::FileData> {
             let path =
                 crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
-            let url = format!("templates/{}/{}", $dir, $file_name);
+            let url = format!("templates/{}/{}", $dir.replace('-', "_"), $file_name);
             let text = crate::templates::download_relative_text(client, &url).await?;
             let content = crate::templates::FileContent::Text(text);
             Ok(crate::templates::FileData { path, content })

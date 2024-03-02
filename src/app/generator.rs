@@ -104,6 +104,11 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 platforms.push("fabric");
             }
 
+            if app.subprojects.fabric_likes {
+                context.define("fabric_like");
+                files.push(Box::pin(fabric_like::all_files(client.clone())));
+            }
+
             if app.subprojects.forge {
                 context.define("forge");
                 files.push(Box::pin(forge::all_files(client.clone())));
