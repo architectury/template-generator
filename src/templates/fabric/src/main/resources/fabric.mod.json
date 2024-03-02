@@ -29,6 +29,9 @@
     "fabricloader": ">=%FABRIC_LOADER_VERSION%",
     "minecraft": "~%MINECRAFT_VERSION%",
     "java": ">=%JAVA_MAJOR_VERSION%",
+//% if architectury_api
+    "architectury": ">=%ARCHITECTURY_API_VERSION%",
+//% end
     "fabric-api": "*"
   },
   "suggests": {

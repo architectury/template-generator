@@ -30,6 +30,12 @@
       {
         "id": "minecraft",
         "version": ">=%MINECRAFT_VERSION%"
+//% if architectury_api
+      },
+      {
+        "id": "architectury",
+        "version": ">=%ARCHITECTURY_API_VERSION%"
+//% end
       }
     ]
   },
