@@ -72,8 +72,13 @@ select {
     margin: 1ex;
 }
 
+h1 {
+    text-align: center;
+}
+
 .horizontal-flow {
     align-items: start;
+    justify-content: center;
 }
 
 .toggle-button {
