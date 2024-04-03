@@ -6,7 +6,7 @@ license = "Insert License Here"
 [[mods]]
 modId = "%MOD_ID%"
 version = "${version}"
-displayName = "%MOD_NAME_TOML%"
+displayName = "%MOD_NAME%"
 authors = "Me!"
 description = '''
 This is an example description! Tell everyone what your mod is about!

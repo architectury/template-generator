@@ -24,9 +24,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         mod_id = crate::mod_ids::to_mod_id(&app.mod_name);
     }
     context.put("MOD_ID", mod_id);
-    // TODO: Escape
-    context.put("MOD_NAME_JSON", &app.mod_name);
-    context.put("MOD_NAME_TOML", &app.mod_name);
+    let escaped_name = escape_json_and_toml(&app.mod_name);
+    context.put("MOD_NAME", escaped_name);
 
     // Game version-specific
     let game_version = app.game_version;
@@ -221,4 +220,55 @@ where
     F: Future<Output = Result<String>>,
 {
     future.map(|result| result.map(|version| (key.to_owned(), version)))
+}
+
+/// Escapes a raw string so it can be embedded in a JSON or TOML quoted string value.
+fn escape_json_and_toml(input: &str) -> String {
+    let mut output = String::with_capacity(input.len());
+
+    for c in input.chars() {
+        if c.is_ascii_control() {
+            let c = c as u16;
+            output.push_str(&format!("\\u{:04X}", c));
+        } else {
+            if c == '\\' || c == '"' {
+                output.push('\\');
+            }
+
+            output.push(c);
+        }
+    }
+
+    output
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn nothing_needs_escaping() {
+        let input = "Hello, world‽ 🧶";
+        let escaped = super::escape_json_and_toml(input);
+        assert_eq!(escaped, input);
+    }
+
+    #[test]
+    fn escape_quotes() {
+        let input = "My \"Great\" Mod";
+        let escaped = super::escape_json_and_toml(input);
+        assert_eq!(escaped, "My \\\"Great\\\" Mod");
+    }
+
+    #[test]
+    fn escape_backslashes() {
+        let input = "My Mod \\ with a Weird Name";
+        let escaped = super::escape_json_and_toml(input);
+        assert_eq!(escaped, "My Mod \\\\ with a Weird Name");
+    }
+
+    #[test]
+    fn escape_controls() {
+        let input = "Hello\tWorld";
+        let escaped = super::escape_json_and_toml(input);
+        assert_eq!(escaped, "Hello\\u0009World");
+    }
 }

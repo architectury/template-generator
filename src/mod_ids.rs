@@ -29,7 +29,7 @@ pub fn validate_mod_id<S: AsRef<str>>(id: S) -> Result<()> {
     let head = chars.next().unwrap();
 
     if !is_valid_id_start(head) {
-        return Err(miette!("'{}' is not valid in the start of an ID", head));
+        return Err(miette!("'{}' is not valid at the start of an ID", head));
     }
 
     for c in chars {

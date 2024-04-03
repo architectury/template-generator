@@ -5,7 +5,7 @@
     "id": "%MOD_ID%",
     "version": "${version}",
     "metadata": {
-      "name": "%MOD_NAME_JSON%",
+      "name": "%MOD_NAME%",
       "description": "This is an example description! Tell everyone what your mod is about!",
       "contributors": [
         "Me!"

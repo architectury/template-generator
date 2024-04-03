@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "%MOD_NAME_JSON%",
+    "description": "%MOD_NAME%",
 //% if FORGE_DATA_PACK_FORMAT
     "%FORGE_DATA_PACK_FORMAT_KEY%": %FORGE_DATA_PACK_FORMAT%,
 //% end
