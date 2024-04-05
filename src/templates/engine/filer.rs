@@ -109,8 +109,8 @@ mod native {
     #[cfg(target_family = "unix")]
     fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -> Result<()> {
         use std::os::unix::fs::PermissionsExt;
-        let permissions = fs::metadata(path).into_diagnostic()?.permissions();
-        let new_mode = permissions.mode() | permissions.unix();
+        let file_permissions = fs::metadata(path).into_diagnostic()?.permissions();
+        let new_mode = file_permissions.mode() | permissions.unix();
         let new_permissions = Permissions::from_mode(new_mode);
         fs::set_permissions(path, new_permissions).into_diagnostic()
     }
