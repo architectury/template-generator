@@ -203,7 +203,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 }
             };
 
-            filer.save(path.as_str(), &content).tap(|result| {
+            filer.save(path.as_str(), &content, &file_data.permissions).tap(|result| {
                 if let Err(err) = result {
                     eprintln!("Could not save {}: {:?}", path, err);
                 }

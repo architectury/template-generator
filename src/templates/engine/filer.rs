@@ -9,7 +9,21 @@ use std::io::{Cursor, Seek, Write};
 use zip::write::FileOptions;
 
 pub trait Filer {
-    fn save(&mut self, path: &str, content: &[u8]) -> Result<()>;
+    fn save(&mut self, path: &str, content: &[u8], permissions: &FilePermissions) -> Result<()>;
+}
+
+pub enum FilePermissions {
+    None,
+    Execute,
+}
+
+impl FilePermissions {
+    pub fn unix(&self) -> u32 {
+        match self {
+            Self::None => 0o644,
+            Self::Execute => 0o755,
+        }
+    }
 }
 
 pub struct ZipFiler<'a, W>
@@ -36,7 +50,7 @@ impl<'a, W> Filer for ZipFiler<'a, W>
 where
     W: Write + Seek,
 {
-    fn save(&mut self, path: &str, content: &[u8]) -> Result<()> {
+    fn save(&mut self, path: &str, content: &[u8], permissions: &FilePermissions) -> Result<()> {
         let parts: Vec<_> = path.split("/").collect();
 
         for i in 0..(parts.len() - 1) {
@@ -50,7 +64,10 @@ where
         }
 
         self.writer
-            .start_file(path, FileOptions::default())
+            .start_file(
+                path,
+                FileOptions::default().unix_permissions(permissions.unix()),
+            )
             .into_diagnostic()?;
         self.writer.write_all(content).into_diagnostic()?;
         Ok(())
@@ -89,8 +106,28 @@ mod native {
         path: &'a path::Path,
     }
 
+    #[cfg(target_family = "unix")]
+    fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -> Result<()> {
+        use std::os::unix::fs::PermissionsExt;
+        let permissions = fs::metadata(path).into_diagnostic()?.permissions();
+        let new_mode = permissions.mode() | permissions.unix();
+        let new_permissions = Permissions::from_mode(new_mode);
+        fs::set_permissions(path, new_permissions).into_diagnostic()
+    }
+
+    #[cfg(not(target_family = "unix"))]
+    fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -> Result<()> {
+        // Not supported on Windows
+        Ok(())
+    }
+
     impl<'a> super::Filer for DirectoryFiler<'a> {
-        fn save(&mut self, path: &str, content: &[u8]) -> Result<()> {
+        fn save(
+            &mut self,
+            path: &str,
+            content: &[u8],
+            permissions: &super::FilePermissions,
+        ) -> Result<()> {
             let mut full_path = path::PathBuf::from(self.path);
             full_path.push(path);
 
@@ -98,7 +135,8 @@ mod native {
                 fs::create_dir_all(parent).into_diagnostic()?;
             }
 
-            fs::write(full_path, content).into_diagnostic()?;
+            fs::write(&full_path, content).into_diagnostic()?;
+            update_permissions(&full_path, permissions)?;
             Ok(())
         }
     }
