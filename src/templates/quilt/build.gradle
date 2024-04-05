@@ -56,8 +56,7 @@ processResources {
     inputs.property 'version', project.version
 
     filesMatching('quilt.mod.json') {
-        expand group: project.group
-        expand version: project.version
+        expand group: project.group, version: project.version
     }
 }
 

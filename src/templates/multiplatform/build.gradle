@@ -15,6 +15,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
 
     base {
