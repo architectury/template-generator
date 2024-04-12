@@ -1,7 +1,9 @@
 name: Build
 on: [push, pull_request]
+permissions:
+  contents: write
 jobs:
-  web:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,3 +16,25 @@ jobs:
         run: npm install -g wasm-pack
       - name: Build
         run: ./gradlew buildWeb
+      - name: Checkout pages
+        # Only run for the release branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/checkout@v4
+        with:
+          ref: pages
+          path: pages
+      - name: Commit web content
+        # Only run for the release branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd pages
+          # Remove existing files and copy new files
+          ls -1 | xargs rm -r
+          cp -r ../build/web/* .
+          # Set committer details (see actions/checkout README)
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          # Commit and push
+          git add .
+          git commit -m "Update files"
+          git push
