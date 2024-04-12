@@ -1,22 +1,7 @@
 {
-  "1.16.5": {
-    "architectury_api": "1.32.68",
-    "forge": "1.16.5-36.2.42",
-    "neoforge": null
-  },
-  "1.18.1": {
-    "architectury_api": "3.9.66",
-    "forge": "1.18.1-39.1.2",
-    "neoforge": null
-  },
-  "1.20.4": {
-    "architectury_api": "11.1.17",
-    "forge": "1.20.4-49.0.39",
-    "neoforge": "20.4.227"
-  },
-  "1.19.1": {
-    "architectury_api": "6.3.56",
-    "forge": "1.19.1-42.0.9",
+  "1.20.2": {
+    "architectury_api": "10.1.20",
+    "forge": "1.20.2-48.1.0",
     "neoforge": null
   },
   "1.19.3": {
@@ -29,24 +14,19 @@
     "forge": "1.17.1-37.1.1",
     "neoforge": null
   },
+  "1.19": {
+    "architectury_api": "5.14.84",
+    "forge": "1.19-41.1.0",
+    "neoforge": null
+  },
   "1.19.2": {
     "architectury_api": "6.6.92",
     "forge": "1.19.2-43.3.9",
     "neoforge": null
   },
-  "1.19.4": {
-    "architectury_api": "8.2.91",
-    "forge": "1.19.4-45.2.10",
-    "neoforge": null
-  },
-  "1.20.1": {
-    "architectury_api": "9.2.14",
-    "forge": "1.20.1-47.2.23",
-    "neoforge": null
-  },
-  "1.19": {
-    "architectury_api": "5.14.84",
-    "forge": "1.19-41.1.0",
+  "1.16.5": {
+    "architectury_api": "1.32.68",
+    "forge": "1.16.5-36.2.42",
     "neoforge": null
   },
   "1.18.2": {
@@ -54,9 +34,29 @@
     "forge": "1.18.2-40.2.18",
     "neoforge": null
   },
-  "1.20.2": {
-    "architectury_api": "10.1.20",
-    "forge": "1.20.2-48.1.0",
+  "1.19.1": {
+    "architectury_api": "6.3.56",
+    "forge": "1.19.1-42.0.9",
     "neoforge": null
+  },
+  "1.19.4": {
+    "architectury_api": "8.2.91",
+    "forge": "1.19.4-45.2.10",
+    "neoforge": null
+  },
+  "1.18.1": {
+    "architectury_api": "3.9.66",
+    "forge": "1.18.1-39.1.2",
+    "neoforge": null
+  },
+  "1.20.1": {
+    "architectury_api": "9.2.14",
+    "forge": "1.20.1-47.2.23",
+    "neoforge": null
+  },
+  "1.20.4": {
+    "architectury_api": "11.1.17",
+    "forge": "1.20.4-49.0.39",
+    "neoforge": "20.4.227"
   }
 }
