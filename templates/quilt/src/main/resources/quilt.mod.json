@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "%MOD_ID%",
+    "version": "${version}",
+    "metadata": {
+      "name": "%MOD_NAME%",
+      "description": "This is an example description! Tell everyone what your mod is about!",
+      "contributors": [
+        "Me!"
+      ],
+      "icon": "assets/%MOD_ID%/icon.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "%PACKAGE_NAME%.quilt.ExampleModQuilt"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": ">=%MINECRAFT_VERSION%"
+//% if architectury_api
+      },
+      {
+        "id": "architectury",
+        "version": ">=%ARCHITECTURY_API_VERSION%"
+//% end
+      }
+    ]
+  },
+  "mixin": [
+    "%MOD_ID%.mixins.json"
+  ]
+}

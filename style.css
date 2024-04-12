@@ -1,0 +1,190 @@
+/*
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+*/
+
+:root {
+    font-family: sans-serif;
+    cursor: default;
+    user-select: none;
+    background-color: var(--canvas-color);
+    color: var(--text-color);
+
+    --error-color: #BB0000;
+    --border-color: #888888;
+    --canvas-color: #F0F0F0;
+    --card-color: white;
+    --text-color: black;
+    --button-accent-color: blue;
+    --active-button-text-color: white;
+    --disable-button-color: #CCCCCC;
+    --text-field-background: white;
+}
+
+fieldset {
+    border-radius: 1ex;
+    margin: 1ex;
+}
+
+fieldset, fieldset > legend {
+    background-color: var(--card-color);
+    border: solid 1px var(--border-color);
+}
+
+fieldset > legend {
+    padding: 0.7ex;
+    border-radius: 0.5ex;
+}
+
+fieldset h2 {
+    margin-bottom: 0.5ex;
+}
+
+fieldset > h2:first-of-type, h3:first-of-type {
+    margin-top: 0;
+}
+
+input[type = "text"] {
+    display: block;
+    width: 24em;
+    padding: 0.8ex;
+    
+    background-color: var(--text-field-background);
+    color: var(--text-color);
+    border: solid 1px var(--border-color);
+}
+
+select {
+    padding: 1ex;
+}
+
+.label-heading {
+    font-weight: bold;
+}
+
+.property-description {
+    display: block;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
+.multicol, .horizontal-flow {
+    display: flex;
+    flex-direction: row;
+}
+
+.vertical-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.multicol > * {
+    margin: 1ex;
+}
+
+h1 {
+    text-align: center;
+}
+
+.horizontal-flow {
+    align-items: start;
+    justify-content: center;
+}
+
+.toggle-button {
+    display: inline-block;
+    margin: 0.5ex;
+    padding: 0.7ex;
+    border: solid 1px var(--button-accent-color);
+    border-radius: 0.5ex;
+    transition: background-color 0.1s;
+}
+
+.toggle-button:hover {
+    background-color: color-mix(in srgb, var(--button-accent-color), transparent 75%);
+}
+
+.toggle-button:has(input:checked) {
+    background-color: var(--button-accent-color);
+    color: var(--active-button-text-color);
+}
+
+.toggle-button:has(input:disabled) {
+    background-color: var(--disable-button-color);
+    border-color: var(--border-color);
+}
+
+.toggle-button input {
+    appearance: none;
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+label[error]::after {
+    display: block;
+    content: "❌ " attr(error);
+    color: var(--error-color);
+}
+
+#error-message-container::before {
+    content: "❌ ";
+    color: var(--error-color);
+}
+
+#error-message-container {
+    color: var(--error-color);
+}
+
+button {
+    width: 100%;
+    height: 3em;
+    font-size: 1em;
+
+    border: solid 1px var(--border-color);
+    border-radius: 0.5ex;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Overridden properties */
+        --border-color: #464666;
+        --canvas-color: #1D1D2A;
+        --card-color: #2A2A3D;
+        --text-color: #DADADF;
+        --button-accent-color: #3259CC;
+        --active-button-text-color: white;
+        --disable-button-color: #35354A;
+        --text-field-background: #232333;
+
+        /* Properties unique to dark mode */
+        --button-hover-color: #2948a5;
+        --select-background: var(--text-field-background);
+        --select-hover: color-mix(in srgb, var(--text-field-background), var(--card-color));
+    }
+
+    button {
+        border-color: var(--button-accent-color);
+        background-color: var(--button-accent-color);
+        color: var(--active-button-text-color);
+    }
+
+    button:hover {
+        background-color: var(--button-hover-color);
+    }
+
+    select {
+        background-color: var(--select-background);
+        color: var(--text-color);
+        border: solid 1px var(--border-color);
+        border-radius: 0.5ex;
+    }
+
+    select:hover {
+        background-color: var(--select-hover);
+    }
+}

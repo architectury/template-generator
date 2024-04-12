@@ -1,0 +1,9 @@
+{
+  "pack": {
+    "description": "%MOD_NAME%",
+//% if FORGE_DATA_PACK_FORMAT
+    "%FORGE_DATA_PACK_FORMAT_KEY%": %FORGE_DATA_PACK_FORMAT%,
+//% end
+    "pack_format": %FORGE_PACK_FORMAT%
+  }
+}

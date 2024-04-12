@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "%PACKAGE_NAME%.mixin",
+  "compatibilityLevel": "%MIXIN_COMPAT_LEVEL%",
+  "minVersion": "0.8",
+  "client": [
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
