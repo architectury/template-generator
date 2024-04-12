@@ -29,12 +29,12 @@ jobs:
         run: |
           cd pages
           # Remove existing files and copy new files
-          ls -1 | xargs rm -r
-          cp -r ../build/web/* .
+          rm -rf docs/*
+          cp -r ../build/web/* docs
           # Set committer details (see actions/checkout README)
           git config user.name github-actions
           git config user.email github-actions@github.com
           # Commit and push
-          git add .
+          git add docs
           git commit -m "Update files"
           git push
