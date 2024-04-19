@@ -30,10 +30,10 @@ jobs:
           # Remove existing files and copy new files
           ./gradlew refreshWebFiles
           # Set committer details (see actions/checkout README)
+          cd pages
           git config user.name github-actions
           git config user.email github-actions@github.com
           # Commit and push
-          cd pages
           git add .
           git commit -m "Update files"
           git push
