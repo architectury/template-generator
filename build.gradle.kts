@@ -40,3 +40,12 @@ tasks.register<Exec>("runTestServer") {
     dependsOn(buildWeb)
     commandLine("python", file("test/server.py").absolutePath, "-d", outputDir.get().asFile.absolutePath)
 }
+
+tasks.register<Sync>("refreshWebFiles") {
+    dependsOn(buildWeb)
+    from(fileTree(buildWeb.map { it.destinationDir }))
+    into("pages") // must match the path used in the build workflow
+    preserve {
+        include("CNAME")
+    }
+}

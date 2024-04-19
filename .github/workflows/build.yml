@@ -27,10 +27,8 @@ jobs:
         # Only run for the release branch
         if: github.ref == 'refs/heads/main'
         run: |
-          cd pages
           # Remove existing files and copy new files
-          rm -rf docs/*
-          cp -r ../build/web/* docs
+          ./gradlew refreshWebFiles
           # Set committer details (see actions/checkout README)
           git config user.name github-actions
           git config user.email github-actions@github.com
