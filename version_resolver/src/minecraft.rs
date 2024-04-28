@@ -31,6 +31,8 @@ pub enum MinecraftVersion {
     Minecraft1_20_2,
     #[serde(rename = "1.20.4")]
     Minecraft1_20_4,
+    #[serde(rename = "1.20.5")]
+    Minecraft1_20_5,
 }
 
 impl MinecraftVersion {
@@ -41,26 +43,31 @@ impl MinecraftVersion {
 
     pub fn version(&self) -> &'static str {
         match self {
-            MinecraftVersion::Minecraft1_16_5 => "1.16.5",
-            MinecraftVersion::Minecraft1_17_1 => "1.17.1",
-            MinecraftVersion::Minecraft1_18_1 => "1.18.1",
-            MinecraftVersion::Minecraft1_18_2 => "1.18.2",
-            MinecraftVersion::Minecraft1_19 => "1.19",
-            MinecraftVersion::Minecraft1_19_1 => "1.19.1",
-            MinecraftVersion::Minecraft1_19_2 => "1.19.2",
-            MinecraftVersion::Minecraft1_19_3 => "1.19.3",
-            MinecraftVersion::Minecraft1_19_4 => "1.19.4",
-            MinecraftVersion::Minecraft1_20_1 => "1.20.1",
-            MinecraftVersion::Minecraft1_20_2 => "1.20.2",
-            MinecraftVersion::Minecraft1_20_4 => "1.20.4",
+            Self::Minecraft1_16_5 => "1.16.5",
+            Self::Minecraft1_17_1 => "1.17.1",
+            Self::Minecraft1_18_1 => "1.18.1",
+            Self::Minecraft1_18_2 => "1.18.2",
+            Self::Minecraft1_19 => "1.19",
+            Self::Minecraft1_19_1 => "1.19.1",
+            Self::Minecraft1_19_2 => "1.19.2",
+            Self::Minecraft1_19_3 => "1.19.3",
+            Self::Minecraft1_19_4 => "1.19.4",
+            Self::Minecraft1_20_1 => "1.20.1",
+            Self::Minecraft1_20_2 => "1.20.2",
+            Self::Minecraft1_20_4 => "1.20.4",
+            Self::Minecraft1_20_5 => "1.20.5",
         }
     }
 
     pub fn java_version(&self) -> JavaVersion {
-        match self {
-            MinecraftVersion::Minecraft1_16_5 => JavaVersion::Java8,
-            MinecraftVersion::Minecraft1_17_1 => JavaVersion::Java9OrNewer(16),
-            _ => JavaVersion::Java9OrNewer(17),
+        if self == &Self::Minecraft1_16_5 {
+            JavaVersion::Java8
+        } else if self == &Self::Minecraft1_17_1 {
+            JavaVersion::Java9OrNewer(16)
+        } else if &Self::Minecraft1_18_1 <= self && self <= &Self::Minecraft1_20_4 {
+            JavaVersion::Java9OrNewer(17)
+        } else {
+            JavaVersion::Java9OrNewer(21)
         }
     }
 
@@ -80,87 +87,92 @@ impl MinecraftVersion {
 
     pub fn fabric_api_branch(&self) -> &'static str {
         match self {
-            MinecraftVersion::Minecraft1_16_5 => "1.16",
-            MinecraftVersion::Minecraft1_17_1 => "1.17",
-            MinecraftVersion::Minecraft1_18_1 => "1.18",
+            Self::Minecraft1_16_5 => "1.16",
+            Self::Minecraft1_17_1 => "1.17",
+            Self::Minecraft1_18_1 => "1.18",
             _ => self.version(),
         }
     }
 
-    pub fn forge_major_version(&self) -> &'static str {
+    pub fn forge_major_version(&self) -> Option<&'static str> {
         match self {
-            MinecraftVersion::Minecraft1_16_5 => "36",
-            MinecraftVersion::Minecraft1_17_1 => "37",
-            MinecraftVersion::Minecraft1_18_1 => "39",
-            MinecraftVersion::Minecraft1_18_2 => "40",
-            MinecraftVersion::Minecraft1_19 => "41",
-            MinecraftVersion::Minecraft1_19_1 => "42",
-            MinecraftVersion::Minecraft1_19_2 => "43",
-            MinecraftVersion::Minecraft1_19_3 => "44",
-            MinecraftVersion::Minecraft1_19_4 => "45",
-            MinecraftVersion::Minecraft1_20_1 => "47",
-            MinecraftVersion::Minecraft1_20_2 => "48",
-            MinecraftVersion::Minecraft1_20_4 => "49",
+            Self::Minecraft1_16_5 => Some("36"),
+            Self::Minecraft1_17_1 => Some("37"),
+            Self::Minecraft1_18_1 => Some("39"),
+            Self::Minecraft1_18_2 => Some("40"),
+            Self::Minecraft1_19 => Some("41"),
+            Self::Minecraft1_19_1 => Some("42"),
+            Self::Minecraft1_19_2 => Some("43"),
+            Self::Minecraft1_19_3 => Some("44"),
+            Self::Minecraft1_19_4 => Some("45"),
+            Self::Minecraft1_20_1 => Some("47"),
+            Self::Minecraft1_20_2 => Some("48"),
+            Self::Minecraft1_20_4 => Some("49"),
+            Self::Minecraft1_20_5 => None,
         }
     }
 
     pub fn architectury_api_version(&self) -> &'static str {
         match self {
-            MinecraftVersion::Minecraft1_16_5 => "1",
-            MinecraftVersion::Minecraft1_17_1 => "2",
-            MinecraftVersion::Minecraft1_18_1 => "3",
-            MinecraftVersion::Minecraft1_18_2 => "4",
-            MinecraftVersion::Minecraft1_19 => "5",
-            MinecraftVersion::Minecraft1_19_1 => "6.3",
-            MinecraftVersion::Minecraft1_19_2 => "6",
-            MinecraftVersion::Minecraft1_19_3 => "7",
-            MinecraftVersion::Minecraft1_19_4 => "8",
-            MinecraftVersion::Minecraft1_20_1 => "9",
-            MinecraftVersion::Minecraft1_20_2 => "10",
-            MinecraftVersion::Minecraft1_20_4 => "11",
+            Self::Minecraft1_16_5 => "1",
+            Self::Minecraft1_17_1 => "2",
+            Self::Minecraft1_18_1 => "3",
+            Self::Minecraft1_18_2 => "4",
+            Self::Minecraft1_19 => "5",
+            Self::Minecraft1_19_1 => "6.3",
+            Self::Minecraft1_19_2 => "6",
+            Self::Minecraft1_19_3 => "7",
+            Self::Minecraft1_19_4 => "8",
+            Self::Minecraft1_20_1 => "9",
+            Self::Minecraft1_20_2 => "10",
+            Self::Minecraft1_20_4 => "11",
+            Self::Minecraft1_20_5 => "12",
         }
     }
 
     pub fn neoforge_loader_major(&self) -> Option<&'static str> {
         match self {
-            MinecraftVersion::Minecraft1_20_4 => Some("2"),
+            Self::Minecraft1_20_4 => Some("2"),
+            Self::Minecraft1_20_5 => Some("2"),
             _ => None,
         }
     }
 
     pub fn neoforge_major(&self) -> Option<&'static str> {
         match self {
-            MinecraftVersion::Minecraft1_20_4 => Some("20.4"),
+            Self::Minecraft1_20_4 => Some("20.4"),
+            Self::Minecraft1_20_5 => Some("20.5"),
             _ => None,
         }
     }
 
-    pub fn forge_pack_version(&self) -> &'static str {
+    pub fn forge_pack_version(&self) -> Option<&'static str> {
         match self {
-            MinecraftVersion::Minecraft1_16_5 => "6",
-            MinecraftVersion::Minecraft1_17_1 => "7",
-            MinecraftVersion::Minecraft1_18_1 => "8",
-            MinecraftVersion::Minecraft1_18_2 => "8",
-            MinecraftVersion::Minecraft1_19 => "9",
-            MinecraftVersion::Minecraft1_19_1 => "9",
-            MinecraftVersion::Minecraft1_19_2 => "9",
-            MinecraftVersion::Minecraft1_19_3 => "12",
-            MinecraftVersion::Minecraft1_19_4 => "13",
-            MinecraftVersion::Minecraft1_20_1 => "15",
-            MinecraftVersion::Minecraft1_20_2 => "18",
-            MinecraftVersion::Minecraft1_20_4 => "22",
+            Self::Minecraft1_16_5 => Some("6"),
+            Self::Minecraft1_17_1 => Some("7"),
+            Self::Minecraft1_18_1 => Some("8"),
+            Self::Minecraft1_18_2 => Some("8"),
+            Self::Minecraft1_19 => Some("9"),
+            Self::Minecraft1_19_1 => Some("9"),
+            Self::Minecraft1_19_2 => Some("9"),
+            Self::Minecraft1_19_3 => Some("12"),
+            Self::Minecraft1_19_4 => Some("13"),
+            Self::Minecraft1_20_1 => Some("15"),
+            Self::Minecraft1_20_2 => Some("18"),
+            Self::Minecraft1_20_4 => Some("22"),
+            Self::Minecraft1_20_5 => None,
         }
     }
 
     pub fn forge_server_pack_version(&self) -> Option<(&'static str, &'static str)> {
         match self {
-            MinecraftVersion::Minecraft1_18_2 => Some(("forge:data_pack_format", "9")),
-            MinecraftVersion::Minecraft1_19 => Some(("forge:data_pack_format", "10")),
-            MinecraftVersion::Minecraft1_19_1 => Some(("forge:data_pack_format", "10")),
-            MinecraftVersion::Minecraft1_19_2 => Some(("forge:data_pack_format", "10")),
-            MinecraftVersion::Minecraft1_19_3 => Some(("forge:data_pack_format", "10")),
-            MinecraftVersion::Minecraft1_19_4 => Some(("forge:server_data_pack_format", "11")),
-            MinecraftVersion::Minecraft1_20_1 => Some(("forge:server_data_pack_format", "15")),
+            Self::Minecraft1_18_2 => Some(("forge:data_pack_format", "9")),
+            Self::Minecraft1_19 => Some(("forge:data_pack_format", "10")),
+            Self::Minecraft1_19_1 => Some(("forge:data_pack_format", "10")),
+            Self::Minecraft1_19_2 => Some(("forge:data_pack_format", "10")),
+            Self::Minecraft1_19_3 => Some(("forge:data_pack_format", "10")),
+            Self::Minecraft1_19_4 => Some(("forge:server_data_pack_format", "11")),
+            Self::Minecraft1_20_1 => Some(("forge:server_data_pack_format", "15")),
             _ => None,
         }
     }

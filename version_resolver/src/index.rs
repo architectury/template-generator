@@ -35,7 +35,7 @@ impl VersionIndex {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Versions {
     pub architectury_api: String,
-    pub forge: String,
+    pub forge: Option<String>,
     pub neoforge: Option<String>,
 }
 
@@ -51,18 +51,22 @@ impl Versions {
         )
         .await?;
 
-        let forge = crate::maven::resolve_matching_version(
-            &client,
-            crate::maven::MavenLibrary::forge(),
-            |version| {
-                version.starts_with(&format!(
-                    "{}-{}.",
-                    game_version.version(),
-                    game_version.forge_major_version()
-                ))
-            },
-        )
-        .await?;
+        let forge = if let Some(forge_major) = game_version.forge_major_version() {
+            Some(crate::maven::resolve_matching_version(
+                &client,
+                crate::maven::MavenLibrary::forge(),
+                |version| {
+                    version.starts_with(&format!(
+                        "{}-{}.",
+                        game_version.version(),
+                        forge_major
+                    ))
+                },
+            )
+            .await?)
+        } else {
+            None
+        };
 
         let neoforge = if let Some(major) = game_version.neoforge_major() {
             Some(
