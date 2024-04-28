@@ -2,7 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import init, { create_state, generate, is_valid_mod_id, list_all_minecraft_versions, supports_neoforge, to_mod_id, validate_mod_id } from "./templateer.js";
+import init, {
+    create_state,
+    generate,
+    is_valid_mod_id,
+    list_all_minecraft_versions,
+    supports_forge,
+    supports_neoforge,
+    to_mod_id,
+    validate_mod_id
+} from "./templateer.js";
 await init();
 
 const state = create_state();
@@ -96,7 +105,7 @@ function updateState() {
     state.project_type = getProjectType();
     state.mapping_set = getMappingSet();
     state.subprojects.fabric = document.getElementById("fabric-loader-input").checked;
-    state.subprojects.forge = document.getElementById("forge-loader-input").checked;
+    state.subprojects.forge = document.getElementById("forge-loader-input").checked && isForgeAvailable();
     state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked && isNeoForgeAvailable();
     state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
     state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked && isFabricLikeAvailable();
@@ -134,17 +143,26 @@ function isNeoForgeAvailable() {
     return supports_neoforge(version);
 }
 
-function refreshAvailablePlatforms() {
-    const hasNeoForge = isNeoForgeAvailable();
-    const neoForgeProjectInput = document.getElementById("neoforge-project-input");
-    const neoForgeLoaderInput = document.getElementById("neoforge-loader-input");
-    neoForgeProjectInput.disabled = !hasNeoForge;
-    neoForgeLoaderInput.disabled = !hasNeoForge;
+function isForgeAvailable() {
+    const version = mcSelect.value;
+    return supports_forge(version);
+}
 
-    // Change project type if Neo is not available.
-    if (!hasNeoForge && neoForgeProjectInput.checked) {
+function refreshAvailablePlatforms() {
+    refreshForgeLikePlatform(isNeoForgeAvailable(), "neoforge");
+    refreshForgeLikePlatform(isForgeAvailable(), "forge");
+}
+
+function refreshForgeLikePlatform(available, id) {
+    const projectInput = document.getElementById(id + "-project-input");
+    const loaderInput = document.getElementById(id + "-loader-input");
+    projectInput.disabled = !available;
+    loaderInput.disabled = !available;
+
+    // Change project type if the platform is not available for this game version.
+    if (!available && projectInput.checked) {
         multiplatformInput.checked = true;
-        neoForgeProjectInput.checked = false;
+        projectInput.checked = false;
         refreshDisplayedProjectType();
     }
 }
@@ -178,5 +196,6 @@ document.getElementById("generate-button").onclick = async () => {
 modNameInput.value = state.mod_name;
 modIdInput.value = state.mod_id;
 refreshModIdPlaceholder();
+refreshAvailablePlatforms();
 document.getElementById("package-input").value = state.package_name;
 document.getElementById("architectury-api-input").checked = state.dependencies.architectury_api;

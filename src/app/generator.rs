@@ -44,13 +44,16 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     );
     context.put("ARCHITECTURY_GROUP", game_version.architectury_maven_group());
     context.put("ARCHITECTURY_PACKAGE", game_version.architectury_package());
-    context.put("FORGE_LOADER_MAJOR", game_version.forge_major_version());
+    context.maybe_put(
+        "FORGE_LOADER_MAJOR",
+        game_version.forge_major_version()
+    );
     context.maybe_put(
         "NEOFORGE_LOADER_MAJOR",
         game_version.neoforge_loader_major(),
     );
     context.maybe_put("NEOFORGE_MAJOR", game_version.neoforge_major());
-    context.put("FORGE_PACK_FORMAT", game_version.forge_pack_version());
+    context.maybe_put("FORGE_PACK_FORMAT", game_version.forge_pack_version());
 
     if let Some((data_pack_format_key, data_pack_format)) = game_version.forge_server_pack_version() {
         context.put("FORGE_DATA_PACK_FORMAT_KEY", data_pack_format_key);
@@ -112,21 +115,30 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             if app.subprojects.forge {
                 context.define("forge");
                 files.push(Box::pin(forge::all_files(client.clone())));
-                variables.push(Box::pin(add_key(
-                    "FORGE_VERSION",
-                    std::future::ready(Ok(versions.forge)),
-                )));
+                if let Some(version) = versions.forge {
+                    variables.push(Box::pin(add_key(
+                        "FORGE_VERSION",
+                        std::future::ready(Ok(version)),
+                    )));
+                }
                 platforms.push("forge");
             }
 
             if app.subprojects.neoforge {
                 context.define("neoforge");
-                files.push(Box::pin(neoforge::all_files(client.clone())));
+                files.push(Box::pin(neoforge::main_files(client.clone())));
                 if let Some(version) = versions.neoforge {
                     variables.push(Box::pin(add_key(
                         "NEOFORGE_VERSION",
                         std::future::ready(Ok(version)),
                     )));
+                }
+                if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+                    context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
+                    files.push(Box::pin(neoforge::mods_toml_files(client.clone())));
+                } else {
+                    context.put("NEOFORGE_METADATA_FILE_NAME", "neoforge.mods.toml");
+                    files.push(Box::pin(neoforge::neoforge_mods_toml_files(client.clone())));
                 }
                 platforms.push("neoforge");
             }
@@ -159,20 +171,29 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
             }
         }
         ProjectType::NeoForge => {
-            files.push(Box::pin(neoforge_only::all_files(client.clone())));
+            files.push(Box::pin(neoforge_only::main_files(client.clone())));
             if let Some(version) = versions.neoforge {
                 variables.push(Box::pin(add_key(
                     "NEOFORGE_VERSION",
                     std::future::ready(Ok(version)),
                 )));
             }
+            if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+                context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
+                files.push(Box::pin(neoforge_only::mods_toml_files(client.clone())));
+            } else {
+                context.put("NEOFORGE_METADATA_FILE_NAME", "neoforge.mods.toml");
+                files.push(Box::pin(neoforge_only::neoforge_mods_toml_files(client.clone())));
+            }
         }
         ProjectType::Forge => {
             files.push(Box::pin(forge_only::all_files(client.clone())));
-            variables.push(Box::pin(add_key(
-                "FORGE_VERSION",
-                std::future::ready(Ok(versions.forge)),
-            )));
+            if let Some(version) = versions.forge {
+                variables.push(Box::pin(add_key(
+                    "FORGE_VERSION",
+                    std::future::ready(Ok(version)),
+                )));
+            }
         }
     }
 

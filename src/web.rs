@@ -90,3 +90,9 @@ pub fn supports_neoforge(game_version: JsValue) -> Result<bool, JsValue> {
     let game_version: version_resolver::minecraft::MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
     Ok(game_version.neoforge_major().is_some())
 }
+
+#[wasm_bindgen]
+pub fn supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
+    let game_version: version_resolver::minecraft::MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
+    Ok(game_version.forge_major_version().is_some())
+}
