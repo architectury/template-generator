@@ -16,7 +16,7 @@
   },
   "1.18.2": {
     "architectury_api": "4.12.94",
-    "forge": "1.18.2-40.2.18",
+    "forge": "1.18.2-40.2.21",
     "neoforge": null
   },
   "1.19": {
@@ -46,7 +46,7 @@
   },
   "1.20.1": {
     "architectury_api": "9.2.14",
-    "forge": "1.20.1-47.2.30",
+    "forge": "1.20.1-47.2.32",
     "neoforge": null
   },
   "1.20.2": {
@@ -56,12 +56,12 @@
   },
   "1.20.4": {
     "architectury_api": "11.1.17",
-    "forge": "1.20.4-49.0.49",
-    "neoforge": "20.4.233"
+    "forge": "1.20.4-49.0.50",
+    "neoforge": "20.4.234"
   },
   "1.20.5": {
-    "architectury_api": "12.0.26",
+    "architectury_api": "12.0.28",
     "forge": null,
-    "neoforge": "20.5.20-beta"
+    "neoforge": "20.5.21-beta"
   }
 }
