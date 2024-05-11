@@ -140,6 +140,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                     context.put("NEOFORGE_METADATA_FILE_NAME", "neoforge.mods.toml");
                     files.push(Box::pin(neoforge::neoforge_mods_toml_files(client.clone())));
                 }
+                context.maybe_put("NEOFORGE_YARN_PATCH_VERSION", versions.neoforge_yarn_patch);
                 platforms.push("neoforge");
             }
 
@@ -185,6 +186,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 context.put("NEOFORGE_METADATA_FILE_NAME", "neoforge.mods.toml");
                 files.push(Box::pin(neoforge_only::neoforge_mods_toml_files(client.clone())));
             }
+            context.maybe_put("NEOFORGE_YARN_PATCH_VERSION", versions.neoforge_yarn_patch);
         }
         ProjectType::Forge => {
             files.push(Box::pin(forge_only::all_files(client.clone())));
