@@ -140,7 +140,7 @@ macro_rules! file_data_raw {
         ) -> miette::Result<crate::templates::FileData> {
             let path =
                 crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
-            let url = format!("templates/{}/{}", $dir, $file_name);
+            let url = format!("templates/{}/{}", $dir.replace("-", "_"), $file_name);
             let bytes = crate::templates::$download_function(client, &url).await?;
             let content = crate::templates::FileContent::$file_content_type(bytes);
             let permissions = crate::templates::engine::filer::FilePermissions::$permissions;
