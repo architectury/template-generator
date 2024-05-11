@@ -27,7 +27,14 @@ repositories {
 dependencies {
     minecraft "net.minecraft:minecraft:$project.minecraft_version"
 //% if yarn
+//% if NEOFORGE_YARN_PATCH_VERSION
+    mappings loom.layered {
+        it.mappings("net.fabricmc:yarn:$project.yarn_mappings:v2")
+        it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$project.yarn_mappings_patch_version")
+    }
+//% else
     mappings "net.fabricmc:yarn:$project.yarn_mappings:v2"
+//% end
 //% end
 //% if mojang_mappings
     mappings loom.officialMojangMappings()

@@ -62,6 +62,7 @@
   "1.20.5": {
     "architectury_api": "12.0.28",
     "forge": null,
-    "neoforge": "20.5.21-beta"
+    "neoforge": "20.5.21-beta",
+    "neoforge_yarn_patch": "1.20.5+build.3"
   }
 }
