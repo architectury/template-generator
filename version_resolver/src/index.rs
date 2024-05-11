@@ -37,6 +37,8 @@ pub struct Versions {
     pub architectury_api: String,
     pub forge: Option<String>,
     pub neoforge: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub neoforge_yarn_patch: Option<String>,
 }
 
 impl Versions {
@@ -81,10 +83,24 @@ impl Versions {
             None
         };
 
+        let neoforge_yarn_patch = if let Some(prefix) = game_version.neoforge_yarn_patch_version() {
+            Some(
+                crate::maven::resolve_matching_version(
+                    &client,
+                    crate::maven::MavenLibrary::neoforge_yarn_patch(),
+                    |version| version.starts_with(&format!("{}+", prefix)),
+                )
+                .await?,
+            )
+        } else {
+            None
+        };
+
         Ok(Self {
             architectury_api,
             forge,
             neoforge,
+            neoforge_yarn_patch,
         })
     }
 }

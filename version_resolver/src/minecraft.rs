@@ -146,6 +146,13 @@ impl MinecraftVersion {
         }
     }
 
+    pub fn neoforge_yarn_patch_version(&self) -> Option<&'static str> {
+        match self {
+            Self::Minecraft1_20_5 => Some("1.20.5"),
+            _ => None,
+        }
+    }
+
     pub fn forge_pack_version(&self) -> Option<&'static str> {
         match self {
             Self::Minecraft1_16_5 => Some("6"),

@@ -71,6 +71,10 @@ impl MavenLibrary {
         )
     }
 
+    pub fn neoforge_yarn_patch() -> Self {
+        Self::new(MavenRepository::Architectury, "dev.architectury", "yarn-mappings-patch-neoforge")
+    }
+
     // Forge libraries
     pub fn forge() -> Self {
         Self::new(MavenRepository::Forge, "net.minecraftforge", "forge")
