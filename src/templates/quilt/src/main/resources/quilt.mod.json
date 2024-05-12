@@ -7,9 +7,9 @@
     "metadata": {
       "name": "%MOD_NAME%",
       "description": "This is an example description! Tell everyone what your mod is about!",
-      "contributors": [
-        "Me!"
-      ],
+      "contributors": {
+        "Me!": "Author"
+      },
       "icon": "assets/%MOD_ID%/icon.png"
     },
     "intermediate_mappings": "net.fabricmc:intermediary",
