@@ -134,7 +134,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_1 => "9",
             Self::Minecraft1_20_2 => "10",
             Self::Minecraft1_20_4 => "11",
-            Self::Minecraft1_20_5 => "12",
+            Self::Minecraft1_20_5 => "12.0",
             Self::Minecraft1_20_6 => "12",
             Self::Minecraft1_21 => "13",
         }
