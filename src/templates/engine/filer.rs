@@ -9,6 +9,7 @@ use std::io::{Cursor, Seek, Write};
 use zip::write::FileOptions;
 
 pub trait Filer {
+    fn set_file_name(&mut self, file_name: String);
     fn save(&mut self, path: &str, content: &[u8], permissions: &FilePermissions) -> Result<()>;
 }
 
@@ -32,6 +33,7 @@ where
 {
     writer: &'a mut zip::ZipWriter<W>,
     directories: HashSet<String>,
+    pub file_name: Option<String>,
 }
 
 impl<'a, W> ZipFiler<'a, W>
@@ -42,6 +44,7 @@ where
         Self {
             writer,
             directories: HashSet::new(),
+            file_name: None,
         }
     }
 }
@@ -71,6 +74,10 @@ where
             .into_diagnostic()?;
         self.writer.write_all(content).into_diagnostic()?;
         Ok(())
+    }
+
+    fn set_file_name(&mut self, file_name: String) {
+        self.file_name = Some(file_name)
     }
 }
 
@@ -139,6 +146,10 @@ mod native {
             update_permissions(&full_path, permissions)?;
             Ok(())
         }
+
+        fn set_file_name(&mut self, _file_name: String) {
+            // Don't do anything as the directory filer prompts for the output name.
+        }
     }
 }
 
@@ -147,6 +158,7 @@ where
     F: FnOnce(&mut dyn Filer) -> Result<()>,
 {
     let mut cursor = Cursor::new(Vec::new());
+    let mut file_name: String = "template.zip".to_owned();
 
     // Create and use the zip writer and filer.
     // This is its own scope in order to drop the borrow to the cursor.
@@ -155,6 +167,10 @@ where
         {
             let mut filer = ZipFiler::new(&mut writer);
             block(&mut filer)?;
+
+            if let Some(custom_name) = filer.file_name {
+                file_name = custom_name + ".zip";
+            }
         }
         writer.finish().into_diagnostic()?;
     }
@@ -162,7 +178,7 @@ where
     let saved = AsyncFileDialog::new()
         .set_title("Choose where to save the template")
         .add_filter("Zip file", &["zip"])
-        .set_file_name("template.zip")
+        .set_file_name(file_name)
         .save_file()
         .await;
 
