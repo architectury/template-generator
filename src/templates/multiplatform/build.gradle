@@ -31,6 +31,12 @@ subprojects {
         // for more information about repositories.
     }
 
+//% if mojang_mappings
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+//% end
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
 //% if yarn

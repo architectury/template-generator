@@ -11,6 +11,10 @@ base {
 }
 
 loom {
+//% if mojang_mappings
+    silentMojangMappingsLicense()
+
+//% end
     forge {
         mixinConfig '%MOD_ID%.mixins.json'
     }
