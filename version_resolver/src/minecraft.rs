@@ -100,6 +100,16 @@ impl MinecraftVersion {
         }
     }
 
+    pub fn fabric_api_mod_id(&self) -> &'static str {
+        if self >= &Self::Minecraft1_19_2 {
+            "fabric-api"
+        } else {
+            // See https://github.com/architectury/template-generator/issues/18 and
+            // https://github.com/FabricMC/fabric/commit/f60060dfe365941c3b7514d1e53cc7e09dbd671e.
+            "fabric"
+        }
+    }
+
     pub fn forge_major_version(&self) -> Option<&'static str> {
         match self {
             Self::Minecraft1_16_5 => Some("36"),

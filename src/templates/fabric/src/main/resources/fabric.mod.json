@@ -32,7 +32,7 @@
 //% if architectury_api
     "architectury": ">=%ARCHITECTURY_API_VERSION%",
 //% end
-    "fabric-api": "*"
+    "%FABRIC_API_MOD_ID%": "*"
   },
   "suggests": {
     "another-mod": "*"

@@ -44,6 +44,7 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
     );
     context.put("ARCHITECTURY_GROUP", game_version.architectury_maven_group());
     context.put("ARCHITECTURY_PACKAGE", game_version.architectury_package());
+    context.put("FABRIC_API_MOD_ID", game_version.fabric_api_mod_id());
     context.maybe_put(
         "FORGE_LOADER_MAJOR",
         game_version.forge_major_version()
