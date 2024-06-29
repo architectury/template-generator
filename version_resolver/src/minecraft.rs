@@ -35,6 +35,8 @@ pub enum MinecraftVersion {
     Minecraft1_20_5,
     #[serde(rename = "1.20.6")]
     Minecraft1_20_6,
+    #[serde(rename = "1.21")]
+    Minecraft1_21,
 }
 
 impl MinecraftVersion {
@@ -59,6 +61,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => "1.20.4",
             Self::Minecraft1_20_5 => "1.20.5",
             Self::Minecraft1_20_6 => "1.20.6",
+            Self::Minecraft1_21 => "1.21",
         }
     }
 
@@ -113,6 +116,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => Some("49"),
             Self::Minecraft1_20_5 => None,
             Self::Minecraft1_20_6 => None,
+            Self::Minecraft1_21 => None,
         }
     }
 
@@ -132,6 +136,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => "11",
             Self::Minecraft1_20_5 => "12",
             Self::Minecraft1_20_6 => "12",
+            Self::Minecraft1_21 => "13",
         }
     }
 
@@ -140,6 +145,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => Some("2"),
             Self::Minecraft1_20_5 => Some("2"),
             Self::Minecraft1_20_6 => Some("2"),
+            Self::Minecraft1_21 => Some("4"),
             _ => None,
         }
     }
@@ -149,6 +155,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => Some("20.4"),
             Self::Minecraft1_20_5 => Some("20.5"),
             Self::Minecraft1_20_6 => Some("20.6"),
+            Self::Minecraft1_21 => Some("21.0"),
             _ => None,
         }
     }
@@ -156,7 +163,8 @@ impl MinecraftVersion {
     pub fn neoforge_yarn_patch_version(&self) -> Option<&'static str> {
         match self {
             Self::Minecraft1_20_5 => Some("1.20.5"),
-            Self::Minecraft1_20_6 => Some("1.20.5"),
+            Self::Minecraft1_20_6 => Some("1.20.6"),
+            Self::Minecraft1_21 => Some("1.21"),
             _ => None,
         }
     }
@@ -177,6 +185,7 @@ impl MinecraftVersion {
             Self::Minecraft1_20_4 => Some("22"),
             Self::Minecraft1_20_5 => None,
             Self::Minecraft1_20_6 => None,
+            Self::Minecraft1_21 => None,
         }
     }
 
