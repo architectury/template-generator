@@ -6,7 +6,7 @@ use miette::{IntoDiagnostic, Result};
 use rfd::AsyncFileDialog;
 use std::collections::HashSet;
 use std::io::{Cursor, Seek, Write};
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 
 pub trait Filer {
     fn set_file_name(&mut self, file_name: String);
@@ -61,7 +61,7 @@ where
 
             if self.directories.insert(directory.clone()) {
                 self.writer
-                    .add_directory(directory, FileOptions::default())
+                    .add_directory(directory, SimpleFileOptions::default())
                     .into_diagnostic()?;
             }
         }
@@ -69,7 +69,7 @@ where
         self.writer
             .start_file(
                 path,
-                FileOptions::default().unix_permissions(permissions.unix()),
+                SimpleFileOptions::default().unix_permissions(permissions.unix()),
             )
             .into_diagnostic()?;
         self.writer.write_all(content).into_diagnostic()?;
