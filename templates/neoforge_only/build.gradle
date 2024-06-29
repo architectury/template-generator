@@ -24,6 +24,12 @@ repositories {
     // for more information about repositories.
 }
 
+//% if mojang_mappings
+loom {
+    silentMojangMappingsLicense()
+}
+
+//% end
 dependencies {
     minecraft "net.minecraft:minecraft:$project.minecraft_version"
 //% if yarn
