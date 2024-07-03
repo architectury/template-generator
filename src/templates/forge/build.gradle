@@ -28,6 +28,15 @@ configurations {
         canBeResolved = true
         canBeConsumed = false
     }
+//% if forge_jopt_hack
+
+    // Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+
+    configureEach {
+        resolutionStrategy {
+            force 'net.sf.jopt-simple:jopt-simple:5.0.4'
+        }
+    }
+//% end
 }
 
 dependencies {
