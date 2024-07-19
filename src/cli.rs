@@ -3,14 +3,14 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use clap::Parser;
-use cliclack::{confirm, input, intro, multiselect, outro, select};
+use cliclack::{confirm, input, intro, multiselect, outro, select, spinner};
 use miette::{miette, Context, IntoDiagnostic, Result};
 use strum::IntoEnumIterator;
 use version_resolver::minecraft::MinecraftVersion;
 use std::path::PathBuf;
 
 use crate::{Dependencies, GeneratorApp, MappingSet, ProjectType, Subprojects};
-use crate::filer::ZipFilerProvider;
+use crate::filer::{FilerProvider, ZipFilerProvider};
 use crate::filer::native::{DirectoryFilerProvider, FsZipWriteTarget};
 
 #[derive(Parser)]
@@ -25,7 +25,7 @@ struct Args {
 
 pub async fn main() -> Result<()> {
     let args = Args::parse();
-    let output_name = if args.zip {
+    if args.zip {
         let (file, default_name) = if let Some(output) = &args.output {
             // If the file was provided, try to derive the mod name from it.
             let name = output.file_name()
@@ -34,27 +34,23 @@ pub async fn main() -> Result<()> {
             (FsZipWriteTarget::ZipFile(output.clone()), name)
         } else {
             // If the file wasn't provided, get the current dir and use the default file name inside.
-            let dir = std::env::current_dir()
-                .into_diagnostic()
-                .wrap_err("Couldn't get current directory")?;
+            let dir = get_current_dir()?;
             (FsZipWriteTarget::InDirectory(dir), None)
         };
-        let app = prompt(default_name)?;
-        let filer_provider = ZipFilerProvider(file);
-        crate::generator::generate(&app, &filer_provider).await?;
 
-        if let Some(output) = args.output {
-            output.to_string_lossy().into_owned()
-        } else {
-            crate::generator::compose_file_name(&app) + ".zip"
-        }
+        run(ZipFilerProvider(file), default_name, |app| {
+            if let Some(output) = &args.output {
+                output.to_string_lossy().into_owned()
+            } else {
+                crate::generator::compose_file_name(app) + ".zip"
+            }
+        })
+        .await?
     } else {
         let dir = if let Some(directory) = args.output {
             directory
         } else {
-            std::env::current_dir()
-                .into_diagnostic()
-                .wrap_err("Couldn't get current directory")?
+            get_current_dir()?
         };
 
         if dir.exists() {
@@ -73,11 +69,26 @@ pub async fn main() -> Result<()> {
         }
 
         let default_name = dir.file_name().and_then(|s| s.to_str());
-        let app = prompt(default_name)?;
-        crate::generator::generate(&app, &DirectoryFilerProvider(&dir)).await?;
-        dir.to_string_lossy().into_owned()
-    };
-    outro(format!("Generated into {}!", output_name)).into_diagnostic()?;
+        run(DirectoryFilerProvider(&dir), default_name, |_| {
+            dir.to_string_lossy()
+        })
+        .await?
+    }
+    Ok(())
+}
+
+async fn run<F, N, D>(filer_provider: F, default_mod_name: Option<&str>, output_name_provider: N) -> Result<()>
+where
+    F: FilerProvider,
+    N: FnOnce(&GeneratorApp) -> D,
+    D: std::fmt::Display,
+{
+    let app = prompt(default_mod_name)?;
+    let spinner = spinner();
+    spinner.start("Generating...");
+    crate::generator::generate(&app, &filer_provider).await?;
+    spinner.stop("Done!");
+    outro(format!("Generated into {}!", output_name_provider(&app))).into_diagnostic()?;
     Ok(())
 }
 
@@ -171,6 +182,12 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
         dependencies
     };
     Ok(generator)
+}
+
+fn get_current_dir() -> Result<PathBuf> {
+    std::env::current_dir()
+        .into_diagnostic()
+        .wrap_err("Couldn't get current directory")
 }
 
 // TODO: Can this be a function ref?
