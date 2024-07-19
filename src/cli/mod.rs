@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use clap::Parser;
-use cliclack::{confirm, input, intro, multiselect, select};
+use cliclack::{confirm, input, intro, multiselect, outro, select};
 use miette::{miette, Context, IntoDiagnostic, Result};
 use strum::IntoEnumIterator;
 use version_resolver::minecraft::MinecraftVersion;
@@ -25,7 +25,7 @@ struct Args {
 
 pub async fn main() -> Result<()> {
     let args = Args::parse();
-    if args.zip {
+    let output_name = if args.zip {
         let (file, default_name) = if let Some(output) = &args.output {
             // If the file was provided, try to derive the mod name from it.
             let name = output.file_name()
@@ -41,7 +41,13 @@ pub async fn main() -> Result<()> {
         };
         let app = prompt(default_name)?;
         let filer_provider = ZipFilerProvider(file);
-        crate::generator::generate(&app, &filer_provider).await
+        crate::generator::generate(&app, &filer_provider).await?;
+
+        if let Some(output) = args.output {
+            output.to_string_lossy().into_owned()
+        } else {
+            crate::generator::compose_file_name(&app) + ".zip"
+        }
     } else {
         let dir = if let Some(directory) = args.output {
             directory
@@ -68,8 +74,11 @@ pub async fn main() -> Result<()> {
 
         let default_name = dir.file_name().and_then(|s| s.to_str());
         let app = prompt(default_name)?;
-        crate::generator::generate(&app, &DirectoryFilerProvider(&dir)).await
-    }
+        crate::generator::generate(&app, &DirectoryFilerProvider(&dir)).await?;
+        dir.to_string_lossy().into_owned()
+    };
+    outro(format!("Generated into {}!", output_name)).into_diagnostic()?;
+    Ok(())
 }
 
 fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {

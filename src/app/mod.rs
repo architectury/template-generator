@@ -88,4 +88,12 @@ impl GeneratorApp {
             dependencies: Default::default(),
         }
     }
+
+    pub fn get_effective_mod_id(&self) -> String {
+        if self.mod_id.is_empty() {
+            crate::mod_ids::to_mod_id(&self.mod_name)
+        } else {
+            self.mod_id.clone()
+        }
+    }
 }
