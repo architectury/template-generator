@@ -25,7 +25,7 @@ fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -
     use std::os::unix::fs::PermissionsExt;
     let file_permissions = fs::metadata(path).into_diagnostic()?.permissions();
     let new_mode = file_permissions.mode() | permissions.unix();
-    let new_permissions = Permissions::from_mode(new_mode);
+    let new_permissions = fs::Permissions::from_mode(new_mode);
     fs::set_permissions(path, new_permissions).into_diagnostic()
 }
 
