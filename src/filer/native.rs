@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{IntoDiagnostic, Result};
+use miette::{miette, Context, IntoDiagnostic, Result};
 use std::{fs, path};
 
 pub struct DirectoryFilerProvider<'a>(pub &'a path::Path);
@@ -59,11 +59,26 @@ impl<'a> super::Filer for DirectoryFiler<'a> {
     }
 }
 
-impl<T> super::ZipWriteTarget for T
-where
-    T: AsRef<path::Path>,
-{
-    async fn write(&self, _file_name: String, data: &[u8]) -> Result<()> {
-        tokio::fs::write(self, data).await.into_diagnostic()
+pub enum FsZipWriteTarget {
+    ZipFile(path::PathBuf),
+    InDirectory(path::PathBuf),
+}
+
+impl super::ZipWriteTarget for FsZipWriteTarget {
+    async fn write(&self, file_name: String, data: &[u8]) -> Result<()> {
+        let path = match self {
+            Self::ZipFile(path) => path,
+            Self::InDirectory(path) => &path.join(file_name),
+        };
+
+        let exists = tokio::fs::try_exists(path)
+            .await
+            .into_diagnostic()
+            .wrap_err_with(|| format!("Could not check if file {} exists", path.to_string_lossy()))?;
+        if exists {
+            return Err(miette!("Output file {} already exists!", path.to_string_lossy()));
+        }
+
+        tokio::fs::write(path, data).await.into_diagnostic()
     }
 }

@@ -4,42 +4,82 @@
 
 use clap::Parser;
 use cliclack::{confirm, input, intro, multiselect, select};
-use miette::{Context, IntoDiagnostic, Result};
+use miette::{miette, Context, IntoDiagnostic, Result};
 use strum::IntoEnumIterator;
 use version_resolver::minecraft::MinecraftVersion;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::{Dependencies, GeneratorApp, MappingSet, ProjectType, Subprojects};
-use crate::filer::native::DirectoryFilerProvider;
+use crate::filer::ZipFilerProvider;
+use crate::filer::native::{DirectoryFilerProvider, FsZipWriteTarget};
 
 #[derive(Parser)]
 #[command(version)]
 struct Args {
     /// The project path (default: the current directory)
     output: Option<PathBuf>,
+    /// Output a zip instead of a directory
+    #[arg(short, long)]
+    zip: bool,
 }
 
 pub async fn main() -> Result<()> {
     let args = Args::parse();
-    // TODO: Support zips
-    let dir = if let Some(directory) = args.output {
-        directory
+    if args.zip {
+        let (file, default_name) = if let Some(output) = &args.output {
+            // If the file was provided, try to derive the mod name from it.
+            let name = output.file_name()
+                .and_then(|s| s.to_str())
+                .map(|s| s.strip_suffix(".zip").unwrap_or(s));
+            (FsZipWriteTarget::ZipFile(output.clone()), name)
+        } else {
+            // If the file wasn't provided, get the current dir and use the default file name inside.
+            let dir = std::env::current_dir()
+                .into_diagnostic()
+                .wrap_err("Couldn't get current directory")?;
+            (FsZipWriteTarget::InDirectory(dir), None)
+        };
+        let app = prompt(default_name)?;
+        let filer_provider = ZipFilerProvider(file);
+        crate::generator::generate(&app, &filer_provider).await
     } else {
-        std::env::current_dir()
-            .into_diagnostic()
-            .wrap_err("Couldn't get current directory")?
-    };
-    let app = prompt(&dir)?;
-    let filer_provider = DirectoryFilerProvider(&dir);
-    crate::generator::generate(&app, &filer_provider).await
+        let dir = if let Some(directory) = args.output {
+            directory
+        } else {
+            std::env::current_dir()
+                .into_diagnostic()
+                .wrap_err("Couldn't get current directory")?
+        };
+
+        if dir.exists() {
+            if !dir.is_dir() {
+                return Err(miette!("File {} is not a directory", dir.to_string_lossy()));
+            }
+
+            // Check that the directory is empty.
+            let mut iter = tokio::fs::read_dir(&dir)
+                .await
+                .into_diagnostic()
+                .wrap_err("Could not check if the output directory is empty")?;
+            if iter.next_entry().await.into_diagnostic()?.is_some() {
+                return Err(miette!("Output directory {} is not empty", dir.to_string_lossy()));
+            }
+        }
+
+        let default_name = dir.file_name().and_then(|s| s.to_str());
+        let app = prompt(default_name)?;
+        crate::generator::generate(&app, &DirectoryFilerProvider(&dir)).await
+    }
 }
 
-fn prompt(dir: &Path) -> Result<GeneratorApp> {
+fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
     intro("Architectury Template Generator").into_diagnostic()?;
-    
-    let mod_name: String = input("Mod name")
-        .default_input(dir.file_name().and_then(|s| s.to_str()).unwrap_or(""))
-        .interact().into_diagnostic()?;
+
+    let mut mod_name = input("Mod name");
+    if let Some(name) = default_name {
+        mod_name = mod_name.default_input(name);
+    }
+    let mod_name: String = mod_name.interact().into_diagnostic()?;
 
     let mod_id: String = input("Mod ID")
         .default_input(&crate::mod_ids::to_mod_id(&mod_name))
