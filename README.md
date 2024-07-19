@@ -1,6 +1,6 @@
 # Template Generator
 
-A generator for Architectury mod templates with a web UI and a TUI.
+A generator for Architectury mod templates with a web UI and an interactive command line UI.
 
 ## Requirements
 

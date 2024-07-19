@@ -14,26 +14,18 @@ use std::pin::Pin;
 use std::sync::Arc;
 use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
-pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
+pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
-    // This vec contains all dash-separated parts of the template file name.
-    // Example: my_mod-1.21-fabric-neoforge-template.zip
-    let mut file_name_parts: Vec<String> = Vec::new();
     // Mod properties
     context.put("PACKAGE_NAME", &app.package_name);
     context.put("PACKAGE_DIR", &app.package_name.replace(".", "/"));
-    let mut mod_id: String = app.mod_id.clone();
-    if mod_id.is_empty() {
-        mod_id = crate::mod_ids::to_mod_id(&app.mod_name);
-    }
-    file_name_parts.push(mod_id.clone());
+    let mod_id: String = app.get_effective_mod_id();
     context.put("MOD_ID", mod_id);
     let escaped_name = escape_json_and_toml(&app.mod_name);
     context.put("MOD_NAME", escaped_name);
 
     // Game version-specific
     let game_version = app.game_version;
-    file_name_parts.push(game_version.version().to_owned());
     context.put("MINECRAFT_VERSION", game_version.version());
     context.put(
         "GRADLE_JAVA_VERSION",
@@ -166,11 +158,6 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 platforms.push("quilt");
             }
 
-            // Add all platforms to template file name.
-            for platform in &platforms {
-                file_name_parts.push((*platform).to_owned());
-            }
-
             let platforms = platforms.join(",");
             context.put("ARCHITECTURY_PLATFORMS", platforms);
 
@@ -198,7 +185,6 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                 files.push(Box::pin(neoforge_only::neoforge_mods_toml_files(client.clone())));
             }
             context.maybe_put("NEOFORGE_YARN_PATCH_VERSION", versions.neoforge_yarn_patch);
-            file_name_parts.push("neoforge-only".to_owned());
         }
         ProjectType::Forge => {
             files.push(Box::pin(forge_only::all_files(client.clone())));
@@ -208,12 +194,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
                     std::future::ready(Ok(version)),
                 )));
             }
-            file_name_parts.push("forge-only".to_owned());
         }
     }
-
-    // Add final template suffix to file name
-    file_name_parts.push("template".to_owned());
 
     // Resolve versions
     let (files, variables) = join!(join_all(files), join_all(variables));
@@ -228,8 +210,8 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         context.put(key, value);
     }
 
-    engine::filer::use_filer(|filer| {
-        let file_name = file_name_parts.join("-");
+    filer_provider.use_filer(|filer| {
+        let file_name = compose_file_name(app);
         filer.set_file_name(file_name);
 
         for file_data in files {
@@ -256,6 +238,41 @@ pub async fn generate(app: &super::GeneratorApp) -> Result<()> {
         Ok(())
     })
     .await
+}
+
+pub fn compose_file_name(app: &super::GeneratorApp) -> String {
+    let mut file_name = app.get_effective_mod_id();
+    file_name += "-";
+    file_name += app.game_version.version();
+
+    match app.project_type {
+        ProjectType::Multiplatform => {
+            if app.subprojects.fabric && app.subprojects.quilt && app.subprojects.fabric_likes {
+                file_name += "-fabric-like";
+            } else {
+                if app.subprojects.fabric {
+                    file_name += "-fabric";
+                }
+
+                if app.subprojects.quilt {
+                    file_name += "-quilt";
+                }
+            }
+
+            if app.subprojects.neoforge {
+                file_name += "-neoforge";
+            }
+
+            if app.subprojects.forge {
+                file_name += "-forge";
+            }
+        },
+        ProjectType::NeoForge => file_name += "-neoforge-only",
+        ProjectType::Forge => file_name += "-forge-only",
+    }
+
+    file_name += "-template";
+    file_name
 }
 
 fn add_key<F>(key: &'static str, future: F) -> impl Future<Output = Result<(String, String)>>

@@ -3,32 +3,9 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #[cfg(not(target_family = "wasm"))]
-fn main() -> Result<()> {
-    use miette::{IntoDiagnostic, Result};
-    use ratatui::prelude::*;
-    use templateer::app2::create_app;
-
-    // Set up Crossterm
-    crossterm::terminal::enable_raw_mode().into_diagnostic()?;
-    crossterm::execute!(std::io::stderr(), crossterm::terminal::EnterAlternateScreen)
-        .into_diagnostic()?;
-
-    let terminal = Terminal::new(CrosstermBackend::new(std::io::stderr())).into_diagnostic()?;
-    let mut app = create_app(terminal);
-
-    loop {
-        app.tick()?;
-        if app.should_exit() {
-            break;
-        }
-    }
-
-    // Clean up
-    crossterm::execute!(std::io::stderr(), crossterm::terminal::LeaveAlternateScreen)
-        .into_diagnostic()?;
-    crossterm::terminal::disable_raw_mode().into_diagnostic()?;
-
-    Ok(())
+#[tokio::main]
+async fn main() -> miette::Result<()> {
+    templateer::cli::main().await
 }
 
 #[cfg(target_family = "wasm")]
