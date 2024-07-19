@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use bytes::Bytes;
-use engine::filer::FilePermissions;
+use crate::filer::FilePermissions;
 
 pub mod engine;
 pub mod fabric;
@@ -130,7 +130,7 @@ macro_rules! file_data_raw {
             Ok(crate::templates::FileData {
                 path,
                 content: crate::templates::FileContent::$file_content_type($const_name.into()),
-                permissions: crate::templates::engine::filer::FilePermissions::$permissions,
+                permissions: crate::filer::FilePermissions::$permissions,
             })
         }
 
@@ -143,7 +143,7 @@ macro_rules! file_data_raw {
             let url = format!("templates/{}/{}", $dir.replace("-", "_"), $file_name);
             let bytes = crate::templates::$download_function(client, &url).await?;
             let content = crate::templates::FileContent::$file_content_type(bytes);
-            let permissions = crate::templates::engine::filer::FilePermissions::$permissions;
+            let permissions = crate::filer::FilePermissions::$permissions;
             Ok(crate::templates::FileData { path, content, permissions })
         }
     };

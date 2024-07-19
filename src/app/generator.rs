@@ -14,7 +14,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
-pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl engine::filer::FilerProvider) -> Result<()> {
+pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
     // This vec contains all dash-separated parts of the template file name.
     // Example: my_mod-1.21-fabric-neoforge-template.zip

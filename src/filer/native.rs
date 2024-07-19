@@ -1,0 +1,69 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+use miette::{IntoDiagnostic, Result};
+use std::{fs, path};
+
+pub struct DirectoryFilerProvider<'a>(pub &'a path::Path);
+
+impl<'a> super::FilerProvider for DirectoryFilerProvider<'a> {
+    async fn use_filer<F>(&self, block: F) -> Result<()>
+    where
+        F: FnOnce(&mut dyn super::Filer) -> Result<()>,
+    {
+        block(&mut DirectoryFiler { path: self.0 })
+    }
+}
+
+struct DirectoryFiler<'a> {
+    path: &'a path::Path,
+}
+
+#[cfg(target_family = "unix")]
+fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -> Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    let file_permissions = fs::metadata(path).into_diagnostic()?.permissions();
+    let new_mode = file_permissions.mode() | permissions.unix();
+    let new_permissions = Permissions::from_mode(new_mode);
+    fs::set_permissions(path, new_permissions).into_diagnostic()
+}
+
+#[cfg(not(target_family = "unix"))]
+fn update_permissions(_path: &path::Path, _permissions: &super::FilePermissions) -> Result<()> {
+    // Not supported on Windows
+    Ok(())
+}
+
+impl<'a> super::Filer for DirectoryFiler<'a> {
+    fn save(
+        &mut self,
+        path: &str,
+        content: &[u8],
+        permissions: &super::FilePermissions,
+    ) -> Result<()> {
+        let mut full_path = path::PathBuf::from(self.path);
+        full_path.push(path);
+
+        if let Some(parent) = full_path.parent() {
+            fs::create_dir_all(parent).into_diagnostic()?;
+        }
+
+        fs::write(&full_path, content).into_diagnostic()?;
+        update_permissions(&full_path, permissions)?;
+        Ok(())
+    }
+
+    fn set_file_name(&mut self, _file_name: String) {
+        // Don't do anything as the directory filer prompts for the output name.
+    }
+}
+
+impl<T> super::ZipWriteTarget for T
+where
+    T: AsRef<path::Path>,
+{
+    async fn write(&self, _file_name: String, data: &[u8]) -> Result<()> {
+        tokio::fs::write(self, data).await.into_diagnostic()
+    }
+}

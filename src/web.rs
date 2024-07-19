@@ -7,7 +7,7 @@ use miette::{miette, Result};
 use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
-use crate::templates::engine::filer;
+use crate::filer;
 
 pub trait ResultExt<T> {
     fn to_miette(self) -> Result<T>;

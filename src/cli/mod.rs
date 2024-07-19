@@ -10,7 +10,7 @@ use version_resolver::minecraft::MinecraftVersion;
 use std::path::{Path, PathBuf};
 
 use crate::{Dependencies, GeneratorApp, MappingSet, ProjectType, Subprojects};
-use crate::templates::engine::filer;
+use crate::filer::native::DirectoryFilerProvider;
 
 #[derive(Parser)]
 #[command(version)]
@@ -30,7 +30,7 @@ pub async fn main() -> Result<()> {
             .wrap_err("Couldn't get current directory")?
     };
     let app = prompt(&dir)?;
-    let filer_provider = filer::DirectoryFilerProvider(&dir);
+    let filer_provider = DirectoryFilerProvider(&dir);
     crate::generator::generate(&app, &filer_provider).await
 }
 
