@@ -4,9 +4,7 @@
 
 pub mod app;
 #[cfg(not(target_family = "wasm"))]
-pub mod app2;
-#[cfg(not(target_family = "wasm"))]
-pub mod async_support;
+pub mod cli;
 pub mod mod_ids;
 pub mod tap;
 pub mod templates;

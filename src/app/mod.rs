@@ -3,13 +3,14 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 
 pub mod generator;
 pub mod versions;
 
 pub const SUBHEADING_STYLE: &'static str = "subheading";
 
-#[derive(Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ProjectType {
     #[default]
     Multiplatform,
@@ -17,7 +18,7 @@ pub enum ProjectType {
     Forge,
 }
 
-#[derive(Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, EnumIter)]
 pub enum MappingSet {
     #[default]
     Mojang,
@@ -25,7 +26,14 @@ pub enum MappingSet {
 }
 
 impl MappingSet {
-    fn description(&self) -> &'static str {
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::Mojang => "Official Mojang mappings",
+            Self::Yarn => "Yarn",
+        }
+    }
+
+    pub fn description(&self) -> &'static str {
         match self {
             Self::Mojang => "The official obfuscation maps published by Mojang.",
             Self::Yarn => "A libre mapping set maintained by FabricMC.",
@@ -35,16 +43,16 @@ impl MappingSet {
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Subprojects {
-    fabric: bool,
-    forge: bool,
-    neoforge: bool,
-    quilt: bool,
-    fabric_likes: bool,
+    pub fabric: bool,
+    pub forge: bool,
+    pub neoforge: bool,
+    pub quilt: bool,
+    pub fabric_likes: bool,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Dependencies {
-    architectury_api: bool,
+    pub architectury_api: bool,
 }
 
 impl Default for Dependencies {
@@ -57,14 +65,14 @@ impl Default for Dependencies {
 
 #[derive(Serialize, Deserialize)]
 pub struct GeneratorApp {
-    mod_name: String,
-    mod_id: String,
-    package_name: String,
-    game_version: version_resolver::minecraft::MinecraftVersion,
-    project_type: ProjectType,
-    subprojects: Subprojects,
-    mapping_set: MappingSet,
-    dependencies: Dependencies,
+    pub mod_name: String,
+    pub mod_id: String,
+    pub package_name: String,
+    pub game_version: version_resolver::minecraft::MinecraftVersion,
+    pub project_type: ProjectType,
+    pub subprojects: Subprojects,
+    pub mapping_set: MappingSet,
+    pub dependencies: Dependencies,
 }
 
 impl GeneratorApp {
