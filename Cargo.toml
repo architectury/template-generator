@@ -19,7 +19,7 @@ strum = { version = "0.26", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 rfd = "0.14"
 cliclack = "0.3.2"
-clap = "4.5.9"
+clap = { version = "4.5", features = ["derive"] }
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
