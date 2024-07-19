@@ -3,7 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use miette::{IntoDiagnostic, Result};
-use rfd::AsyncFileDialog;
 use std::collections::HashSet;
 use std::io::{Cursor, Seek, Write};
 use zip::write::SimpleFileOptions;
@@ -148,51 +147,70 @@ mod native {
             // Don't do anything as the directory filer prompts for the output name.
         }
     }
+
+    impl<T> super::ZipWriteTarget for T
+    where
+        T: AsRef<path::Path>,
+    {
+        async fn write(&self, _file_name: String, data: &[u8]) -> Result<()> {
+            tokio::fs::write(self, data).await.into_diagnostic()
+        }
+    }
 }
 
-pub struct ZipFilerProvider;
+pub struct ZipFilerProvider<T: ZipWriteTarget>(pub T);
 
-impl FilerProvider for ZipFilerProvider {
+impl<T: ZipWriteTarget> FilerProvider for ZipFilerProvider<T> {
     async fn use_filer<F>(&self, block: F) -> Result<()>
     where
         F: FnOnce(&mut dyn Filer) -> Result<()> {
-        use_zip_filer(block).await
+        let mut cursor = Cursor::new(Vec::new());
+        let mut file_name: String = "template.zip".to_owned();
+
+        // Create and use the zip writer and filer.
+        // This is its own scope in order to drop the borrow to the cursor.
+        {
+            let mut writer = zip::ZipWriter::new(&mut cursor);
+            {
+                let mut filer = ZipFiler::new(&mut writer);
+                block(&mut filer)?;
+
+                if let Some(custom_name) = filer.file_name {
+                    file_name = custom_name + ".zip";
+                }
+            }
+            writer.finish().into_diagnostic()?;
+        }
+
+        self.0.write(file_name, cursor.get_ref()).await
     }
 }
 
-pub async fn use_zip_filer<F>(block: F) -> Result<()>
-where
-    F: FnOnce(&mut dyn Filer) -> Result<()>,
-{
-    let mut cursor = Cursor::new(Vec::new());
-    let mut file_name: String = "template.zip".to_owned();
+#[allow(async_fn_in_trait)]
+pub trait ZipWriteTarget {
+    async fn write(&self, file_name: String, data: &[u8]) -> Result<()>;
+}
 
-    // Create and use the zip writer and filer.
-    // This is its own scope in order to drop the borrow to the cursor.
-    {
-        let mut writer = zip::ZipWriter::new(&mut cursor);
-        {
-            let mut filer = ZipFiler::new(&mut writer);
-            block(&mut filer)?;
+#[cfg(target_family = "wasm")]
+pub mod web {
+    use miette::{IntoDiagnostic, Result};
 
-            if let Some(custom_name) = filer.file_name {
-                file_name = custom_name + ".zip";
+    pub struct ZipSaveDialog;
+
+    impl super::ZipWriteTarget for ZipSaveDialog {
+        async fn write(&self, file_name: String, data: &[u8]) -> Result<()> {
+            let saved = rfd::AsyncFileDialog::new()
+                .set_title("Choose where to save the template")
+                .add_filter("Zip file", &["zip"])
+                .set_file_name(file_name)
+                .save_file()
+                .await;
+
+            if let Some(file) = saved {
+                file.write(data).await.into_diagnostic()?;
             }
+
+            Ok(())
         }
-        writer.finish().into_diagnostic()?;
     }
-
-    // TODO: Replace with platform-specific writer trait
-    let saved = AsyncFileDialog::new()
-        .set_title("Choose where to save the template")
-        .add_filter("Zip file", &["zip"])
-        .set_file_name(file_name)
-        .save_file()
-        .await;
-
-    if let Some(file) = saved {
-        file.write(cursor.get_ref()).await.into_diagnostic()?;
-    }
-
-    Ok(())
 }
