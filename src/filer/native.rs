@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{miette, Context, IntoDiagnostic, Result};
+use eyre::{eyre, Context, Result};
 use std::{fs, path};
 
 pub struct DirectoryFilerProvider<'a>(pub &'a path::Path);
@@ -23,10 +23,11 @@ struct DirectoryFiler<'a> {
 #[cfg(target_family = "unix")]
 fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -> Result<()> {
     use std::os::unix::fs::PermissionsExt;
-    let file_permissions = fs::metadata(path).into_diagnostic()?.permissions();
+    let file_permissions = fs::metadata(path)?.permissions();
     let new_mode = file_permissions.mode() | permissions.unix();
     let new_permissions = fs::Permissions::from_mode(new_mode);
-    fs::set_permissions(path, new_permissions).into_diagnostic()
+    fs::set_permissions(path, new_permissions)?;
+    Ok(())
 }
 
 #[cfg(not(target_family = "unix"))]
@@ -46,10 +47,10 @@ impl<'a> super::Filer for DirectoryFiler<'a> {
         full_path.push(path);
 
         if let Some(parent) = full_path.parent() {
-            fs::create_dir_all(parent).into_diagnostic()?;
+            fs::create_dir_all(parent)?;
         }
 
-        fs::write(&full_path, content).into_diagnostic()?;
+        fs::write(&full_path, content)?;
         update_permissions(&full_path, permissions)?;
         Ok(())
     }
@@ -73,12 +74,12 @@ impl super::ZipWriteTarget for FsZipWriteTarget {
 
         let exists = tokio::fs::try_exists(path)
             .await
-            .into_diagnostic()
             .wrap_err_with(|| format!("Could not check if file {} exists", path.to_string_lossy()))?;
         if exists {
-            return Err(miette!("Output file {} already exists!", path.to_string_lossy()));
+            return Err(eyre!("Output file {} already exists!", path.to_string_lossy()));
         }
 
-        tokio::fs::write(path, data).await.into_diagnostic()
+        tokio::fs::write(path, data).await?;
+        Ok(())
     }
 }

@@ -5,7 +5,7 @@
 pub const LOOM_VERSION: &'static str = "1.6-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
-use miette::Result;
+use eyre::Result;
 use reqwest::Client;
 use version_resolver::index::Versions;
 use version_resolver::minecraft::MinecraftVersion;
@@ -15,16 +15,16 @@ pub async fn get_version_index(
     client: std::sync::Arc<Client>,
     game_version: &MinecraftVersion,
 ) -> Result<Versions> {
-    use miette::{miette, IntoDiagnostic};
+    use eyre::eyre;
     use version_resolver::index::VersionIndex;
 
     let json = crate::templates::download_relative_text(client, "version_index.json").await?;
-    let index: VersionIndex = serde_json::from_str(&json).into_diagnostic()?;
+    let index: VersionIndex = serde_json::from_str(&json)?;
     index
         .versions
         .get(game_version)
         .ok_or_else(|| {
-            miette!(
+            eyre!(
                 "Could not find version index for version {}",
                 game_version.version()
             )

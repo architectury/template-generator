@@ -6,9 +6,9 @@ use crate::tap::Tap;
 use crate::templates::*;
 use crate::{MappingSet, ProjectType};
 use bytes::Bytes;
+use eyre::Result;
 use futures::future::join_all;
 use futures::{join, FutureExt};
-use miette::{IntoDiagnostic, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -63,7 +63,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
     context.put("PLUGIN_VERSION", crate::versions::PLUGIN_VERSION);
 
     // Setup version resolving
-    let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);
+    let client = Arc::new(reqwest::ClientBuilder::new().build()?);
     let versions = crate::app::versions::get_version_index(client.clone(), &game_version).await?;
     let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> =
         vec![Box::pin(shared::shared_files(client.clone()))];
