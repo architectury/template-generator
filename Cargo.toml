@@ -7,7 +7,6 @@ edition = "2021"
 members = ["version_resolver"]
 
 [workspace.dependencies]
-miette = "7.1"
 reqwest = "0.12"
 xml_dom = "0.2.6"
 wasm-bindgen = "0.2.92"
@@ -20,6 +19,8 @@ tokio = { version = "1", features = ["full"] }
 rfd = "0.14"
 cliclack = "0.3.2"
 clap = { version = "4.5", features = ["derive"] }
+eyre = { version = "0.6" }
+color-eyre = { version = "0.6" }
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
@@ -42,7 +43,7 @@ features = [
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-miette = { workspace = true }
+eyre = { workspace = true }
 reqwest = { workspace = true }
 futures = "0.3"
 zip = { version = "2.1.3", default-features = false, features = ["deflate"] }
@@ -53,7 +54,7 @@ version_resolver = { path = "version_resolver" }
 bytes = "1.6"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-miette = { workspace = true, features = ["fancy"] }
+color-eyre = { workspace = true }
 tokio = { workspace = true }
 cliclack = { workspace = true }
 clap = { workspace = true }

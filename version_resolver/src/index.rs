@@ -4,7 +4,7 @@
 
 use std::collections::BTreeMap;
 
-use miette::Result;
+use eyre::Result;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 

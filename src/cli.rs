@@ -4,7 +4,7 @@
 
 use clap::Parser;
 use cliclack::{confirm, input, intro, multiselect, outro, select, spinner};
-use miette::{miette, Context, IntoDiagnostic, Result};
+use eyre::{eyre, Context, Result};
 use strum::IntoEnumIterator;
 use version_resolver::minecraft::MinecraftVersion;
 use std::path::PathBuf;
@@ -24,6 +24,7 @@ struct Args {
 }
 
 pub async fn main() -> Result<()> {
+    color_eyre::install()?;
     let args = Args::parse();
     if args.zip {
         let (file, default_name) = if let Some(output) = &args.output {
@@ -55,16 +56,15 @@ pub async fn main() -> Result<()> {
 
         if dir.exists() {
             if !dir.is_dir() {
-                return Err(miette!("File {} is not a directory", dir.to_string_lossy()));
+                return Err(eyre!("File {} is not a directory", dir.to_string_lossy()));
             }
 
             // Check that the directory is empty.
             let mut iter = tokio::fs::read_dir(&dir)
                 .await
-                .into_diagnostic()
                 .wrap_err("Could not check if the output directory is empty")?;
-            if iter.next_entry().await.into_diagnostic()?.is_some() {
-                return Err(miette!("Output directory {} is not empty", dir.to_string_lossy()));
+            if iter.next_entry().await?.is_some() {
+                return Err(eyre!("Output directory {} is not empty", dir.to_string_lossy()));
             }
         }
 
@@ -88,26 +88,26 @@ where
     spinner.start("Generating...");
     crate::generator::generate(&app, &filer_provider).await?;
     spinner.stop("Done!");
-    outro(format!("Generated into {}!", output_name_provider(&app))).into_diagnostic()?;
+    outro(format!("Generated into {}!", output_name_provider(&app)))?;
     Ok(())
 }
 
 fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
-    intro("Architectury Template Generator").into_diagnostic()?;
+    intro("Architectury Template Generator")?;
 
     let mut mod_name = input("Mod name");
     if let Some(name) = default_name {
         mod_name = mod_name.default_input(name);
     }
-    let mod_name: String = mod_name.interact().into_diagnostic()?;
+    let mod_name: String = mod_name.interact()?;
 
     let mod_id: String = input("Mod ID")
         .default_input(&crate::mod_ids::to_mod_id(&mod_name))
         .validate_interactively(ModIdValidate)
-        .interact().into_diagnostic()?;
+        .interact()?;
 
     let package_name: String = input("Package name")
-        .interact().into_diagnostic()?;
+        .interact()?;
 
     let mut versions: Vec<_> = MinecraftVersion::iter()
         .map(|version| {
@@ -117,7 +117,7 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
     versions.reverse(); // newest first
     let game_version = select("Minecraft version")
         .items(&versions)
-        .interact().into_diagnostic()?;
+        .interact()?;
 
     let mapping_sets: Vec<_> = MappingSet::iter()
         .map(|set| {
@@ -126,7 +126,7 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
         .collect();
     let mapping_set = select("Mappings")
         .items(&mapping_sets)
-        .interact().into_diagnostic()?;
+        .interact()?;
 
     let mut project_types = vec![
         (ProjectType::Multiplatform, "Multiplatform", ""),
@@ -139,7 +139,7 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
     }
     let project_type: ProjectType = select("Project type")
         .items(&project_types)
-        .interact().into_diagnostic()?;
+        .interact()?;
 
     let mut subprojects = Subprojects::default();
     let mut dependencies = Dependencies::default();
@@ -154,7 +154,7 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
         subproject_options.retain(|(s, _, _)| s.is_available_on(&game_version));
         let chosen_subprojects = multiselect("Mod loaders")
             .items(&subproject_options)
-            .interact().into_diagnostic()?;
+            .interact()?;
 
         for subproject in chosen_subprojects {
             subproject.apply_to(&mut subprojects);
@@ -163,12 +163,12 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
         if subprojects.fabric && subprojects.quilt {
             subprojects.fabric_likes = confirm("Fabric-like subproject (shared code between Fabric and Quilt)?")
                 .initial_value(subprojects.fabric_likes)
-                .interact().into_diagnostic()?;
+                .interact()?;
         }
 
         dependencies.architectury_api = confirm("Architectury API?")
             .initial_value(dependencies.architectury_api)
-            .interact().into_diagnostic()?;
+            .interact()?;
     }
 
     let generator = GeneratorApp {
@@ -185,16 +185,14 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
 }
 
 fn get_current_dir() -> Result<PathBuf> {
-    std::env::current_dir()
-        .into_diagnostic()
-        .wrap_err("Couldn't get current directory")
+    std::env::current_dir().wrap_err("Couldn't get current directory")
 }
 
 // TODO: Can this be a function ref?
 struct ModIdValidate;
 
 impl cliclack::Validate<String> for ModIdValidate {
-    type Err = miette::Error;
+    type Err = eyre::Report;
 
     fn validate(&self, input: &String) -> Result<()> {
         crate::mod_ids::validate_mod_id(input)
