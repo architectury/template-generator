@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-pub const LOOM_VERSION: &'static str = "1.6-SNAPSHOT";
+pub const LOOM_VERSION: &'static str = "1.7-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
 use miette::Result;

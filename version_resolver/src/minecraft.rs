@@ -37,6 +37,12 @@ pub enum MinecraftVersion {
     Minecraft1_20_6,
     #[serde(rename = "1.21")]
     Minecraft1_21,
+    #[serde(rename = "1.21.1")]
+    Minecraft1_21_1,
+    #[serde(rename = "1.21.2")]
+    Minecraft1_21_2,
+    #[serde(rename = "1.21.3")]
+    Minecraft1_21_3,
 }
 
 impl MinecraftVersion {
@@ -62,6 +68,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => "1.20.5",
             Self::Minecraft1_20_6 => "1.20.6",
             Self::Minecraft1_21 => "1.21",
+            Self::Minecraft1_21_1 => "1.21.1",
+            Self::Minecraft1_21_2 => "1.21.2",
+            Self::Minecraft1_21_3 => "1.21.3",
         }
     }
 
@@ -127,6 +136,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => None,
             Self::Minecraft1_20_6 => None,
             Self::Minecraft1_21 => None,
+            Self::Minecraft1_21_1 => None,
+            Self::Minecraft1_21_2 => None,
+            Self::Minecraft1_21_3 => None,
         }
     }
 
@@ -147,6 +159,10 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => "12.0",
             Self::Minecraft1_20_6 => "12",
             Self::Minecraft1_21 => "13",
+            Self::Minecraft1_21_1 => "13",
+            Self::Minecraft1_21_2 => "14",
+            Self::Minecraft1_21_3 => "14",
+
         }
     }
 
@@ -156,6 +172,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => Some("2"),
             Self::Minecraft1_20_6 => Some("2"),
             Self::Minecraft1_21 => Some("4"),
+            Self::Minecraft1_21_1 => Some("4"),
+            Self::Minecraft1_21_2 => Some("4"),
+            Self::Minecraft1_21_3 => Some("4"),
             _ => None,
         }
     }
@@ -166,6 +185,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => Some("20.5"),
             Self::Minecraft1_20_6 => Some("20.6"),
             Self::Minecraft1_21 => Some("21.0"),
+            Self::Minecraft1_21_1 => Some("21.1"),
+            Self::Minecraft1_21_2 => Some("21.2"),
+            Self::Minecraft1_21_3 => Some("21.3"),
             _ => None,
         }
     }
@@ -175,6 +197,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => Some("1.20.5"),
             Self::Minecraft1_20_6 => Some("1.20.6"),
             Self::Minecraft1_21 => Some("1.21"),
+            Self::Minecraft1_21_1 => Some("1.21"),
+            Self::Minecraft1_21_2 => Some("1.21"),
+            Self::Minecraft1_21_3 => Some("1.21"),
             _ => None,
         }
     }
@@ -196,6 +221,9 @@ impl MinecraftVersion {
             Self::Minecraft1_20_5 => None,
             Self::Minecraft1_20_6 => None,
             Self::Minecraft1_21 => None,
+            Self::Minecraft1_21_1 => None,
+            Self::Minecraft1_21_2 => None,
+            Self::Minecraft1_21_3 => None,
         }
     }
 
