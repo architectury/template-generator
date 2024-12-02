@@ -174,6 +174,10 @@ function refreshFabricLikeCheckbox() {
     fabricLikeInput.disabled = !hasFabricLike;
 }
 
+function isLoaderChecked() {
+    return document.getElementById("fabric-loader-input").checked || document.getElementById("forge-loader-input").checked || document.getElementById("neoforge-loader-input").checked || document.getElementById("quilt-loader-input").checked
+}
+
 document.getElementById("generate-button").onclick = async () => {
     updateState();
 
@@ -186,6 +190,9 @@ document.getElementById("generate-button").onclick = async () => {
     } else if (state.package_name === "") {
         showError("Package name is empty");
         return;
+    } else if (!isLoaderChecked()) {
+        showError("You need to choose at least one loader first!")
+        return
     }
 
     clearError();
