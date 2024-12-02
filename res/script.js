@@ -191,7 +191,7 @@ document.getElementById("generate-button").onclick = async () => {
         showError("Package name is empty");
         return;
     } else if (!isLoaderChecked()) {
-        showError("You need to choose at least one loader first!")
+        showError("You need to choose at least one subproject first!")
         return
     }
 
