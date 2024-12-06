@@ -156,9 +156,8 @@ function isForgeAvailable() {
 function isArchitecturyApiAvailable() {
     const version = mcSelect.value;
     if (document.getElementById("forge-loader-input").checked) {
-        return arch_api_supports_forge(version)
-    }
-    else {
+        return arch_api_supports_forge(version);
+    } else {
         return true;
     }
 }
