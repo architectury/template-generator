@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{miette, Result};
+use eyre::{eyre, Result};
 
 const MIN_LENGTH: usize = 2;
 const MAX_LENGTH: usize = 64;
@@ -18,7 +18,7 @@ fn is_valid_in_id(c: char) -> bool {
 pub fn validate_mod_id<S: AsRef<str>>(id: S) -> Result<()> {
     let id = id.as_ref();
     if id.len() < MIN_LENGTH || id.len() > MAX_LENGTH {
-        return Err(miette!(
+        return Err(eyre!(
             "Length must be between {} and {}",
             MIN_LENGTH,
             MAX_LENGTH
@@ -29,12 +29,12 @@ pub fn validate_mod_id<S: AsRef<str>>(id: S) -> Result<()> {
     let head = chars.next().unwrap();
 
     if !is_valid_id_start(head) {
-        return Err(miette!("'{}' is not valid at the start of an ID", head));
+        return Err(eyre!("'{}' is not valid at the start of an ID", head));
     }
 
     for c in chars {
         if !is_valid_in_id(c) {
-            return Err(miette!("'{}' is not valid in IDs", c));
+            return Err(eyre!("'{}' is not valid in IDs", c));
         }
     }
 

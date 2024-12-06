@@ -3,19 +3,19 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use js_sys::{Array, JsString};
-use miette::{miette, Result};
+use eyre::{eyre, Result};
 use strum::IntoEnumIterator;
 use wasm_bindgen::prelude::*;
 
 use crate::filer;
 
 pub trait ResultExt<T> {
-    fn to_miette(self) -> Result<T>;
+    fn to_eyre(self) -> Result<T>;
 }
 
-impl<T> ResultExt<T> for std::result::Result<T, wasm_bindgen::JsValue> {
-    fn to_miette(self) -> Result<T> {
-        self.map_err(|err| miette!("{:?}", err))
+impl<T> ResultExt<T> for Result<T, wasm_bindgen::JsValue> {
+    fn to_eyre(self) -> Result<T> {
+        self.map_err(|err| eyre!("{:?}", err))
     }
 }
 

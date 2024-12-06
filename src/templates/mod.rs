@@ -36,67 +36,68 @@ pub fn compose_file_path(dir: &str, file_name: &str, include_dir: bool) -> Strin
 }
 
 #[cfg(target_family = "wasm")]
-pub fn compose_relative_url(url: &str) -> miette::Result<reqwest::Url> {
+pub fn compose_relative_url(url: &str) -> eyre::Result<reqwest::Url> {
     use crate::web::ResultExt;
-    use miette::{miette, IntoDiagnostic};
+    use eyre::eyre;
 
     let document = web_sys::window()
-        .ok_or_else(|| miette!("Could not find window"))?
+        .ok_or_else(|| eyre!("Could not find window"))?
         .document()
-        .ok_or_else(|| miette!("Could not find document"))?;
-    let document_url = document.url().to_miette()?;
+        .ok_or_else(|| eyre!("Could not find document"))?;
+    let document_url = document.url().to_eyre()?;
     let base_url = if let Some(slash_index) = document_url.rfind("/") {
         &document_url[0..=slash_index]
     } else {
         &document_url
     };
-    let base = reqwest::Url::parse(base_url).into_diagnostic()?;
-    reqwest::Url::options()
-        .base_url(Some(&base))
-        .parse(url)
-        .into_diagnostic()
+    let base = reqwest::Url::parse(base_url)?;
+    Ok(
+        reqwest::Url::options()
+            .base_url(Some(&base))
+            .parse(url)?
+    )
 }
 
 #[cfg(target_family = "wasm")]
 pub async fn download_relative_text(
     client: std::sync::Arc<reqwest::Client>,
     url: &str,
-) -> miette::Result<String> {
-    use miette::{miette, IntoDiagnostic};
+) -> eyre::Result<String> {
+    use eyre::eyre;
 
     let parsed_url = compose_relative_url(url)?;
-    let response = client.get(parsed_url).send().await.into_diagnostic()?;
+    let response = client.get(parsed_url).send().await?;
 
     if !response.status().is_success() {
-        return Err(miette!(
+        return Err(eyre!(
             "Could not download {}: got status code {}",
             url,
             response.status()
         ));
     }
 
-    response.text().await.into_diagnostic()
+    Ok(response.text().await?)
 }
 
 #[cfg(target_family = "wasm")]
 pub async fn download_relative_binary(
     client: std::sync::Arc<reqwest::Client>,
     url: &str,
-) -> miette::Result<Bytes> {
-    use miette::{miette, IntoDiagnostic};
+) -> eyre::Result<Bytes> {
+    use eyre::eyre;
 
     let parsed_url = compose_relative_url(url)?;
-    let response = client.get(parsed_url).send().await.into_diagnostic()?;
+    let response = client.get(parsed_url).send().await?;
 
     if !response.status().is_success() {
-        return Err(miette!(
+        return Err(eyre!(
             "Could not download {}: got status code {}",
             url,
             response.status()
         ));
     }
 
-    response.bytes().await.into_diagnostic()
+    Ok(response.bytes().await?)
 }
 
 macro_rules! file_data {
@@ -124,7 +125,7 @@ macro_rules! file_data_raw {
         #[cfg(not(target_family = "wasm"))]
         async fn $fn_name(
             _client: std::sync::Arc<reqwest::Client>,
-        ) -> miette::Result<crate::templates::FileData> {
+        ) -> eyre::Result<crate::templates::FileData> {
             let path =
                 crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
             Ok(crate::templates::FileData {
@@ -137,7 +138,7 @@ macro_rules! file_data_raw {
         #[cfg(target_family = "wasm")]
         async fn $fn_name(
             client: std::sync::Arc<reqwest::Client>,
-        ) -> miette::Result<crate::templates::FileData> {
+        ) -> eyre::Result<crate::templates::FileData> {
             let path =
                 crate::templates::compose_file_path($dir, $file_name, $include_dir_in_target);
             let url = format!("templates/{}/{}", $dir.replace("-", "_"), $file_name);
@@ -151,8 +152,8 @@ macro_rules! file_data_raw {
 
 macro_rules! file_list {
     ($vis:vis $fn_name:ident, $($file_fn:ident)+) => {
-        $vis async fn $fn_name(client: std::sync::Arc<reqwest::Client>) -> miette::Result<Vec<crate::templates::FileData>> {
-            let mut output: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = miette::Result<crate::templates::FileData>>>>> = Vec::new();
+        $vis async fn $fn_name(client: std::sync::Arc<reqwest::Client>) -> eyre::Result<Vec<crate::templates::FileData>> {
+            let mut output: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = eyre::Result<crate::templates::FileData>>>>> = Vec::new();
             $(
             output.push(Box::pin($file_fn(client.clone())));
             )+

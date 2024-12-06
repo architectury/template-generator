@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{IntoDiagnostic, Result};
+use eyre::Result;
 use std::collections::HashSet;
 use std::io::{Cursor, Seek, Write};
 use zip::write::SimpleFileOptions;
@@ -72,19 +72,12 @@ where
             let directory = format!("{}/", parts[0..=i].join("/"));
 
             if self.directories.insert(directory.clone()) {
-                self.writer
-                    .add_directory(directory, SimpleFileOptions::default())
-                    .into_diagnostic()?;
+                self.writer.add_directory(directory, SimpleFileOptions::default())?;
             }
         }
 
-        self.writer
-            .start_file(
-                path,
-                SimpleFileOptions::default().unix_permissions(permissions.unix()),
-            )
-            .into_diagnostic()?;
-        self.writer.write_all(content).into_diagnostic()?;
+        self.writer.start_file(path, SimpleFileOptions::default().unix_permissions(permissions.unix()))?;
+        self.writer.write_all(content)?;
         Ok(())
     }
 
@@ -114,7 +107,7 @@ impl<T: ZipWriteTarget> FilerProvider for ZipFilerProvider<T> {
                     file_name = custom_name + ".zip";
                 }
             }
-            writer.finish().into_diagnostic()?;
+            writer.finish()?;
         }
 
         self.0.write(file_name, cursor.get_ref()).await
