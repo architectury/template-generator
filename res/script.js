@@ -184,7 +184,6 @@ function refreshForgeLikePlatform(available, id) {
 }
 
 function refreshArchitecturySupport() {
-    console.log(isArchitecturyApiAvailable())
     if (!isArchitecturyApiAvailable()) {
         document.getElementById("architectury-api-input").disabled = true
     }
