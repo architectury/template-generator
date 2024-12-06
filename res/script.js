@@ -38,7 +38,7 @@ for (const input of projectTypeToggles) {
 
 // Add listeners to Forge checkboxes for controlling the Architectury API checkbox.
 document.getElementById("forge-loader-input").onchange = refreshArchitecturySupport;
-refreshArchitecturySupport()
+refreshArchitecturySupport();
 
 // Add listeners to Fabric and Quilt checkboxes for controlling the Fabric-like checkbox,
 // and refresh the Fabric-like status according to the default state.
@@ -166,7 +166,7 @@ function isArchitecturyApiAvailable() {
 function refreshAvailablePlatforms() {
     refreshForgeLikePlatform(isNeoForgeAvailable(), "neoforge");
     refreshForgeLikePlatform(isForgeAvailable(), "forge");
-    refreshArchitecturySupport()
+    refreshArchitecturySupport();
 }
 
 function refreshForgeLikePlatform(available, id) {
@@ -185,12 +185,11 @@ function refreshForgeLikePlatform(available, id) {
 
 function refreshArchitecturySupport() {
     if (!isArchitecturyApiAvailable()) {
-        document.getElementById("architectury-api-input").disabled = true
+        document.getElementById("architectury-api-input").disabled = true;
+    } else {
+        document.getElementById("architectury-api-input").disabled = false;
     }
-    else {
-        document.getElementById("architectury-api-input").disabled = false
-    }
-}
+};
 
 // Enables/disables the Fabric-like checkbox based on whether it can be selected for the current state.
 function refreshFabricLikeCheckbox() {

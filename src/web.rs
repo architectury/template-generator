@@ -80,8 +80,7 @@ pub async fn generate(state: JsValue) {
 
 async fn generate_inner(state: JsValue) -> Result<(), JsValue> {
     let app: crate::app::GeneratorApp = serde_wasm_bindgen::from_value(state)?;
-    crate::app::generator::generate(&app)
-            .await
+    crate::app::generator::generate(&app).await
         .map_err(|err| JsValue::from(format!("{}", err)))
 }
 
@@ -102,8 +101,7 @@ pub fn arch_api_supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
     let game_version: version_resolver::minecraft::MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
     if game_version.forge_major_version().is_some() {
         Ok(game_version.forge_major_version().unwrap().parse::<i32>().unwrap() < 50)
-    }
-    else {
+    } else {
         Ok(false)
     }
 }
