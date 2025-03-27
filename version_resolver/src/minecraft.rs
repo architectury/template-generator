@@ -185,7 +185,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => Some("4"),
             Self::Minecraft1_21_3 => Some("4"),
             Self::Minecraft1_21_4 => Some("4"),
-            Self::Minecraft1_21_5 => Some("4")
+            Self::Minecraft1_21_5 => Some("4"),
             _ => None,
         }
     }
