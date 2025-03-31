@@ -1,3 +1,5 @@
+import java.util.*
+
 val wasmDir = layout.buildDirectory.dir("wasm")
 val outputDir = layout.buildDirectory.dir("web")
 val versionIndex = layout.buildDirectory.file("version_index.json")
@@ -38,7 +40,10 @@ val buildWeb = tasks.register<Copy>("buildWeb") {
 tasks.register<Exec>("runTestServer") {
     outputs.upToDateWhen { false }
     dependsOn(buildWeb)
-    commandLine("python", file("test/server.py").absolutePath, "-d", outputDir.get().asFile.absolutePath)
+
+    val pythonCmd = if (System.getProperty("os.name").lowercase(Locale.getDefault()).contains("win")) "python" else "python3"
+
+    commandLine(pythonCmd, file("test/server.py").absolutePath, "-d", outputDir.get().asFile.absolutePath)
 }
 
 tasks.register<Sync>("refreshWebFiles") {
