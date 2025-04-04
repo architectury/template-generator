@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::{IntoDiagnostic, Result};
+use eyre::Result;
 
 pub struct ZipSaveDialog;
 
@@ -16,7 +16,7 @@ impl super::ZipWriteTarget for ZipSaveDialog {
             .await;
 
         if let Some(file) = saved {
-            file.write(data).await.into_diagnostic()?;
+            file.write(data).await?;
         }
 
         Ok(())
