@@ -45,6 +45,8 @@ pub enum MinecraftVersion {
     Minecraft1_21_3,
     #[serde(rename = "1.21.4")]
     Minecraft1_21_4,
+    #[serde(rename = "1.21.5")]
+    Minecraft1_21_5,
 }
 
 impl MinecraftVersion {
@@ -74,6 +76,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => "1.21.2",
             Self::Minecraft1_21_3 => "1.21.3",
             Self::Minecraft1_21_4 => "1.21.4",
+            Self::Minecraft1_21_5 => "1.21.5",
         }
     }
 
@@ -143,6 +146,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => None,
             Self::Minecraft1_21_3 => None,
             Self::Minecraft1_21_4 => None,
+            Self::Minecraft1_21_5 => None,
         }
     }
 
@@ -167,7 +171,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => "14",
             Self::Minecraft1_21_3 => "14",
             Self::Minecraft1_21_4 => "15",
-
+            Self::Minecraft1_21_5 => "16",
         }
     }
 
@@ -181,6 +185,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => Some("4"),
             Self::Minecraft1_21_3 => Some("4"),
             Self::Minecraft1_21_4 => Some("4"),
+            Self::Minecraft1_21_5 => Some("4"),
             _ => None,
         }
     }
@@ -195,6 +200,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => Some("21.2"),
             Self::Minecraft1_21_3 => Some("21.3"),
             Self::Minecraft1_21_4 => Some("21.4"),
+            Self::Minecraft1_21_5 => Some("21.5"),
             _ => None,
         }
     }
@@ -208,6 +214,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => Some("1.21"),
             Self::Minecraft1_21_3 => Some("1.21"),
             Self::Minecraft1_21_4 => Some("1.21"),
+            Self::Minecraft1_21_5 => Some("1.21"),
             _ => None,
         }
     }
@@ -233,6 +240,7 @@ impl MinecraftVersion {
             Self::Minecraft1_21_2 => None,
             Self::Minecraft1_21_3 => None,
             Self::Minecraft1_21_4 => None,
+            Self::Minecraft1_21_5 => None,
         }
     }
 
