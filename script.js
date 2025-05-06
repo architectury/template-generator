@@ -9,6 +9,7 @@ import init, {
     list_all_minecraft_versions,
     supports_forge,
     supports_neoforge,
+    arch_api_supports_forge,
     to_mod_id,
     validate_mod_id
 } from "./templateer.js";
@@ -34,6 +35,10 @@ const multiplatformSettings = document.getElementById("multiplatform-settings");
 for (const input of projectTypeToggles) {
     input.onchange = refreshDisplayedProjectType;
 };
+
+// Add listeners to Forge checkboxes for controlling the Architectury API checkbox.
+document.getElementById("forge-loader-input").onchange = refreshArchitecturySupport;
+refreshArchitecturySupport();
 
 // Add listeners to Fabric and Quilt checkboxes for controlling the Fabric-like checkbox,
 // and refresh the Fabric-like status according to the default state.
@@ -109,7 +114,7 @@ function updateState() {
     state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked && isNeoForgeAvailable();
     state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
     state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked && isFabricLikeAvailable();
-    state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked;
+    state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked && isArchitecturyApiAvailable();
 }
 
 function showError(error) {
@@ -148,9 +153,19 @@ function isForgeAvailable() {
     return supports_forge(version);
 }
 
+function isArchitecturyApiAvailable() {
+    const version = mcSelect.value;
+    if (document.getElementById("forge-loader-input").checked) {
+        return arch_api_supports_forge(version);
+    } else {
+        return true;
+    }
+}
+
 function refreshAvailablePlatforms() {
     refreshForgeLikePlatform(isNeoForgeAvailable(), "neoforge");
     refreshForgeLikePlatform(isForgeAvailable(), "forge");
+    refreshArchitecturySupport();
 }
 
 function refreshForgeLikePlatform(available, id) {
@@ -166,6 +181,14 @@ function refreshForgeLikePlatform(available, id) {
         refreshDisplayedProjectType();
     }
 }
+
+function refreshArchitecturySupport() {
+    if (!isArchitecturyApiAvailable()) {
+        document.getElementById("architectury-api-input").disabled = true;
+    } else {
+        document.getElementById("architectury-api-input").disabled = false;
+    }
+};
 
 // Enables/disables the Fabric-like checkbox based on whether it can be selected for the current state.
 function refreshFabricLikeCheckbox() {
@@ -190,7 +213,7 @@ document.getElementById("generate-button").onclick = async () => {
     } else if (state.package_name === "") {
         showError("Package name is empty");
         return;
-    } else if (!isLoaderChecked()) {
+    } else if (!isLoaderChecked() && multiplatformInput.checked) {
         showError("You need to choose at least one subproject first!")
         return
     }
