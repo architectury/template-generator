@@ -96,3 +96,13 @@ pub fn supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
     let game_version: version_resolver::minecraft::MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
     Ok(game_version.forge_major_version().is_some())
 }
+
+#[wasm_bindgen]
+pub fn arch_api_supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
+    let game_version: version_resolver::minecraft::MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
+    if game_version.forge_major_version().is_some() {
+        Ok(game_version.forge_major_version().unwrap().parse::<i32>().unwrap() < 50)
+    } else {
+        Ok(false)
+    }
+}
