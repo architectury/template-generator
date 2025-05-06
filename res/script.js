@@ -190,7 +190,7 @@ document.getElementById("generate-button").onclick = async () => {
     } else if (state.package_name === "") {
         showError("Package name is empty");
         return;
-    } else if (!isLoaderChecked()) {
+    } else if ((!isLoaderChecked()) && (multiplatformInput.checked == true)) {
         showError("You need to choose at least one subproject first!")
         return
     }
