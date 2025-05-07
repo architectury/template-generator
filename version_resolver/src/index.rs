@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use miette::Result;
 use serde::{Deserialize, Serialize};
 
-use crate::{minecraft::MinecraftVersion, version_metadata::MinecraftVersionList};
+use crate::version_metadata::{MinecraftVersion, MinecraftVersionList};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {
@@ -23,7 +23,7 @@ impl VersionIndex {
         for game_version in version_list.versions.iter() {
             versions.insert(
                 game_version.version.to_owned(),
-                Versions::resolve(client, &MinecraftVersion::new(game_version.clone())).await?,
+                Versions::resolve(client, &game_version).await?,
             );
         }
 
@@ -48,19 +48,19 @@ impl Versions {
         let architectury_api = crate::maven::resolve_matching_version(
             &client,
             crate::maven::MavenLibrary::architectury_api(game_version),
-            |version| version.starts_with(&format!("{}.", game_version.architectury_api_version())),
+            |version| version.starts_with(&format!("{}.", game_version.architectury.api_version)),
         )
         .await?;
 
-        let forge = if let Some(forge_major) = game_version.forge_major_version() {
+        let forge = if let Some(forge) = &game_version.forge {
             Some(crate::maven::resolve_matching_version(
                 &client,
                 crate::maven::MavenLibrary::forge(),
                 |version| {
                     version.starts_with(&format!(
                         "{}-{}.",
-                        game_version.version(),
-                        forge_major
+                        game_version.version,
+                        forge.major_version
                     ))
                 },
             )
@@ -69,12 +69,12 @@ impl Versions {
             None
         };
 
-        let neoforge = if let Some(major) = game_version.neoforge_major() {
+        let neoforge = if let Some(neoforge) = &game_version.neoforge {
             Some(
                 crate::maven::resolve_matching_version(
                     &client,
                     crate::maven::MavenLibrary::neoforge(),
-                    |version| version.starts_with(&format!("{}.", major)),
+                    |version| version.starts_with(&format!("{}.", neoforge.neoforge_major_version)),
                 )
                 .await?,
             )
@@ -82,17 +82,19 @@ impl Versions {
             None
         };
 
-        let neoforge_yarn_patch = if let Some(prefix) = game_version.neoforge_yarn_patch_version() {
-            Some(
-                crate::maven::resolve_matching_version(
-                    &client,
-                    crate::maven::MavenLibrary::neoforge_yarn_patch(),
-                    |version| version.starts_with(&format!("{}+", prefix)),
-                )
-                .await?,
-            )
-        } else {
-            None
+        let neoforge_yarn_patch = match &game_version.neoforge {
+            Some(neoforge) => match &neoforge.yarn_patch_version {
+                Some(prefix) => Some(
+                    crate::maven::resolve_matching_version(
+                        &client,
+                        crate::maven::MavenLibrary::neoforge_yarn_patch(),
+                        |version| version.starts_with(&format!("{}+", prefix)),
+                    )
+                    .await?,
+                ),
+                None => None,
+            },
+            None => None,
         };
 
         Ok(Self {

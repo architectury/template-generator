@@ -8,7 +8,7 @@ pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 use miette::Result;
 use reqwest::Client;
 use version_resolver::index::Versions;
-use version_resolver::minecraft::MinecraftVersion;
+use version_resolver::version_metadata::MinecraftVersion;
 
 #[cfg(target_family = "wasm")]
 pub async fn get_version_index(
@@ -22,11 +22,11 @@ pub async fn get_version_index(
     let index: VersionIndex = serde_json::from_str(&json).into_diagnostic()?;
     index
         .versions
-        .get(game_version.version())
+        .get(&game_version.version)
         .ok_or_else(|| {
             miette!(
                 "Could not find version index for version {}",
-                game_version.version()
+                game_version.version
             )
         })
         .cloned()
