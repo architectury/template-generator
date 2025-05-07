@@ -6,6 +6,7 @@ pub mod app;
 #[cfg(not(target_family = "wasm"))]
 pub mod cli;
 pub mod filer;
+pub mod game_versions;
 pub mod mod_ids;
 pub mod tap;
 pub mod templates;

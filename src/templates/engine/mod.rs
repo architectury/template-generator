@@ -119,10 +119,10 @@ impl Context {
     pub fn maybe_put<K, V>(&mut self, key: K, value: Option<V>)
     where
         K: AsRef<str>,
-        V: AsRef<str>,
+        V: ToString,
     {
         if let Some(value) = value {
-            self.put(key, value)
+            self.put(key, value.to_string())
         }
     }
 

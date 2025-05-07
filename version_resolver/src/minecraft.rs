@@ -2,258 +2,103 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use miette::miette;
 use serde::{Deserialize, Serialize};
-use strum::EnumIter;
 
-#[derive(Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord, Serialize, Deserialize, EnumIter)]
-pub enum MinecraftVersion {
-    #[serde(rename = "1.16.5")]
-    Minecraft1_16_5,
-    #[serde(rename = "1.17.1")]
-    Minecraft1_17_1,
-    #[serde(rename = "1.18.1")]
-    Minecraft1_18_1,
-    #[serde(rename = "1.18.2")]
-    Minecraft1_18_2,
-    #[serde(rename = "1.19")]
-    Minecraft1_19,
-    #[serde(rename = "1.19.1")]
-    Minecraft1_19_1,
-    #[serde(rename = "1.19.2")]
-    Minecraft1_19_2,
-    #[serde(rename = "1.19.3")]
-    Minecraft1_19_3,
-    #[serde(rename = "1.19.4")]
-    Minecraft1_19_4,
-    #[serde(rename = "1.20.1")]
-    Minecraft1_20_1,
-    #[serde(rename = "1.20.2")]
-    Minecraft1_20_2,
-    #[serde(rename = "1.20.4")]
-    Minecraft1_20_4,
-    #[serde(rename = "1.20.5")]
-    Minecraft1_20_5,
-    #[serde(rename = "1.20.6")]
-    Minecraft1_20_6,
-    #[serde(rename = "1.21")]
-    Minecraft1_21,
-    #[serde(rename = "1.21.1")]
-    Minecraft1_21_1,
-    #[serde(rename = "1.21.2")]
-    Minecraft1_21_2,
-    #[serde(rename = "1.21.3")]
-    Minecraft1_21_3,
-    #[serde(rename = "1.21.4")]
-    Minecraft1_21_4,
-    #[serde(rename = "1.21.5")]
-    Minecraft1_21_5,
+#[deprecated]
+#[derive(Clone)]
+pub struct MinecraftVersion {
+    inner: crate::version_metadata::MinecraftVersion,
 }
 
 impl MinecraftVersion {
-    pub fn latest() -> Self {
-        use strum::IntoEnumIterator;
-        Self::iter().last().unwrap()
+    pub fn new(inner: crate::version_metadata::MinecraftVersion) -> Self {
+        Self {
+            inner
+        }
     }
 
-    pub fn version(&self) -> &'static str {
-        match self {
-            Self::Minecraft1_16_5 => "1.16.5",
-            Self::Minecraft1_17_1 => "1.17.1",
-            Self::Minecraft1_18_1 => "1.18.1",
-            Self::Minecraft1_18_2 => "1.18.2",
-            Self::Minecraft1_19 => "1.19",
-            Self::Minecraft1_19_1 => "1.19.1",
-            Self::Minecraft1_19_2 => "1.19.2",
-            Self::Minecraft1_19_3 => "1.19.3",
-            Self::Minecraft1_19_4 => "1.19.4",
-            Self::Minecraft1_20_1 => "1.20.1",
-            Self::Minecraft1_20_2 => "1.20.2",
-            Self::Minecraft1_20_4 => "1.20.4",
-            Self::Minecraft1_20_5 => "1.20.5",
-            Self::Minecraft1_20_6 => "1.20.6",
-            Self::Minecraft1_21 => "1.21",
-            Self::Minecraft1_21_1 => "1.21.1",
-            Self::Minecraft1_21_2 => "1.21.2",
-            Self::Minecraft1_21_3 => "1.21.3",
-            Self::Minecraft1_21_4 => "1.21.4",
-            Self::Minecraft1_21_5 => "1.21.5",
-        }
+    pub fn latest<'a>(map: &crate::version_metadata::MinecraftVersionMap<'a>) -> Self {
+        Self::new(map.latest_version().clone())
+    }
+
+    pub fn version(&self) -> &str {
+        &self.inner.version
     }
 
     pub fn java_version(&self) -> JavaVersion {
-        if self == &Self::Minecraft1_16_5 {
-            JavaVersion::Java8
-        } else if self == &Self::Minecraft1_17_1 {
-            JavaVersion::Java9OrNewer(16)
-        } else if &Self::Minecraft1_18_1 <= self && self <= &Self::Minecraft1_20_4 {
-            JavaVersion::Java9OrNewer(17)
-        } else {
-            JavaVersion::Java9OrNewer(21)
+        self.inner.java_version.try_into().unwrap()
+    }
+
+    pub fn architectury_package(&self) -> &str {
+        self.inner.architectury.package.as_str()
+    }
+
+    pub fn architectury_maven_group(&self) -> &str {
+        self.inner.architectury.maven_group.as_str()
+    }
+
+    pub fn fabric_api_branch(&self) -> &str {
+        &self.inner
+            .fabric
+            .fabric_api_branch
+            .as_ref()
+            .unwrap_or(&self.inner.version)
+            .as_ref()
+    }
+
+    pub fn fabric_api_mod_id(&self) -> &str {
+        // See https://github.com/architectury/template-generator/issues/18 and
+        // https://github.com/FabricMC/fabric/commit/f60060dfe365941c3b7514d1e53cc7e09dbd671e.
+        self.inner.fabric.fabric_api_mod_id.as_str()
+    }
+
+    pub fn forge_major_version(&self) -> Option<u32> {
+        match &self.inner.forge {
+            Some(forge) => Some(forge.major_version),
+            None => None,
         }
     }
 
-    pub fn architectury_package(&self) -> &'static str {
-        match self {
-            MinecraftVersion::Minecraft1_16_5 => "me.shedaniel.architectury",
-            _ => "dev.architectury",
+    pub fn architectury_api_version(&self) -> &str {
+        self.inner.architectury.api_version.as_str()
+    }
+
+    pub fn neoforge_loader_major(&self) -> Option<&str> {
+        match &self.inner.neoforge {
+            Some(neoforge) => Some(neoforge.loader_major_version.as_str()),
+            None => None,
         }
     }
 
-    pub fn architectury_maven_group(&self) -> &'static str {
-        match self {
-            MinecraftVersion::Minecraft1_16_5 => "me.shedaniel",
-            _ => "dev.architectury",
+    pub fn neoforge_major(&self) -> Option<&str> {
+        match &self.inner.neoforge {
+            Some(neoforge) => Some(neoforge.neoforge_major_version.as_str()),
+            None => None,
         }
     }
 
-    pub fn fabric_api_branch(&self) -> &'static str {
-        match self {
-            Self::Minecraft1_16_5 => "1.16",
-            Self::Minecraft1_17_1 => "1.17",
-            Self::Minecraft1_18_1 => "1.18",
-            _ => self.version(),
+    pub fn neoforge_yarn_patch_version(&self) -> Option<&str> {
+        match &self.inner.neoforge {
+            Some(neoforge) => neoforge.yarn_patch_version.as_ref().map(|x| x.as_str()),
+            None => None,
         }
     }
 
-    pub fn fabric_api_mod_id(&self) -> &'static str {
-        if self >= &Self::Minecraft1_19_2 {
-            "fabric-api"
-        } else {
-            // See https://github.com/architectury/template-generator/issues/18 and
-            // https://github.com/FabricMC/fabric/commit/f60060dfe365941c3b7514d1e53cc7e09dbd671e.
-            "fabric"
+    pub fn forge_pack_version(&self) -> Option<u32> {
+        match &self.inner.forge {
+            Some(forge) => Some(forge.pack_version),
+            None => None,
         }
     }
 
-    pub fn forge_major_version(&self) -> Option<&'static str> {
-        match self {
-            Self::Minecraft1_16_5 => Some("36"),
-            Self::Minecraft1_17_1 => Some("37"),
-            Self::Minecraft1_18_1 => Some("39"),
-            Self::Minecraft1_18_2 => Some("40"),
-            Self::Minecraft1_19 => Some("41"),
-            Self::Minecraft1_19_1 => Some("42"),
-            Self::Minecraft1_19_2 => Some("43"),
-            Self::Minecraft1_19_3 => Some("44"),
-            Self::Minecraft1_19_4 => Some("45"),
-            Self::Minecraft1_20_1 => Some("47"),
-            Self::Minecraft1_20_2 => Some("48"),
-            Self::Minecraft1_20_4 => Some("49"),
-            Self::Minecraft1_20_5 => None,
-            Self::Minecraft1_20_6 => None,
-            Self::Minecraft1_21 => None,
-            Self::Minecraft1_21_1 => None,
-            Self::Minecraft1_21_2 => None,
-            Self::Minecraft1_21_3 => None,
-            Self::Minecraft1_21_4 => None,
-            Self::Minecraft1_21_5 => None,
-        }
-    }
-
-    pub fn architectury_api_version(&self) -> &'static str {
-        match self {
-            Self::Minecraft1_16_5 => "1",
-            Self::Minecraft1_17_1 => "2",
-            Self::Minecraft1_18_1 => "3",
-            Self::Minecraft1_18_2 => "4",
-            Self::Minecraft1_19 => "5",
-            Self::Minecraft1_19_1 => "6.3",
-            Self::Minecraft1_19_2 => "6",
-            Self::Minecraft1_19_3 => "7",
-            Self::Minecraft1_19_4 => "8",
-            Self::Minecraft1_20_1 => "9",
-            Self::Minecraft1_20_2 => "10",
-            Self::Minecraft1_20_4 => "11",
-            Self::Minecraft1_20_5 => "12.0",
-            Self::Minecraft1_20_6 => "12",
-            Self::Minecraft1_21 => "13",
-            Self::Minecraft1_21_1 => "13",
-            Self::Minecraft1_21_2 => "14",
-            Self::Minecraft1_21_3 => "14",
-            Self::Minecraft1_21_4 => "15",
-            Self::Minecraft1_21_5 => "16",
-        }
-    }
-
-    pub fn neoforge_loader_major(&self) -> Option<&'static str> {
-        match self {
-            Self::Minecraft1_20_4 => Some("2"),
-            Self::Minecraft1_20_5 => Some("2"),
-            Self::Minecraft1_20_6 => Some("2"),
-            Self::Minecraft1_21 => Some("4"),
-            Self::Minecraft1_21_1 => Some("4"),
-            Self::Minecraft1_21_2 => Some("4"),
-            Self::Minecraft1_21_3 => Some("4"),
-            Self::Minecraft1_21_4 => Some("4"),
-            Self::Minecraft1_21_5 => Some("4"),
-            _ => None,
-        }
-    }
-
-    pub fn neoforge_major(&self) -> Option<&'static str> {
-        match self {
-            Self::Minecraft1_20_4 => Some("20.4"),
-            Self::Minecraft1_20_5 => Some("20.5"),
-            Self::Minecraft1_20_6 => Some("20.6"),
-            Self::Minecraft1_21 => Some("21.0"),
-            Self::Minecraft1_21_1 => Some("21.1"),
-            Self::Minecraft1_21_2 => Some("21.2"),
-            Self::Minecraft1_21_3 => Some("21.3"),
-            Self::Minecraft1_21_4 => Some("21.4"),
-            Self::Minecraft1_21_5 => Some("21.5"),
-            _ => None,
-        }
-    }
-
-    pub fn neoforge_yarn_patch_version(&self) -> Option<&'static str> {
-        match self {
-            Self::Minecraft1_20_5 => Some("1.20.5"),
-            Self::Minecraft1_20_6 => Some("1.20.6"),
-            Self::Minecraft1_21 => Some("1.21"),
-            Self::Minecraft1_21_1 => Some("1.21"),
-            Self::Minecraft1_21_2 => Some("1.21"),
-            Self::Minecraft1_21_3 => Some("1.21"),
-            Self::Minecraft1_21_4 => Some("1.21"),
-            Self::Minecraft1_21_5 => Some("1.21"),
-            _ => None,
-        }
-    }
-
-    pub fn forge_pack_version(&self) -> Option<&'static str> {
-        match self {
-            Self::Minecraft1_16_5 => Some("6"),
-            Self::Minecraft1_17_1 => Some("7"),
-            Self::Minecraft1_18_1 => Some("8"),
-            Self::Minecraft1_18_2 => Some("8"),
-            Self::Minecraft1_19 => Some("9"),
-            Self::Minecraft1_19_1 => Some("9"),
-            Self::Minecraft1_19_2 => Some("9"),
-            Self::Minecraft1_19_3 => Some("12"),
-            Self::Minecraft1_19_4 => Some("13"),
-            Self::Minecraft1_20_1 => Some("15"),
-            Self::Minecraft1_20_2 => Some("18"),
-            Self::Minecraft1_20_4 => Some("22"),
-            Self::Minecraft1_20_5 => None,
-            Self::Minecraft1_20_6 => None,
-            Self::Minecraft1_21 => None,
-            Self::Minecraft1_21_1 => None,
-            Self::Minecraft1_21_2 => None,
-            Self::Minecraft1_21_3 => None,
-            Self::Minecraft1_21_4 => None,
-            Self::Minecraft1_21_5 => None,
-        }
-    }
-
-    pub fn forge_server_pack_version(&self) -> Option<(&'static str, &'static str)> {
-        match self {
-            Self::Minecraft1_18_2 => Some(("forge:data_pack_format", "9")),
-            Self::Minecraft1_19 => Some(("forge:data_pack_format", "10")),
-            Self::Minecraft1_19_1 => Some(("forge:data_pack_format", "10")),
-            Self::Minecraft1_19_2 => Some(("forge:data_pack_format", "10")),
-            Self::Minecraft1_19_3 => Some(("forge:data_pack_format", "10")),
-            Self::Minecraft1_19_4 => Some(("forge:server_data_pack_format", "11")),
-            Self::Minecraft1_20_1 => Some(("forge:server_data_pack_format", "15")),
-            _ => None,
+    pub fn forge_server_pack_version(&self) -> Option<(&str, &str)> {
+        match &self.inner.forge {
+            Some(forge) => match &forge.server_pack_version {
+                Some((key, value)) => Some((key.as_str(), value.as_str())),
+                None => None,
+            },
+            None => None,
         }
     }
 }
@@ -283,6 +128,20 @@ impl JavaVersion {
         match self {
             Self::Java8 => "JAVA_8".to_owned(),
             Self::Java9OrNewer(version) => format!("JAVA_{}", version),
+        }
+    }
+}
+
+impl TryFrom<u32> for JavaVersion {
+    type Error = miette::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if value >= 9 {
+            Ok(Self::Java9OrNewer(value))
+        } else if value == 8 {
+            Ok(Self::Java8)
+        } else {
+            Err(miette!("Java version {} not supported", value))
         }
     }
 }

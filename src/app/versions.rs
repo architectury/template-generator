@@ -22,7 +22,7 @@ pub async fn get_version_index(
     let index: VersionIndex = serde_json::from_str(&json).into_diagnostic()?;
     index
         .versions
-        .get(game_version)
+        .get(game_version.version())
         .ok_or_else(|| {
             miette!(
                 "Could not find version index for version {}",

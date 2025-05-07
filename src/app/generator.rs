@@ -9,12 +9,14 @@ use bytes::Bytes;
 use futures::future::join_all;
 use futures::{join, FutureExt};
 use miette::{IntoDiagnostic, Result};
+use version_resolver::minecraft::MinecraftVersion;
+use version_resolver::version_metadata::MinecraftVersionList;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
-pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
+pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersionList, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
     // Mod properties
     context.put("PACKAGE_NAME", &app.package_name);
@@ -25,7 +27,10 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
     context.put("MOD_NAME", escaped_name);
 
     // Game version-specific
-    let game_version = app.game_version;
+    let game_version = version_list.versions.iter()
+        .find(|x| x.version == app.game_version)
+        .map(|x| MinecraftVersion::new(x.clone()))
+        .unwrap();
     context.put("MINECRAFT_VERSION", game_version.version());
     context.put(
         "GRADLE_JAVA_VERSION",
@@ -131,7 +136,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                         std::future::ready(Ok(version)),
                     )));
                 }
-                if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+                if game_version.version() == "1.20.4" {
                     context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
                     files.push(Box::pin(neoforge::mods_toml_files(client.clone())));
                 } else {
@@ -177,7 +182,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                     std::future::ready(Ok(version)),
                 )));
             }
-            if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+            if game_version.version() == "1.20.4" {
                 context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
                 files.push(Box::pin(neoforge_only::mods_toml_files(client.clone())));
             } else {
@@ -243,7 +248,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
 pub fn compose_file_name(app: &super::GeneratorApp) -> String {
     let mut file_name = app.get_effective_mod_id();
     file_name += "-";
-    file_name += app.game_version.version();
+    file_name += &app.game_version;
 
     match app.project_type {
         ProjectType::Multiplatform => {

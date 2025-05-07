@@ -2,29 +2,28 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use miette::Result;
 use serde::{Deserialize, Serialize};
-use strum::IntoEnumIterator;
 
-use crate::minecraft::MinecraftVersion;
+use crate::{minecraft::MinecraftVersion, version_metadata::MinecraftVersionList};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {
     #[serde(flatten)]
-    pub versions: BTreeMap<MinecraftVersion, Versions>,
+    pub versions: HashMap<String, Versions>,
 }
 
 impl VersionIndex {
-    pub async fn resolve(client: &reqwest::Client) -> Result<Self> {
-        let mut versions: BTreeMap<MinecraftVersion, Versions> = BTreeMap::new();
+    pub async fn resolve(client: &reqwest::Client, version_list: &MinecraftVersionList) -> Result<Self> {
+        let mut versions: HashMap<String, Versions> = HashMap::new();
 
         // TODO: Iterate in parallel?
-        for game_version in MinecraftVersion::iter() {
+        for game_version in version_list.versions.iter() {
             versions.insert(
-                game_version,
-                Versions::resolve(client, &game_version).await?,
+                game_version.version.to_owned(),
+                Versions::resolve(client, &MinecraftVersion::new(game_version.clone())).await?,
             );
         }
 
