@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
+use version_resolver::version_metadata::MinecraftVersionList;
 
 pub mod generator;
 pub mod versions;
@@ -68,7 +69,7 @@ pub struct GeneratorApp {
     pub mod_name: String,
     pub mod_id: String,
     pub package_name: String,
-    pub game_version: version_resolver::minecraft::MinecraftVersion,
+    pub game_version: String,
     pub project_type: ProjectType,
     pub subprojects: Subprojects,
     pub mapping_set: MappingSet,
@@ -76,12 +77,12 @@ pub struct GeneratorApp {
 }
 
 impl GeneratorApp {
-    pub fn new() -> Self {
+    pub fn new(list: &MinecraftVersionList) -> Self {
         Self {
             mod_name: "Example Mod".to_owned(),
             mod_id: String::new(),
             package_name: "com.example".to_owned(),
-            game_version: version_resolver::minecraft::MinecraftVersion::latest(),
+            game_version: list.latest_version.clone(),
             project_type: Default::default(),
             subprojects: Default::default(),
             mapping_set: Default::default(),

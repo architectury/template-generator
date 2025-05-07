@@ -1,0 +1,288 @@
+{
+  "latest_version": "1.21.5",
+  "versions": [
+    {
+      "version": "1.16.5",
+      "java_version": 8,
+      "architectury": {
+        "api_version": "1",
+        "package": "me.shedaniel.architectury",
+        "maven_group": "me.shedaniel"
+      },
+      "fabric": {
+        "fabric_api_branch": "1.16",
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 36,
+        "pack_version": 6
+      }
+    },
+    {
+      "version": "1.17.1",
+      "java_version": 16,
+      "architectury": {
+        "api_version": "2"
+      },
+      "fabric": {
+        "fabric_api_branch": "1.17",
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 37,
+        "pack_version": 7
+      }
+    },
+    {
+      "version": "1.18.1",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "3"
+      },
+      "fabric": {
+        "fabric_api_branch": "1.18",
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 39,
+        "pack_version": 8
+      }
+    },
+    {
+      "version": "1.18.2",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "4"
+      },
+      "fabric": {
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 40,
+        "pack_version": 8,
+        "server_pack_version": [
+          "forge:data_pack_format",
+          "9"
+        ]
+      }
+    },
+    {
+      "version": "1.19",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "5"
+      },
+      "fabric": {
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 41,
+        "pack_version": 9,
+        "server_pack_version": [
+          "forge:data_pack_format",
+          "10"
+        ]
+      }
+    },
+    {
+      "version": "1.19.1",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "6.3"
+      },
+      "fabric": {
+        "fabric_api_mod_id": "fabric"
+      },
+      "forge": {
+        "major_version": 42,
+        "pack_version": 9,
+        "server_pack_version": [
+          "forge:data_pack_format",
+          "10"
+        ]
+      }
+    },
+    {
+      "version": "1.19.2",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "6"
+      },
+      "forge": {
+        "major_version": 43,
+        "pack_version": 9,
+        "server_pack_version": [
+          "forge:data_pack_format",
+          "10"
+        ]
+      }
+    },
+    {
+      "version": "1.19.3",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "7"
+      },
+      "forge": {
+        "major_version": 44,
+        "pack_version": 12,
+        "server_pack_version": [
+          "forge:data_pack_format",
+          "10"
+        ]
+      }
+    },
+    {
+      "version": "1.19.4",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "8"
+      },
+      "forge": {
+        "major_version": 45,
+        "pack_version": 13,
+        "server_pack_version": [
+          "forge:server_data_pack_format",
+          "11"
+        ]
+      }
+    },
+    {
+      "version": "1.20.1",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "9"
+      },
+      "forge": {
+        "major_version": 47,
+        "pack_version": 15,
+        "server_pack_version": [
+          "forge:server_data_pack_format",
+          "15"
+        ]
+      }
+    },
+    {
+      "version": "1.20.2",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "10"
+      },
+      "forge": {
+        "major_version": 48,
+        "pack_version": 18
+      }
+    },
+    {
+      "version": "1.20.4",
+      "java_version": 17,
+      "architectury": {
+        "api_version": "11"
+      },
+      "forge": {
+        "major_version": 49,
+        "pack_version": 22
+      },
+      "neoforge": {
+        "loader_major_version": "2",
+        "neoforge_major_version": "20.4"
+      }
+    },
+    {
+      "version": "1.20.5",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "12.0"
+      },
+      "neoforge": {
+        "loader_major_version": "2",
+        "neoforge_major_version": "20.5",
+        "yarn_patch_version": "1.20.5"
+      }
+    },
+    {
+      "version": "1.20.6",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "12"
+      },
+      "neoforge": {
+        "loader_major_version": "2",
+        "neoforge_major_version": "20.6",
+        "yarn_patch_version": "1.20.6"
+      }
+    },
+    {
+      "version": "1.21",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "13"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.0",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.1",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "13"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.1",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.2",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "14"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.2",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.3",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "14"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.3",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.4",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "15"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.4",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.5",
+      "java_version": 21,
+      "architectury": {
+        "api_version": "16"
+      },
+      "neoforge": {
+        "loader_major_version": "4",
+        "neoforge_major_version": "21.5",
+        "yarn_patch_version": "1.21"
+      }
+    }
+  ]
+}

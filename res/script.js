@@ -15,16 +15,20 @@ import init, {
 } from "./templateer.js";
 await init();
 
-const state = create_state();
+const versionList = JSON.parse(await list_all_minecraft_versions());
+const state = create_state(versionList);
+const versionsByName = {};
 
 // Set up Minecraft version dropdown with contents
 const mcSelect = document.getElementById("minecraft-version-select");
 mcSelect.onchange = refreshAvailablePlatforms;
 
-for (const version of list_all_minecraft_versions().reverse()) {
+for (const versionMetadata of versionList.versions.reverse()) {
     const option = document.createElement("option");
-    option.textContent = version;
+    option.textContent = versionMetadata.version;
     mcSelect.appendChild(option);
+
+    versionsByName[versionMetadata.version] = versionMetadata;
 }
 
 // Hide multiplatform settings when deselected
@@ -145,18 +149,18 @@ function isFabricLikeAvailable() {
 
 function isNeoForgeAvailable() {
     const version = mcSelect.value;
-    return supports_neoforge(version);
+    return supports_neoforge(versionsByName[version]);
 }
 
 function isForgeAvailable() {
     const version = mcSelect.value;
-    return supports_forge(version);
+    return supports_forge(versionsByName[version]);
 }
 
 function isArchitecturyApiAvailable() {
     const version = mcSelect.value;
     if (document.getElementById("forge-loader-input").checked) {
-        return arch_api_supports_forge(version);
+        return arch_api_supports_forge(versionsByName[version]);
     } else {
         return true;
     }
@@ -219,7 +223,7 @@ document.getElementById("generate-button").onclick = async () => {
     }
 
     clearError();
-    await generate(state);
+    await generate(state, versionList);
 };
 
 // Apply initial state

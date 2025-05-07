@@ -4,7 +4,7 @@
 
 pub mod index;
 pub mod maven;
-pub mod minecraft;
+pub mod version_metadata;
 #[cfg(target_family = "wasm")]
 pub(crate) mod web;
 pub(crate) mod xml;

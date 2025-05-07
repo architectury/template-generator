@@ -6,12 +6,14 @@ use clap::Parser;
 use cliclack::{confirm, input, intro, multiselect, outro, select, spinner};
 use miette::{miette, Context, IntoDiagnostic, Result};
 use strum::IntoEnumIterator;
-use version_resolver::minecraft::MinecraftVersion;
+use version_resolver::version_metadata::{MinecraftVersion, MinecraftVersionList};
 use std::path::PathBuf;
 
 use crate::{Dependencies, GeneratorApp, MappingSet, ProjectType, Subprojects};
 use crate::filer::{FilerProvider, ZipFilerProvider};
 use crate::filer::native::{DirectoryFilerProvider, FsZipWriteTarget};
+
+static MINECRAFT_VERSIONS_JSON: &str = include_str!("minecraft_versions.json");
 
 #[derive(Parser)]
 #[command(version)]
@@ -83,16 +85,21 @@ where
     N: FnOnce(&GeneratorApp) -> D,
     D: std::fmt::Display,
 {
-    let app = prompt(default_mod_name)?;
+    let version_list = load_minecraft_version_list()?;
+    let app = prompt(default_mod_name, &version_list)?;
     let spinner = spinner();
     spinner.start("Generating...");
-    crate::generator::generate(&app, &filer_provider).await?;
+    crate::generator::generate(&app, &version_list, &filer_provider).await?;
     spinner.stop("Done!");
     outro(format!("Generated into {}!", output_name_provider(&app))).into_diagnostic()?;
     Ok(())
 }
 
-fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
+fn load_minecraft_version_list() -> Result<MinecraftVersionList> {
+    serde_json::from_str(MINECRAFT_VERSIONS_JSON).into_diagnostic()
+}
+
+fn prompt(default_name: Option<&str>, version_list: &MinecraftVersionList) -> Result<GeneratorApp> {
     intro("Architectury Template Generator").into_diagnostic()?;
 
     let mut mod_name = input("Mod name");
@@ -109,9 +116,9 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
     let package_name: String = input("Package name")
         .interact().into_diagnostic()?;
 
-    let mut versions: Vec<_> = MinecraftVersion::iter()
+    let mut versions: Vec<_> = version_list.versions.iter()
         .map(|version| {
-            (version, version.version(), "")
+            (version, &version.version, "")
         })
         .collect();
     versions.reverse(); // newest first
@@ -131,10 +138,10 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
     let mut project_types = vec![
         (ProjectType::Multiplatform, "Multiplatform", ""),
     ];
-    if game_version.forge_major_version().is_some() {
+    if game_version.forge.is_some() {
         project_types.push((ProjectType::Forge, "Forge", ""));
     }
-    if game_version.neoforge_major().is_some() {
+    if game_version.neoforge.is_some() {
         project_types.push((ProjectType::NeoForge, "NeoForge", ""));
     }
     let project_type: ProjectType = select("Project type")
@@ -175,7 +182,7 @@ fn prompt(default_name: Option<&str>) -> Result<GeneratorApp> {
         mod_name,
         mod_id,
         package_name,
-        game_version,
+        game_version: game_version.version.clone(),
         project_type,
         subprojects,
         mapping_set,
@@ -212,8 +219,8 @@ enum Subproject {
 impl Subproject {
     pub fn is_available_on(&self, game_version: &MinecraftVersion) -> bool {
         match self {
-            Self::Forge => game_version.forge_major_version().is_some(),
-            Self::NeoForge => game_version.neoforge_major().is_some(),
+            Self::Forge => game_version.forge.is_some(),
+            Self::NeoForge => game_version.neoforge.is_some(),
             _ => true,
         }
     }

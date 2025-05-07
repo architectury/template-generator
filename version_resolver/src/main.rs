@@ -9,6 +9,8 @@ use clap::Parser;
 #[derive(Parser)]
 struct Cli {
     #[arg(short, long, value_name = "FILE")]
+    version_list: std::path::PathBuf,
+    #[arg(short, long, value_name = "FILE")]
     output: Option<std::path::PathBuf>,
 }
 
@@ -16,11 +18,12 @@ struct Cli {
 #[cfg(not(target_family = "wasm"))]
 async fn main() -> miette::Result<()> {
     use miette::IntoDiagnostic;
-    use version_resolver::index::VersionIndex;
+    use version_resolver::{index::VersionIndex, version_metadata::MinecraftVersionList};
 
     let cli = Cli::parse();
     let client = reqwest::Client::new();
-    let index = VersionIndex::resolve(&client).await?;
+    let list: MinecraftVersionList = serde_json::from_str(std::fs::read_to_string(cli.version_list).into_diagnostic()?.as_str()).into_diagnostic()?;
+    let index = VersionIndex::resolve(&client, &list).await?;
     let json = serde_json::to_string_pretty(&index).into_diagnostic()?;
     let path = cli
         .output
