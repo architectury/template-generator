@@ -41,7 +41,7 @@ pub struct MinecraftVersionList {
     pub versions: Vec<MinecraftVersion>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct MinecraftVersion {
     pub version: String,
     pub java_version: u32,
@@ -52,7 +52,7 @@ pub struct MinecraftVersion {
     pub neoforge: Option<NeoForgeMetadata>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ArchitecturyMetadata {
     pub api_version: String,
     #[serde(default = "default_architectury_package")]
@@ -65,7 +65,7 @@ fn default_architectury_package() -> String {
     "dev.architectury".to_owned()
 }
 
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FabricMetadata {
     pub fabric_api_branch: Option<String>,
     #[serde(default = "default_fabric_api_mod_id")]
@@ -76,14 +76,14 @@ fn default_fabric_api_mod_id() -> String {
     "fabric-api".to_owned()
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ForgeMetadata {
     pub major_version: u32,
     pub pack_version: u32,
     pub server_pack_version: Option<(String, String)>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct NeoForgeMetadata {
     pub loader_major_version: String,
     pub neoforge_major_version: String,
