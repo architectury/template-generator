@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-miette = { workspace = true }
+eyre = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -14,7 +14,6 @@ flexver-rs = "0.1.2"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 clap = { workspace = true }
-miette = { workspace = true, features = ["fancy"] }
 tokio = { workspace = true }
 xml_dom = { workspace = true }
 
