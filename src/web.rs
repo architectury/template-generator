@@ -3,21 +3,11 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use js_sys::{Array, JsString};
-use miette::{miette, Result};
-use crate::versions::version_metadata::{MinecraftVersion, MinecraftVersionList};
 use wasm_bindgen::prelude::*;
 
+use crate::Result;
 use crate::filer;
-
-pub trait ResultExt<T> {
-    fn to_miette(self) -> Result<T>;
-}
-
-impl<T> ResultExt<T> for std::result::Result<T, wasm_bindgen::JsValue> {
-    fn to_miette(self) -> Result<T> {
-        self.map_err(|err| miette!("{:?}", err))
-    }
-}
+use crate::versions::version_metadata::{MinecraftVersion, MinecraftVersionList};
 
 fn ok_or_display_error<T, E>(result: Result<T, E>) -> Option<T>
 where

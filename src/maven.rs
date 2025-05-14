@@ -4,7 +4,7 @@
 
 use crate::versions::version_metadata::MinecraftVersion;
 use crate::xml::{read_node, XmlNode};
-use miette::{miette, IntoDiagnostic, Result};
+use crate::{err, Result};
 use reqwest::Client;
 
 const FABRIC_MAVEN: &'static str = "https://maven.fabricmc.net";
@@ -129,17 +129,17 @@ async fn download_maven_metadata(client: &Client, library: &MavenLibrary) -> Res
         library.group().replace(".", "/"),
         library.name()
     );
-    let response = client.get(&url).send().await.into_diagnostic()?;
+    let response = client.get(&url).send().await?;
 
     if !response.status().is_success() {
-        return Err(miette!(
+        return Err(err!(
             "Could not download {}: got status code {}",
             url,
             response.status()
         ));
     }
 
-    let text = response.text().await.into_diagnostic()?;
+    let text = response.text().await?;
     read_node(text.as_str())
 }
 
@@ -177,7 +177,7 @@ where
 {
     let metadata = download_maven_metadata(client, &library).await?;
     get_latest_version_matching(&metadata, filter)
-        .ok_or_else(|| miette!("Could not find latest version for {}", library))
+        .ok_or_else(|| err!("Could not find latest version for {}", library))
 }
 
 pub async fn resolve_latest_version(
@@ -186,5 +186,5 @@ pub async fn resolve_latest_version(
 ) -> Result<String> {
     let metadata = download_maven_metadata(client, &library).await?;
     get_latest_version(&metadata)
-        .ok_or_else(|| miette!("Could not find latest version for {}", library))
+        .ok_or_else(|| err!("Could not find latest version for {}", library))
 }

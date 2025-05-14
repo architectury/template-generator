@@ -8,6 +8,7 @@ pub mod cli;
 pub mod filer;
 pub mod maven;
 pub mod mod_ids;
+pub mod result;
 pub mod tap;
 pub mod templates;
 pub mod versions;
@@ -16,3 +17,4 @@ pub mod web;
 mod xml;
 
 pub use app::*;
+pub use result::Result;

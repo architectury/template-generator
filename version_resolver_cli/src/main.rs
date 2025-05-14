@@ -13,25 +13,24 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() -> miette::Result<()> {
-    use miette::IntoDiagnostic;
+async fn main() -> templateer::Result<()> {
     use templateer::versions::{index::VersionIndex, version_metadata::MinecraftVersionList};
 
     let cli = Cli::parse();
     let client = reqwest::Client::new();
-    let list: MinecraftVersionList = serde_json::from_str(std::fs::read_to_string(cli.version_list).into_diagnostic()?.as_str()).into_diagnostic()?;
+    let list: MinecraftVersionList = serde_json::from_str(std::fs::read_to_string(cli.version_list)?.as_str())?;
     let index = VersionIndex::resolve(&client, &list).await?;
-    let json = serde_json::to_string_pretty(&index).into_diagnostic()?;
+    let json = serde_json::to_string_pretty(&index)?;
     let path = cli
         .output
         .unwrap_or(std::path::PathBuf::from("version_index.json"));
 
     if let Some(parent) = path.parent() {
         if !parent.exists() {
-            std::fs::create_dir_all(parent).into_diagnostic()?;
+            std::fs::create_dir_all(parent)?;
         }
     }
 
-    std::fs::write(path, json).into_diagnostic()?;
+    std::fs::write(path, json)?;
     Ok(())
 }

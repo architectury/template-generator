@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use miette::miette;
+use crate::err;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -121,7 +121,7 @@ impl JavaVersion {
 }
 
 impl TryFrom<u32> for JavaVersion {
-    type Error = miette::Error;
+    type Error = crate::result::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         if value >= 9 {
@@ -129,7 +129,7 @@ impl TryFrom<u32> for JavaVersion {
         } else if value == 8 {
             Ok(Self::Java8)
         } else {
-            Err(miette!("Java version {} not supported", value))
+            Err(err!("Java version {} not supported", value))
         }
     }
 }

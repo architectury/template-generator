@@ -4,9 +4,9 @@
 
 use std::collections::HashMap;
 
-use miette::Result;
 use serde::{Deserialize, Serialize};
 
+use crate::Result;
 use crate::maven::{MavenLibrary, resolve_matching_version};
 use super::version_metadata::{MinecraftVersion, MinecraftVersionList};
 

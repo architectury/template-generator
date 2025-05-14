@@ -4,10 +4,8 @@
 
 pub mod index;
 pub mod version_metadata;
-#[cfg(target_family = "wasm")]
-mod web;
 
 #[cfg(target_family = "wasm")]
-pub async fn load_minecraft_version_list(client: std::sync::Arc<reqwest::Client>) -> miette::Result<String> {
+pub async fn load_minecraft_version_list(client: std::sync::Arc<reqwest::Client>) -> crate::Result<String> {
     crate::templates::download_relative_text(client, "minecraft_versions.json").await
 }
