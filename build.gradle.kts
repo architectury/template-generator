@@ -12,8 +12,9 @@ val compileWasm = tasks.register<Exec>("compileWasm") {
 
 val generateVersionIndex = tasks.register<Exec>("generateVersionIndex") {
     inputs.dir("version_resolver/src")
+    inputs.dir("version_resolver_cli/src")
     inputs.file(minecraftVersions)
-    commandLine("cargo", "run", "-p", "version_resolver", "--", "-v", minecraftVersions.absolutePath, "-o", versionIndex.get().asFile.absolutePath)
+    commandLine("cargo", "run", "-p", "version_resolver_cli", "--", "-v", minecraftVersions.absolutePath, "-o", versionIndex.get().asFile.absolutePath)
     outputs.file(versionIndex)
 }
 

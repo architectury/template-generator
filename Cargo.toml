@@ -1,10 +1,16 @@
 [package]
 name = "templateer"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
 
 [workspace]
-members = ["version_resolver"]
+members = [
+    "version_resolver",
+    "version_resolver_cli"
+]
+
+[workspace.package]
+version = "0.1.0"
 
 [workspace.dependencies]
 miette = "7.1"

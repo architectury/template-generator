@@ -2,10 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#[cfg(not(target_family = "wasm"))]
 use clap::Parser;
 
-#[cfg(not(target_family = "wasm"))]
 #[derive(Parser)]
 struct Cli {
     #[arg(short, long, value_name = "FILE")]
@@ -15,7 +13,6 @@ struct Cli {
 }
 
 #[tokio::main]
-#[cfg(not(target_family = "wasm"))]
 async fn main() -> miette::Result<()> {
     use miette::IntoDiagnostic;
     use version_resolver::{index::VersionIndex, version_metadata::MinecraftVersionList};
@@ -38,6 +35,3 @@ async fn main() -> miette::Result<()> {
     std::fs::write(path, json).into_diagnostic()?;
     Ok(())
 }
-
-#[cfg(target_family = "wasm")]
-fn main() {}

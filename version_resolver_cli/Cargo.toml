@@ -1,0 +1,13 @@
+[package]
+name = "version_resolver_cli"
+version.workspace = true
+edition = "2021"
+
+[dependencies]
+clap = { workspace = true }
+miette = { workspace = true, features = ["fancy"] }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+version_resolver = { path = "../version_resolver" }

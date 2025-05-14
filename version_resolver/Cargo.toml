@@ -1,6 +1,6 @@
 [package]
 name = "version_resolver"
-version = "1.0.0"
+version.workspace = true
 edition = "2021"
 
 [dependencies]
@@ -13,9 +13,6 @@ xml_dom = { workspace = true }
 flexver-rs = "0.1.2"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-clap = { workspace = true }
-miette = { workspace = true, features = ["fancy"] }
-tokio = { workspace = true }
 xml_dom = { workspace = true }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
