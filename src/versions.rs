@@ -3,7 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 pub mod index;
-pub mod version_metadata;
+mod version_metadata;
+pub use version_metadata::*;
 
 pub const LOOM_VERSION: &'static str = "1.10-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";

@@ -11,7 +11,7 @@ use crate::{err, Dependencies, GeneratorApp, MappingSet, ProjectType, Result, Su
 use crate::filer::{FilerProvider, ZipFilerProvider};
 use crate::filer::native::{DirectoryFilerProvider, FsZipWriteTarget};
 use crate::result::ResultContext;
-use crate::versions::version_metadata::{MinecraftVersion, MinecraftVersionList};
+use crate::versions::{MinecraftVersion, MinecraftVersionList};
 
 static MINECRAFT_VERSIONS_JSON: &str = include_str!("minecraft_versions.json");
 

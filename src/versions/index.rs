@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Result;
 use crate::maven::{MavenLibrary, resolve_matching_version};
-use super::version_metadata::{MinecraftVersion, MinecraftVersionList};
+use super::{MinecraftVersion, MinecraftVersionList};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {

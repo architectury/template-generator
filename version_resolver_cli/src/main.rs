@@ -14,7 +14,7 @@ struct Cli {
 
 #[tokio::main]
 async fn main() -> templateer::Result<()> {
-    use templateer::versions::{index::VersionIndex, version_metadata::MinecraftVersionList};
+    use templateer::versions::{index::VersionIndex, MinecraftVersionList};
 
     let cli = Cli::parse();
     let client = reqwest::Client::new();

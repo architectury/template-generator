@@ -7,7 +7,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::Result;
 use crate::filer;
-use crate::versions::version_metadata::{MinecraftVersion, MinecraftVersionList};
+use crate::versions::{MinecraftVersion, MinecraftVersionList};
 
 fn ok_or_display_error<T, E>(result: Result<T, E>) -> Option<T>
 where

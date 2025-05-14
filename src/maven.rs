@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::versions::version_metadata::MinecraftVersion;
+use crate::versions::MinecraftVersion;
 use crate::xml::{read_node, XmlNode};
 use crate::{err, Result};
 use reqwest::Client;
