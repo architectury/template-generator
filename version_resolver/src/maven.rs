@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::{
-    minecraft::MinecraftVersion,
+    version_metadata::MinecraftVersion,
     xml::{read_node, XmlNode},
 };
 use miette::{miette, IntoDiagnostic, Result};
@@ -22,10 +22,7 @@ pub struct MavenLibrary {
 }
 
 impl MavenLibrary {
-    pub fn new<S>(repository: MavenRepository, group: S, name: S) -> Self
-    where
-        S: AsRef<str>,
-    {
+    pub fn new(repository: MavenRepository, group: impl AsRef<str>, name: impl AsRef<str>) -> Self {
         Self {
             repository,
             group: group.as_ref().to_owned(),
@@ -66,7 +63,7 @@ impl MavenLibrary {
     pub fn architectury_api(game_version: &MinecraftVersion) -> Self {
         Self::new(
             MavenRepository::Architectury,
-            game_version.architectury_maven_group(),
+            &game_version.architectury.maven_group,
             "architectury",
         )
     }

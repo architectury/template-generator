@@ -1,5 +1,6 @@
 val wasmDir = layout.buildDirectory.dir("wasm")
 val outputDir = layout.buildDirectory.dir("web")
+val minecraftVersions = file("src/minecraft_versions.json")
 val versionIndex = layout.buildDirectory.file("version_index.json")
 
 val compileWasm = tasks.register<Exec>("compileWasm") {
@@ -11,7 +12,8 @@ val compileWasm = tasks.register<Exec>("compileWasm") {
 
 val generateVersionIndex = tasks.register<Exec>("generateVersionIndex") {
     inputs.dir("version_resolver/src")
-    commandLine("cargo", "run", "-p", "version_resolver", "--", "-o", versionIndex.get().asFile.absolutePath)
+    inputs.file(minecraftVersions)
+    commandLine("cargo", "run", "-p", "version_resolver", "--", "-v", minecraftVersions.absolutePath, "-o", versionIndex.get().asFile.absolutePath)
     outputs.file(versionIndex)
 }
 
@@ -26,6 +28,7 @@ val buildWeb = tasks.register<Copy>("buildWeb") {
         exclude("**/*.rs")
         includeEmptyDirs = false
     }
+    from(minecraftVersions)
     from(versionIndex)
 
     into(outputDir)

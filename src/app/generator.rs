@@ -9,12 +9,13 @@ use bytes::Bytes;
 use futures::future::join_all;
 use futures::{join, FutureExt};
 use miette::{IntoDiagnostic, Result};
+use version_resolver::version_metadata::{JavaVersion, MinecraftVersionList};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
-pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
+pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersionList, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
     // Mod properties
     context.put("PACKAGE_NAME", &app.package_name);
@@ -25,35 +26,44 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
     context.put("MOD_NAME", escaped_name);
 
     // Game version-specific
-    let game_version = app.game_version;
-    context.put("MINECRAFT_VERSION", game_version.version());
+    let game_version = version_list.versions.iter()
+        .find(|x| x.version == app.game_version)
+        .unwrap();
+    let java_version = JavaVersion::try_from(game_version.java_version).unwrap();
+    context.put("MINECRAFT_VERSION", &game_version.version);
     context.put(
         "GRADLE_JAVA_VERSION",
-        game_version.java_version().gradle_java_version(),
+        java_version.gradle_java_version(),
     );
     context.put(
         "JAVA_MAJOR_VERSION",
-        game_version.java_version().java_major_version().to_string(),
+        game_version.java_version.to_string(),
     );
     context.put(
         "MIXIN_COMPAT_LEVEL",
-        game_version.java_version().mixin_compat_level()
+        java_version.mixin_compat_level()
     );
-    context.put("ARCHITECTURY_GROUP", game_version.architectury_maven_group());
-    context.put("ARCHITECTURY_PACKAGE", game_version.architectury_package());
-    context.put("FABRIC_API_MOD_ID", game_version.fabric_api_mod_id());
+    context.put("ARCHITECTURY_GROUP", &game_version.architectury.maven_group);
+    context.put("ARCHITECTURY_PACKAGE", &game_version.architectury.package);
+    context.put("FABRIC_API_MOD_ID", &game_version.fabric.fabric_api_mod_id);
     context.maybe_put(
         "FORGE_LOADER_MAJOR",
-        game_version.forge_major_version()
+        game_version.forge.as_ref().map(|x| x.major_version)
     );
     context.maybe_put(
         "NEOFORGE_LOADER_MAJOR",
-        game_version.neoforge_loader_major(),
+        game_version.neoforge.as_ref().map(|x| &x.loader_major_version),
     );
-    context.maybe_put("NEOFORGE_MAJOR", game_version.neoforge_major());
-    context.maybe_put("FORGE_PACK_FORMAT", game_version.forge_pack_version());
+    context.maybe_put(
+        "NEOFORGE_MAJOR",
+        game_version.neoforge.as_ref().map(|x| &x.neoforge_major_version)
+    );
+    context.maybe_put(
+        "FORGE_PACK_FORMAT",
+        game_version.forge.as_ref().map(|x| &x.pack_version)
+    );
 
-    if let Some((data_pack_format_key, data_pack_format)) = game_version.forge_server_pack_version() {
+    if let Some((data_pack_format_key, data_pack_format)) = game_version.forge.as_ref().and_then(|x| x.server_pack_version.as_ref()) {
         context.put("FORGE_DATA_PACK_FORMAT_KEY", data_pack_format_key);
         context.put("FORGE_DATA_PACK_FORMAT", data_pack_format);
     }
@@ -77,7 +87,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
             variables.push(Box::pin(add_key(
                 "YARN_MAPPINGS",
                 resolve_matching_version(&client, MavenLibrary::yarn(), |version| {
-                    version.starts_with(&format!("{}+", game_version.version()))
+                    version.starts_with(&format!("{}+", game_version.version))
                 }),
             )));
         }
@@ -99,7 +109,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                 variables.push(Box::pin(add_key(
                     "FABRIC_API_VERSION",
                     resolve_matching_version(&client, MavenLibrary::fabric_api(), |version| {
-                        version.ends_with(&format!("+{}", game_version.fabric_api_branch()))
+                        version.ends_with(&format!("+{}", game_version.fabric.fabric_api_branch.as_ref().unwrap_or(&game_version.version)))
                     }),
                 )));
                 platforms.push("fabric");
@@ -131,7 +141,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                         std::future::ready(Ok(version)),
                     )));
                 }
-                if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+                if game_version.version == "1.20.4" {
                     context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
                     files.push(Box::pin(neoforge::mods_toml_files(client.clone())));
                 } else {
@@ -152,7 +162,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                 variables.push(Box::pin(add_key(
                     "QUILTED_FABRIC_API_VERSION",
                     resolve_matching_version(&client, MavenLibrary::quilted_fabric_api(), |version| {
-                        version.ends_with(&format!("-{}", game_version.version()))
+                        version.ends_with(&format!("-{}", game_version.version))
                     }),
                 )));
                 platforms.push("quilt");
@@ -177,7 +187,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
                     std::future::ready(Ok(version)),
                 )));
             }
-            if game_version == version_resolver::minecraft::MinecraftVersion::Minecraft1_20_4 {
+            if game_version.version == "1.20.4" {
                 context.put("NEOFORGE_METADATA_FILE_NAME", "mods.toml");
                 files.push(Box::pin(neoforge_only::mods_toml_files(client.clone())));
             } else {
@@ -243,7 +253,7 @@ pub async fn generate(app: &super::GeneratorApp, filer_provider: &impl crate::fi
 pub fn compose_file_name(app: &super::GeneratorApp) -> String {
     let mut file_name = app.get_effective_mod_id();
     file_name += "-";
-    file_name += app.game_version.version();
+    file_name += &app.game_version;
 
     match app.project_type {
         ProjectType::Multiplatform => {
