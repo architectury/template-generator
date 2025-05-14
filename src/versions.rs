@@ -3,11 +3,9 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 pub mod index;
-pub mod maven;
 pub mod version_metadata;
 #[cfg(target_family = "wasm")]
 mod web;
-mod xml;
 
 #[cfg(target_family = "wasm")]
 pub async fn load_minecraft_version_list(client: std::sync::Arc<reqwest::Client>) -> miette::Result<String> {

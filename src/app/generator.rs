@@ -2,9 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 use crate::tap::Tap;
 use crate::templates::*;
-use crate::versions::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 use crate::versions::version_metadata::{JavaVersion, MinecraftVersionList};
 use crate::{MappingSet, ProjectType};
 use bytes::Bytes;

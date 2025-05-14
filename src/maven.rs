@@ -2,10 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use super::{
-    version_metadata::MinecraftVersion,
-    xml::{read_node, XmlNode},
-};
+use crate::versions::version_metadata::MinecraftVersion;
+use crate::xml::{read_node, XmlNode};
 use miette::{miette, IntoDiagnostic, Result};
 use reqwest::Client;
 
