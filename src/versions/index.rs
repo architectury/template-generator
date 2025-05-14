@@ -4,6 +4,7 @@
 
 use std::collections::HashMap;
 
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::Result;
@@ -105,4 +106,34 @@ impl Versions {
             neoforge_yarn_patch,
         })
     }
+}
+
+#[cfg(target_family = "wasm")]
+pub async fn get_version_index(
+    client: std::sync::Arc<Client>,
+    game_version: &MinecraftVersion,
+) -> Result<Versions> {
+    use crate::err;
+    use crate::versions::index::VersionIndex;
+
+    let json = crate::templates::download_relative_text(client, "version_index.json").await?;
+    let index: VersionIndex = serde_json::from_str(&json)?;
+    index
+        .versions
+        .get(&game_version.version)
+        .ok_or_else(|| {
+            err!(
+                "Could not find version index for version {}",
+                game_version.version
+            )
+        })
+        .cloned()
+}
+
+#[cfg(not(target_family = "wasm"))]
+pub async fn get_version_index(
+    client: std::sync::Arc<Client>,
+    game_version: &MinecraftVersion,
+) -> Result<Versions> {
+    Versions::resolve(&client, game_version).await
 }

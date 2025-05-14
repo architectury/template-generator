@@ -7,7 +7,6 @@ use strum::EnumIter;
 use crate::versions::version_metadata::MinecraftVersionList;
 
 pub mod generator;
-pub mod versions;
 
 pub const SUBHEADING_STYLE: &'static str = "subheading";
 

@@ -68,12 +68,12 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
     }
 
     // Constants
-    context.put("LOOM_VERSION", crate::app::versions::LOOM_VERSION);
-    context.put("PLUGIN_VERSION", crate::app::versions::PLUGIN_VERSION);
+    context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
+    context.put("PLUGIN_VERSION", crate::versions::PLUGIN_VERSION);
 
     // Setup version resolving
     let client = Arc::new(reqwest::ClientBuilder::new().build()?);
-    let versions = crate::app::versions::get_version_index(client.clone(), &game_version).await?;
+    let versions = crate::versions::index::get_version_index(client.clone(), &game_version).await?;
     let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> =
         vec![Box::pin(shared::shared_files(client.clone()))];
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();

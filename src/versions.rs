@@ -5,6 +5,9 @@
 pub mod index;
 pub mod version_metadata;
 
+pub const LOOM_VERSION: &'static str = "1.10-SNAPSHOT";
+pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
+
 #[cfg(target_family = "wasm")]
 pub async fn load_minecraft_version_list(client: std::sync::Arc<reqwest::Client>) -> crate::Result<String> {
     crate::templates::download_relative_text(client, "minecraft_versions.json").await
