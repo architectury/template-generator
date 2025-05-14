@@ -7,7 +7,8 @@ use std::collections::HashMap;
 use miette::Result;
 use serde::{Deserialize, Serialize};
 
-use crate::version_metadata::{MinecraftVersion, MinecraftVersionList};
+use super::maven::{MavenLibrary, resolve_matching_version};
+use super::version_metadata::{MinecraftVersion, MinecraftVersionList};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {
@@ -45,17 +46,17 @@ impl Versions {
         client: &reqwest::Client,
         game_version: &MinecraftVersion,
     ) -> Result<Self> {
-        let architectury_api = crate::maven::resolve_matching_version(
+        let architectury_api = resolve_matching_version(
             &client,
-            crate::maven::MavenLibrary::architectury_api(game_version),
+            MavenLibrary::architectury_api(game_version),
             |version| version.starts_with(&format!("{}.", game_version.architectury.api_version)),
         )
         .await?;
 
         let forge = if let Some(forge) = &game_version.forge {
-            Some(crate::maven::resolve_matching_version(
+            Some(resolve_matching_version(
                 &client,
-                crate::maven::MavenLibrary::forge(),
+                MavenLibrary::forge(),
                 |version| {
                     version.starts_with(&format!(
                         "{}-{}.",
@@ -71,9 +72,9 @@ impl Versions {
 
         let neoforge = if let Some(neoforge) = &game_version.neoforge {
             Some(
-                crate::maven::resolve_matching_version(
+                resolve_matching_version(
                     &client,
-                    crate::maven::MavenLibrary::neoforge(),
+                    MavenLibrary::neoforge(),
                     |version| version.starts_with(&format!("{}.", neoforge.neoforge_major_version)),
                 )
                 .await?,
@@ -85,9 +86,9 @@ impl Versions {
         let neoforge_yarn_patch = match &game_version.neoforge {
             Some(neoforge) => match &neoforge.yarn_patch_version {
                 Some(prefix) => Some(
-                    crate::maven::resolve_matching_version(
+                    resolve_matching_version(
                         &client,
-                        crate::maven::MavenLibrary::neoforge_yarn_patch(),
+                        MavenLibrary::neoforge_yarn_patch(),
                         |version| version.starts_with(&format!("{}+", prefix)),
                     )
                     .await?,

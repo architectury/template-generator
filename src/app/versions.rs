@@ -7,8 +7,8 @@ pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
 use miette::Result;
 use reqwest::Client;
-use version_resolver::index::Versions;
-use version_resolver::version_metadata::MinecraftVersion;
+use crate::versions::index::Versions;
+use crate::versions::version_metadata::MinecraftVersion;
 
 #[cfg(target_family = "wasm")]
 pub async fn get_version_index(
@@ -16,7 +16,7 @@ pub async fn get_version_index(
     game_version: &MinecraftVersion,
 ) -> Result<Versions> {
     use miette::{miette, IntoDiagnostic};
-    use version_resolver::index::VersionIndex;
+    use crate::versions::index::VersionIndex;
 
     let json = crate::templates::download_relative_text(client, "version_index.json").await?;
     let index: VersionIndex = serde_json::from_str(&json).into_diagnostic()?;

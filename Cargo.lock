@@ -1970,6 +1970,7 @@ dependencies = [
  "bytes",
  "clap",
  "cliclack",
+ "flexver-rs",
  "futures",
  "js-sys",
  "miette",
@@ -1980,10 +1981,10 @@ dependencies = [
  "serde_json",
  "strum",
  "tokio",
- "version_resolver",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
+ "xml_dom",
  "zip",
 ]
 
@@ -2281,23 +2282,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
-name = "version_resolver"
-version = "0.1.0"
-dependencies = [
- "flexver-rs",
- "js-sys",
- "miette",
- "reqwest",
- "serde",
- "serde_json",
- "strum",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "xml_dom",
-]
-
-[[package]]
 name = "version_resolver_cli"
 version = "0.1.0"
 dependencies = [
@@ -2306,8 +2290,8 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "templateer",
  "tokio",
- "version_resolver",
 ]
 
 [[package]]

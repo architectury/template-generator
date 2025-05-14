@@ -6,12 +6,12 @@ use clap::Parser;
 use cliclack::{confirm, input, intro, multiselect, outro, select, spinner};
 use miette::{miette, Context, IntoDiagnostic, Result};
 use strum::IntoEnumIterator;
-use version_resolver::version_metadata::{MinecraftVersion, MinecraftVersionList};
 use std::path::PathBuf;
 
 use crate::{Dependencies, GeneratorApp, MappingSet, ProjectType, Subprojects};
 use crate::filer::{FilerProvider, ZipFilerProvider};
 use crate::filer::native::{DirectoryFilerProvider, FsZipWriteTarget};
+use crate::versions::version_metadata::{MinecraftVersion, MinecraftVersionList};
 
 static MINECRAFT_VERSIONS_JSON: &str = include_str!("minecraft_versions.json");
 

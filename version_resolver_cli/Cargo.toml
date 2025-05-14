@@ -9,5 +9,5 @@ miette = { workspace = true, features = ["fancy"] }
 reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+templateer = { path = ".." }
 tokio = { workspace = true }
-version_resolver = { path = "../version_resolver" }

@@ -4,16 +4,16 @@
 
 use crate::tap::Tap;
 use crate::templates::*;
+use crate::versions::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
+use crate::versions::version_metadata::{JavaVersion, MinecraftVersionList};
 use crate::{MappingSet, ProjectType};
 use bytes::Bytes;
 use futures::future::join_all;
 use futures::{join, FutureExt};
 use miette::{IntoDiagnostic, Result};
-use version_resolver::version_metadata::{JavaVersion, MinecraftVersionList};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
 pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersionList, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
@@ -69,8 +69,8 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
     }
 
     // Constants
-    context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
-    context.put("PLUGIN_VERSION", crate::versions::PLUGIN_VERSION);
+    context.put("LOOM_VERSION", crate::app::versions::LOOM_VERSION);
+    context.put("PLUGIN_VERSION", crate::app::versions::PLUGIN_VERSION);
 
     // Setup version resolving
     let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);

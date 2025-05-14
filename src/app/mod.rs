@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use version_resolver::version_metadata::MinecraftVersionList;
+use crate::versions::version_metadata::MinecraftVersionList;
 
 pub mod generator;
 pub mod versions;

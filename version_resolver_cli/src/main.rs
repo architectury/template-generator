@@ -15,7 +15,7 @@ struct Cli {
 #[tokio::main]
 async fn main() -> miette::Result<()> {
     use miette::IntoDiagnostic;
-    use version_resolver::{index::VersionIndex, version_metadata::MinecraftVersionList};
+    use templateer::versions::{index::VersionIndex, version_metadata::MinecraftVersionList};
 
     let cli = Cli::parse();
     let client = reqwest::Client::new();

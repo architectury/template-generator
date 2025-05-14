@@ -6,12 +6,10 @@ val versionIndex = layout.buildDirectory.file("version_index.json")
 val compileWasm = tasks.register<Exec>("compileWasm") {
     commandLine("wasm-pack", "build", "--target", "web", "-d", wasmDir.get().asFile.absolutePath)
     inputs.dir("src")
-    inputs.dir("version_resolver/src")
     outputs.dir(wasmDir)
 }
 
 val generateVersionIndex = tasks.register<Exec>("generateVersionIndex") {
-    inputs.dir("version_resolver/src")
     inputs.dir("version_resolver_cli/src")
     inputs.file(minecraftVersions)
     commandLine("cargo", "run", "-p", "version_resolver_cli", "--", "-v", minecraftVersions.absolutePath, "-o", versionIndex.get().asFile.absolutePath)

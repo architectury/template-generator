@@ -5,7 +5,6 @@ edition = "2021"
 
 [workspace]
 members = [
-    "version_resolver",
     "version_resolver_cli"
 ]
 
@@ -26,6 +25,7 @@ tokio = { version = "1", features = ["full"] }
 rfd = "0.14"
 cliclack = "0.3.2"
 clap = { version = "4.5", features = ["derive"] }
+flexver-rs = "0.1.2"
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
@@ -55,8 +55,9 @@ zip = { version = "2.1.3", default-features = false, features = ["deflate"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 strum = { workspace = true }
-version_resolver = { path = "version_resolver" }
 bytes = "1.6"
+flexver-rs = { workspace = true }
+xml_dom = { workspace = true }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 miette = { workspace = true, features = ["fancy"] }
