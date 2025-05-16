@@ -27,7 +27,8 @@ fn update_permissions(path: &path::Path, permissions: &super::FilePermissions) -
     let file_permissions = fs::metadata(path)?.permissions();
     let new_mode = file_permissions.mode() | permissions.unix();
     let new_permissions = fs::Permissions::from_mode(new_mode);
-    fs::set_permissions(path, new_permissions)
+    fs::set_permissions(path, new_permissions)?;
+    Ok(())
 }
 
 #[cfg(not(target_family = "unix"))]
