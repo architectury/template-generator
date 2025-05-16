@@ -23,7 +23,7 @@ pub use native::read_node;
 #[cfg(not(target_family = "wasm"))]
 mod native {
     use super::XmlNode;
-    use miette::{IntoDiagnostic, Result};
+    use crate::Result;
     use std::iter::Map;
     use std::vec::IntoIter;
     use xml_dom::level2::{Element, Node, NodeType, RefNode};
@@ -62,7 +62,7 @@ mod native {
     }
 
     pub fn read_node(input: &str) -> Result<impl XmlNode> {
-        let ref_node = read_xml(input).into_diagnostic()?;
+        let ref_node = read_xml(input)?;
         Ok(XmlNodeImpl(ref_node))
     }
 
@@ -85,8 +85,7 @@ pub use web::read_node;
 #[cfg(target_family = "wasm")]
 mod web {
     use super::XmlNode;
-    use crate::web::ResultExt;
-    use miette::Result;
+    use crate::result::{Error, Result};
     use std::iter::Map;
     use std::vec::IntoIter;
     use wasm_bindgen::JsCast;
@@ -120,10 +119,10 @@ mod web {
     }
 
     pub fn read_node(input: &str) -> Result<impl XmlNode> {
-        let parser = DomParser::new().to_miette()?;
+        let parser = DomParser::new().map_err(Error::from_js)?;
         let document = parser
             .parse_from_string(input, SupportedType::ApplicationXml)
-            .to_miette()?;
+            .map_err(Error::from_js)?;
         Ok(XmlNodeImpl(document.into()))
     }
 

@@ -4,7 +4,7 @@
 
 #[cfg(not(target_family = "wasm"))]
 #[tokio::main]
-async fn main() -> miette::Result<()> {
+async fn main() -> templateer::Result<()> {
     templateer::cli::main().await
 }
 

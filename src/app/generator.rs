@@ -2,18 +2,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 use crate::tap::Tap;
 use crate::templates::*;
-use crate::{MappingSet, ProjectType};
+use crate::versions::{LOOM_VERSION, PLUGIN_VERSION, JavaVersion, MinecraftVersionList};
+use crate::versions::index::get_version_index;
+use crate::{MappingSet, ProjectType, Result};
 use bytes::Bytes;
 use futures::future::join_all;
 use futures::{join, FutureExt};
-use miette::{IntoDiagnostic, Result};
-use version_resolver::version_metadata::{JavaVersion, MinecraftVersionList};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use version_resolver::maven::{resolve_latest_version, resolve_matching_version, MavenLibrary};
 
 pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersionList, filer_provider: &impl crate::filer::FilerProvider) -> Result<()> {
     let mut context = engine::Context::new();
@@ -69,12 +69,12 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
     }
 
     // Constants
-    context.put("LOOM_VERSION", crate::versions::LOOM_VERSION);
-    context.put("PLUGIN_VERSION", crate::versions::PLUGIN_VERSION);
+    context.put("LOOM_VERSION", LOOM_VERSION);
+    context.put("PLUGIN_VERSION", PLUGIN_VERSION);
 
     // Setup version resolving
-    let client = Arc::new(reqwest::ClientBuilder::new().build().into_diagnostic()?);
-    let versions = crate::app::versions::get_version_index(client.clone(), &game_version).await?;
+    let client = Arc::new(reqwest::ClientBuilder::new().build()?);
+    let versions = get_version_index(client.clone(), &game_version).await?;
     let mut files: Vec<Pin<Box<dyn Future<Output = Result<Vec<FileData>>>>>> =
         vec![Box::pin(shared::shared_files(client.clone()))];
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();

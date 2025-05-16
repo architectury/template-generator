@@ -1,13 +1,18 @@
 [package]
 name = "templateer"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
+autobins = false
 
 [workspace]
-members = ["version_resolver"]
+members = [
+    "version_resolver"
+]
+
+[workspace.package]
+version = "0.1.0"
 
 [workspace.dependencies]
-miette = "7.1"
 reqwest = "0.12"
 xml_dom = "0.2.6"
 wasm-bindgen = "0.2.92"
@@ -20,6 +25,7 @@ tokio = { version = "1", features = ["full"] }
 rfd = "0.14"
 cliclack = "0.3.2"
 clap = { version = "4.5", features = ["derive"] }
+flexver-rs = "0.1.2"
 
 [workspace.dependencies.web-sys]
 version = "0.3.64"
@@ -41,19 +47,22 @@ features = [
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[[bin]]
+name = "architectury-template-generator"
+path = "src/main.rs"
+
 [dependencies]
-miette = { workspace = true }
 reqwest = { workspace = true }
 futures = "0.3"
 zip = { version = "2.1.3", default-features = false, features = ["deflate"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 strum = { workspace = true }
-version_resolver = { path = "version_resolver" }
 bytes = "1.6"
+flexver-rs = { workspace = true }
+xml_dom = { workspace = true }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-miette = { workspace = true, features = ["fancy"] }
 tokio = { workspace = true }
 cliclack = { workspace = true }
 clap = { workspace = true }

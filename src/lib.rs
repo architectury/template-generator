@@ -6,11 +6,15 @@ pub mod app;
 #[cfg(not(target_family = "wasm"))]
 pub mod cli;
 pub mod filer;
-pub mod game_versions;
+pub mod maven;
 pub mod mod_ids;
+pub mod result;
 pub mod tap;
 pub mod templates;
+pub mod versions;
 #[cfg(target_family = "wasm")]
 pub mod web;
+mod xml;
 
 pub use app::*;
+pub use result::Result;

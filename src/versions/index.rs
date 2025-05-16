@@ -4,10 +4,12 @@
 
 use std::collections::HashMap;
 
-use miette::Result;
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::version_metadata::{MinecraftVersion, MinecraftVersionList};
+use crate::Result;
+use crate::maven::{MavenLibrary, resolve_matching_version};
+use super::{MinecraftVersion, MinecraftVersionList};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct VersionIndex {
@@ -45,17 +47,17 @@ impl Versions {
         client: &reqwest::Client,
         game_version: &MinecraftVersion,
     ) -> Result<Self> {
-        let architectury_api = crate::maven::resolve_matching_version(
+        let architectury_api = resolve_matching_version(
             &client,
-            crate::maven::MavenLibrary::architectury_api(game_version),
+            MavenLibrary::architectury_api(game_version),
             |version| version.starts_with(&format!("{}.", game_version.architectury.api_version)),
         )
         .await?;
 
         let forge = if let Some(forge) = &game_version.forge {
-            Some(crate::maven::resolve_matching_version(
+            Some(resolve_matching_version(
                 &client,
-                crate::maven::MavenLibrary::forge(),
+                MavenLibrary::forge(),
                 |version| {
                     version.starts_with(&format!(
                         "{}-{}.",
@@ -71,9 +73,9 @@ impl Versions {
 
         let neoforge = if let Some(neoforge) = &game_version.neoforge {
             Some(
-                crate::maven::resolve_matching_version(
+                resolve_matching_version(
                     &client,
-                    crate::maven::MavenLibrary::neoforge(),
+                    MavenLibrary::neoforge(),
                     |version| version.starts_with(&format!("{}.", neoforge.neoforge_major_version)),
                 )
                 .await?,
@@ -85,9 +87,9 @@ impl Versions {
         let neoforge_yarn_patch = match &game_version.neoforge {
             Some(neoforge) => match &neoforge.yarn_patch_version {
                 Some(prefix) => Some(
-                    crate::maven::resolve_matching_version(
+                    resolve_matching_version(
                         &client,
-                        crate::maven::MavenLibrary::neoforge_yarn_patch(),
+                        MavenLibrary::neoforge_yarn_patch(),
                         |version| version.starts_with(&format!("{}+", prefix)),
                     )
                     .await?,
@@ -104,4 +106,34 @@ impl Versions {
             neoforge_yarn_patch,
         })
     }
+}
+
+#[cfg(target_family = "wasm")]
+pub async fn get_version_index(
+    client: std::sync::Arc<Client>,
+    game_version: &MinecraftVersion,
+) -> Result<Versions> {
+    use crate::err;
+    use crate::versions::index::VersionIndex;
+
+    let json = crate::templates::download_relative_text(client, "version_index.json").await?;
+    let index: VersionIndex = serde_json::from_str(&json)?;
+    index
+        .versions
+        .get(&game_version.version)
+        .ok_or_else(|| {
+            err!(
+                "Could not find version index for version {}",
+                game_version.version
+            )
+        })
+        .cloned()
+}
+
+#[cfg(not(target_family = "wasm"))]
+pub async fn get_version_index(
+    client: std::sync::Arc<Client>,
+    game_version: &MinecraftVersion,
+) -> Result<Versions> {
+    Versions::resolve(&client, game_version).await
 }

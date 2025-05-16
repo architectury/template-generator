@@ -1,25 +1,12 @@
 [package]
 name = "version_resolver"
-version = "1.0.0"
+version.workspace = true
 edition = "2021"
 
 [dependencies]
-miette = { workspace = true }
+clap = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-strum = { workspace = true }
-xml_dom = { workspace = true }
-flexver-rs = "0.1.2"
-
-[target.'cfg(not(target_family = "wasm"))'.dependencies]
-clap = { workspace = true }
-miette = { workspace = true, features = ["fancy"] }
+templateer = { path = ".." }
 tokio = { workspace = true }
-xml_dom = { workspace = true }
-
-[target.'cfg(target_family = "wasm")'.dependencies]
-wasm-bindgen = { workspace = true }
-wasm-bindgen-futures = { workspace = true }
-js-sys = { workspace = true }
-web-sys = { workspace = true }

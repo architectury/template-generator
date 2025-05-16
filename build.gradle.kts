@@ -6,7 +6,6 @@ val versionIndex = layout.buildDirectory.file("version_index.json")
 val compileWasm = tasks.register<Exec>("compileWasm") {
     commandLine("wasm-pack", "build", "--target", "web", "-d", wasmDir.get().asFile.absolutePath)
     inputs.dir("src")
-    inputs.dir("version_resolver/src")
     outputs.dir(wasmDir)
 }
 

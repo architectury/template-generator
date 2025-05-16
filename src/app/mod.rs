@@ -4,10 +4,9 @@
 
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use version_resolver::version_metadata::MinecraftVersionList;
+use crate::versions::MinecraftVersionList;
 
 pub mod generator;
-pub mod versions;
 
 pub const SUBHEADING_STYLE: &'static str = "subheading";
 
