@@ -6,7 +6,7 @@ autobins = false
 
 [workspace]
 members = [
-    "version_resolver_cli"
+    "version_resolver"
 ]
 
 [workspace.package]

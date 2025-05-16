@@ -1,5 +1,5 @@
 [package]
-name = "version_resolver_cli"
+name = "version_resolver"
 version.workspace = true
 edition = "2021"
 
