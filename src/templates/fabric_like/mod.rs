@@ -6,7 +6,7 @@
 super::file_data!(BUILD_GRADLE build_gradle, "fabric-like", true, "build.gradle");
 
 // Code
-super::file_data!(MOD_CLASS mod_class, "fabric-like", true, "src/main/java/PACKAGE_DIR/fabriclike/ExampleModFabricLike.java");
+super::file_data_with_target!(MOD_CLASS mod_class, "fabric-like", true, "src/main/java/PACKAGE_DIR/fabriclike/ExampleModFabricLike.java", "src/main/java/PACKAGE_DIR/fabriclike/MAIN_CLASS_NAMEFabricLike.java");
 
 super::file_list!(pub all_files,
     build_gradle

@@ -109,6 +109,53 @@ macro_rules! file_data {
     };
 }
 
+macro_rules! file_data_with_target {
+    ($const_name:ident $fn_name:ident,
+     $dir:expr, $include_dir:expr,
+     $source_name:expr, $target_name:expr) => {
+        crate::templates::file_data_with_target!{
+            $const_name, $fn_name, $dir, $include_dir, $source_name, $target_name, None
+        }
+    };
+
+    ($const_name:ident, $fn_name:ident,
+     $dir:expr, $include_dir:expr,
+     $source_name:expr, $target_name:expr,
+     $permissions:ident) => {
+        #[cfg(not(target_family = "wasm"))]
+        const $const_name: &'static str = include_str!($source_name);
+
+        #[cfg(not(target_family = "wasm"))]
+        async fn $fn_name(
+            _client: std::sync::Arc<reqwest::Client>,
+        ) -> crate::Result<crate::templates::FileData> {
+            let path = crate::templates::compose_file_path(
+                $dir, $target_name, $include_dir
+            );
+            Ok(crate::templates::FileData {
+                path,
+                content: crate::templates::FileContent::Text($const_name.into()),
+                permissions: crate::filer::FilePermissions::$permissions,
+            })
+        }
+
+        #[cfg(target_family = "wasm")]
+        async fn $fn_name(
+            client: std::sync::Arc<reqwest::Client>
+        ) -> crate::Result<crate::templates::FileData> {
+            let url = format!("templates/{}/{}", $dir.replace("-", "_"), $source_name);
+            let bytes = crate::templates::download_relative_text(client, &url).await?;
+            let content = crate::templates::FileContent::Text(bytes);
+            let permissions = crate::filer::FilePermissions::$permissions;
+            let path = crate::templates::compose_file_path(
+                $dir, $target_name, $include_dir
+            );
+            Ok(crate::templates::FileData { path, content, permissions })
+        }
+    };
+}
+
+
 macro_rules! binary_file_data {
     ($const_name:ident $fn_name:ident, $dir:expr, $include_dir_in_target:expr, $file_name:expr) => {
         crate::templates::file_data_raw!($const_name, $fn_name, $dir, $include_dir_in_target, $file_name, None, [u8], include_bytes, Binary, download_relative_binary);
@@ -164,5 +211,6 @@ macro_rules! file_list {
 
 pub(crate) use binary_file_data;
 pub(crate) use file_data;
+pub(crate) use file_data_with_target;
 pub(crate) use file_data_raw;
 pub(crate) use file_list;

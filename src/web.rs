@@ -65,6 +65,32 @@ pub fn validate_mod_id(mod_id: &str) -> Array {
 }
 
 #[wasm_bindgen]
+pub fn sanitize_class_name(input: &str) -> String {
+  crate::class_names::sanitize_class_name(input)
+}
+
+#[wasm_bindgen]
+pub fn validate_java_class_name(input: &str) -> Array {
+    let result = crate::class_names::validate_name(input);
+    let array = Array::new();
+    match result {
+        Ok(_) => {
+            array.push(&JsValue::TRUE);
+        }
+        Err(e) => {
+            array.push(&JsValue::FALSE);
+            array.push(&JsValue::from(e.to_string()));
+        }
+    }
+    array
+}
+
+#[wasm_bindgen]
+pub fn is_valid_main_class_name(input: &str) -> bool {
+  crate::class_names::is_valid_main_class_name(input)
+}
+
+#[wasm_bindgen]
 pub async fn generate(state: JsValue, version_list: JsValue) {
     let result = generate_inner(state, version_list).await;
     ok_or_display_error(result.map_err(|err| JsString::from(err)));

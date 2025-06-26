@@ -2,12 +2,12 @@ package %PACKAGE_NAME%.neoforge;
 
 import net.neoforged.fml.common.Mod;
 
-import %PACKAGE_NAME%.ExampleMod;
+import %PACKAGE_NAME%.%MAIN_CLASS_NAME%;
 
-@Mod(ExampleMod.MOD_ID)
-public final class ExampleModNeoForge {
-    public ExampleModNeoForge() {
+@Mod(%MAIN_CLASS_NAME%.MOD_ID)
+public final class %MAIN_CLASS_NAME%NeoForge {
+    public %MAIN_CLASS_NAME%NeoForge() {
         // Run our common setup.
-        ExampleMod.init();
+        %MAIN_CLASS_NAME%.init();
     }
 }

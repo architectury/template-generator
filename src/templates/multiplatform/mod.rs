@@ -10,7 +10,7 @@ super::file_data!(SETTINGS_GRADLE settings_gradle, "multiplatform", false, "sett
 // Common files
 super::file_data!(COMMON_BUILD_GRADLE common_build_gradle, "multiplatform", false, "common/build.gradle");
 super::file_data!(COMMON_MIXINS common_mixins, "multiplatform", false, "common/src/main/resources/MOD_ID.mixins.json");
-super::file_data!(COMMON_INIT_CLASS common_init_class, "multiplatform", false, "common/src/main/java/PACKAGE_DIR/ExampleMod.java");
+super::file_data_with_target!(COMMON_INIT_CLASS common_init_class, "multiplatform", false, "common/src/main/java/PACKAGE_DIR/ExampleMod.java", "common/src/main/java/PACKAGE_DIR/MAIN_CLASS_NAME.java");
 
 super::file_list!(pub all_files,
     build_gradle

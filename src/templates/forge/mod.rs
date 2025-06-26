@@ -9,7 +9,7 @@ super::file_data!(GRADLE_PROPERTIES gradle_properties, "forge", true, "gradle.pr
 // Code
 super::file_data!(PACK_MCMETA pack_mcmeta, "forge", true, "src/main/resources/pack.mcmeta");
 super::file_data!(MODS_TOML mods_toml, "forge", true, "src/main/resources/META-INF/mods.toml");
-super::file_data!(MOD_CLASS mod_class, "forge", true, "src/main/java/PACKAGE_DIR/forge/ExampleModForge.java");
+super::file_data_with_target!(MOD_CLASS mod_class, "forge", true, "src/main/java/PACKAGE_DIR/forge/ExampleModForge.java", "src/main/java/PACKAGE_DIR/forge/MAIN_CLASS_NAMEForge.java");
 
 super::file_list!(pub all_files,
     build_gradle

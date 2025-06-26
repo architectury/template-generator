@@ -11,7 +11,7 @@ super::file_data!(SETTINGS_GRADLE settings_gradle, "neoforge_only", false, "sett
 super::file_data!(MIXINS mixins, "neoforge_only", false, "src/main/resources/MOD_ID.mixins.json");
 super::file_data!(MODS_TOML mods_toml, "neoforge_only", false, "src/main/resources/META-INF/mods.toml");
 super::file_data!(NEOFORGE_MODS_TOML neoforge_mods_toml, "neoforge_only", false, "src/main/resources/META-INF/neoforge.mods.toml");
-super::file_data!(MOD_CLASS mod_class, "neoforge_only", false, "src/main/java/PACKAGE_DIR/ExampleMod.java");
+super::file_data_with_target!(MOD_CLASS mod_class, "neoforge_only", false, "src/main/java/PACKAGE_DIR/ExampleMod.java", "src/main/java/PACKAGE_DIR/MAIN_CLASS_NAME.java");
 
 super::file_list!(pub main_files,
     build_gradle
