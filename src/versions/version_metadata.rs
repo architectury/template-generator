@@ -66,11 +66,20 @@ fn default_architectury_package() -> String {
     "dev.architectury".to_owned()
 }
 
-#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FabricMetadata {
     pub fabric_api_branch: Option<String>,
     #[serde(default = "default_fabric_api_mod_id")]
     pub fabric_api_mod_id: String,
+}
+
+impl Default for FabricMetadata {
+    fn default() -> Self {
+        Self {
+            fabric_api_branch: None,
+            fabric_api_mod_id: default_fabric_api_mod_id()
+        }
+    }
 }
 
 fn default_fabric_api_mod_id() -> String {
