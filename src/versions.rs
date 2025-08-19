@@ -6,7 +6,7 @@ pub mod index;
 mod version_metadata;
 pub use version_metadata::*;
 
-pub const LOOM_VERSION: &'static str = "1.10-SNAPSHOT";
+pub const LOOM_VERSION: &'static str = "1.11-SNAPSHOT";
 pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
 
 #[cfg(target_family = "wasm")]
