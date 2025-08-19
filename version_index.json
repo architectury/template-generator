@@ -1,14 +1,47 @@
 {
-  "1.19.3": {
-    "architectury_api": "7.1.86",
-    "forge": "1.19.3-44.1.23",
+  "1.21.4": {
+    "architectury_api": "15.0.3",
+    "forge": null,
+    "neoforge": "21.4.150",
+    "neoforge_yarn_patch": "1.21+build.4"
+  },
+  "1.19.1": {
+    "architectury_api": "6.3.56",
+    "forge": "1.19.1-42.0.9",
     "neoforge": null
   },
   "1.20.6": {
     "architectury_api": "12.1.4",
     "forge": null,
-    "neoforge": "20.6.135",
+    "neoforge": "20.6.138",
     "neoforge_yarn_patch": "1.20.6+build.4"
+  },
+  "1.17.1": {
+    "architectury_api": "2.10.12",
+    "forge": "1.17.1-37.1.1",
+    "neoforge": null
+  },
+  "1.21.8": {
+    "architectury_api": "17.0.8",
+    "forge": null,
+    "neoforge": "21.8.33",
+    "neoforge_yarn_patch": "1.21+build.4"
+  },
+  "1.18.2": {
+    "architectury_api": "4.12.94",
+    "forge": "1.18.2-40.3.11",
+    "neoforge": null
+  },
+  "1.20.1": {
+    "architectury_api": "9.2.14",
+    "forge": "1.20.1-47.4.6",
+    "neoforge": null
+  },
+  "1.21.1": {
+    "architectury_api": "13.0.8",
+    "forge": null,
+    "neoforge": "21.1.201",
+    "neoforge_yarn_patch": "1.21+build.4"
   },
   "1.20.5": {
     "architectury_api": "12.0.29",
@@ -16,14 +49,9 @@
     "neoforge": "20.5.21-beta",
     "neoforge_yarn_patch": "1.20.5+build.3"
   },
-  "1.18.2": {
-    "architectury_api": "4.12.94",
-    "forge": "1.18.2-40.3.10",
-    "neoforge": null
-  },
-  "1.18.1": {
-    "architectury_api": "3.9.66",
-    "forge": "1.18.1-39.1.2",
+  "1.19": {
+    "architectury_api": "5.14.84",
+    "forge": "1.19-41.1.0",
     "neoforge": null
   },
   "1.16.5": {
@@ -31,21 +59,38 @@
     "forge": "1.16.5-36.2.42",
     "neoforge": null
   },
+  "1.19.3": {
+    "architectury_api": "7.1.86",
+    "forge": "1.19.3-44.1.23",
+    "neoforge": null
+  },
+  "1.21.7": {
+    "architectury_api": "17.0.8",
+    "forge": null,
+    "neoforge": "21.7.25-beta",
+    "neoforge_yarn_patch": "1.21+build.4"
+  },
   "1.21.5": {
     "architectury_api": "16.1.4",
     "forge": null,
-    "neoforge": "21.5.82",
+    "neoforge": "21.5.91",
     "neoforge_yarn_patch": "1.21+build.4"
   },
-  "1.21.6": {
-    "architectury_api": "17.0.6",
+  "1.21.3": {
+    "architectury_api": "14.0.4",
     "forge": null,
-    "neoforge": "21.6.20-beta",
+    "neoforge": "21.3.89",
     "neoforge_yarn_patch": "1.21+build.4"
   },
-  "1.20.1": {
-    "architectury_api": "9.2.14",
-    "forge": "1.20.1-47.4.3",
+  "1.21": {
+    "architectury_api": "13.0.8",
+    "forge": null,
+    "neoforge": "21.0.167",
+    "neoforge_yarn_patch": "1.21+build.4"
+  },
+  "1.19.2": {
+    "architectury_api": "6.6.92",
+    "forge": "1.19.2-43.5.1",
     "neoforge": null
   },
   "1.21.2": {
@@ -54,69 +99,30 @@
     "neoforge": "21.2.1-beta",
     "neoforge_yarn_patch": "1.21+build.4"
   },
-  "1.21.4": {
-    "architectury_api": "15.0.3",
+  "1.21.6": {
+    "architectury_api": "17.0.8",
     "forge": null,
-    "neoforge": "21.4.142",
+    "neoforge": "21.6.20-beta",
     "neoforge_yarn_patch": "1.21+build.4"
+  },
+  "1.18.1": {
+    "architectury_api": "3.9.66",
+    "forge": "1.18.1-39.1.2",
+    "neoforge": null
   },
   "1.19.4": {
     "architectury_api": "8.2.91",
-    "forge": "1.19.4-45.4.0",
-    "neoforge": null
-  },
-  "1.19.1": {
-    "architectury_api": "6.3.56",
-    "forge": "1.19.1-42.0.9",
-    "neoforge": null
-  },
-  "1.21.1": {
-    "architectury_api": "13.0.8",
-    "forge": null,
-    "neoforge": "21.1.187",
-    "neoforge_yarn_patch": "1.21+build.4"
-  },
-  "1.17.1": {
-    "architectury_api": "2.10.12",
-    "forge": "1.17.1-37.1.1",
+    "forge": "1.19.4-45.4.2",
     "neoforge": null
   },
   "1.20.4": {
     "architectury_api": "11.1.17",
     "forge": "1.20.4-49.2.0",
-    "neoforge": "20.4.248"
+    "neoforge": "20.4.250"
   },
   "1.20.2": {
     "architectury_api": "10.1.20",
     "forge": "1.20.2-48.1.0",
     "neoforge": null
-  },
-  "1.21.3": {
-    "architectury_api": "14.0.4",
-    "forge": null,
-    "neoforge": "21.3.81",
-    "neoforge_yarn_patch": "1.21+build.4"
-  },
-  "1.19": {
-    "architectury_api": "5.14.84",
-    "forge": "1.19-41.1.0",
-    "neoforge": null
-  },
-  "1.19.2": {
-    "architectury_api": "6.6.92",
-    "forge": "1.19.2-43.5.0",
-    "neoforge": null
-  },
-  "1.21.7": {
-    "architectury_api": "17.0.6",
-    "forge": null,
-    "neoforge": "21.7.8-beta",
-    "neoforge_yarn_patch": "1.21+build.4"
-  },
-  "1.21": {
-    "architectury_api": "13.0.8",
-    "forge": null,
-    "neoforge": "21.0.167",
-    "neoforge_yarn_patch": "1.21+build.4"
   }
 }

@@ -35,10 +35,10 @@ dependencies {
     modImplementation "%ARCHITECTURY_GROUP%:architectury-fabric:$rootProject.architectury_api_version"
 //% end
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 //% if fabric_like
-    common(project(path: ':fabric-like', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':fabric-like', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':fabric-like', configuration: 'transformProductionFabric')
 //% end
 }
@@ -47,7 +47,7 @@ processResources {
     inputs.property 'version', project.version
 
     filesMatching('fabric.mod.json') {
-        expand version: project.version
+        expand version: inputs.properties.version
     }
 }
 

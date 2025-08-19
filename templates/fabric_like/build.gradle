@@ -11,5 +11,5 @@ dependencies {
     modImplementation "%ARCHITECTURY_GROUP%:architectury-fabric:$rootProject.architectury_api_version"
 //% end
 
-    compileOnly(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    compileOnly(project(path: ':common', configuration: 'namedElements')) { transitive = false }
 }
