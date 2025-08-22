@@ -3,12 +3,12 @@ package %PACKAGE_NAME%.fabric;
 import net.fabricmc.api.ModInitializer;
 
 //% if fabric_like
-import %PACKAGE_NAME%.fabriclike.ExampleModFabricLike;
+import %PACKAGE_NAME%.fabriclike.%MAIN_CLASS_NAME%FabricLike;
 //% else
-import %PACKAGE_NAME%.ExampleMod;
+import %PACKAGE_NAME%.%MAIN_CLASS_NAME%;
 //% end
 
-public final class ExampleModFabric implements ModInitializer {
+public final class %MAIN_CLASS_NAME%Fabric implements ModInitializer {
     @Override
     public void onInitialize() {
         // This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -17,10 +17,10 @@ public final class ExampleModFabric implements ModInitializer {
 
 //% if fabric_like
         // Run the Fabric-like setup.
-        ExampleModFabricLike.init();
+        %MAIN_CLASS_NAME%FabricLike.init();
 //% else
         // Run our common setup.
-        ExampleMod.init();
+        %MAIN_CLASS_NAME%.init();
 //% end
     }
 }

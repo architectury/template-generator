@@ -1,10 +1,10 @@
 package %PACKAGE_NAME%.fabriclike;
 
-import %PACKAGE_NAME%.ExampleMod;
+import %PACKAGE_NAME%.%MAIN_CLASS_NAME%;
 
-public final class ExampleModFabricLike {
+public final class %MAIN_CLASS_NAME%FabricLike {
     public static void init() {
         // Run our common setup.
-        ExampleMod.init();
+        %MAIN_CLASS_NAME%.init();
     }
 }

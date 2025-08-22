@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "%PACKAGE_NAME%.fabric.ExampleModFabric"
+      "%PACKAGE_NAME%.fabric.%MAIN_CLASS_NAME%Fabric"
     ],
     "client": [
-      "%PACKAGE_NAME%.fabric.client.ExampleModFabricClient"
+      "%PACKAGE_NAME%.fabric.client.%MAIN_CLASS_NAME%FabricClient"
     ]
   },
   "mixins": [

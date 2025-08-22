@@ -93,6 +93,17 @@ h1 {
     justify-content: center;
 }
 
+.optional-panel {
+    max-width: 55em;
+    margin: auto;
+}
+
+.optional-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: -1.5rem;
+}
+
 .toggle-button {
     display: inline-block;
     margin: 0.5ex;

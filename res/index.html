@@ -19,10 +19,6 @@
             <label for="mod-name-input" class="property-description">The human-readable name of your mod.</label>
             <input type="text" id="mod-name-input">
 
-            <h2>Mod ID (optional)</h2>
-            <label for="mod-id-input" id="mod-id-label" class="property-description">A unique ID for your mod.</label>
-            <input type="text" id="mod-id-input">
-
             <h2>Package name</h2>
             <label for="package-input" class="property-description">A unique package name for your mod.</label>
             <input type="text" id="package-input">
@@ -115,6 +111,25 @@
                 <div id="error-message-container" class="hidden"></div>
             </fieldset>
         </div>
+    </div>
+
+    <div class="optional-panel">
+    <fieldset>
+        <legend>Optional Properties</legend>
+
+        <div class="optional-grid">
+            <div>
+                <h2>Mod ID</h2>
+                <label for="mod-id-input" id="mod-id-label" class="property-description">A unique ID for your mod.</label>
+                <input type="text" id="mod-id-input">
+            </div>
+            <div>
+                <h2>Main class name</h2>
+                <label for="main-class-name-input" class="property-description">The name for your initialisation classes.</label>
+                <input type="text" id="main-class-name-input">
+            </div>
+        </div>
+    </fieldset>
     </div>
 
     <script type="module" src="script.js"></script>

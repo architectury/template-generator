@@ -8,7 +8,7 @@ super::file_data!(GRADLE_PROPERTIES gradle_properties, "quilt", true, "gradle.pr
 
 // Code
 super::file_data!(QUILT_MOD_JSON quilt_mod_json, "quilt", true, "src/main/resources/quilt.mod.json");
-super::file_data!(MOD_CLASS mod_class, "quilt", true, "src/main/java/PACKAGE_DIR/quilt/ExampleModQuilt.java");
+super::file_data_with_target!(MOD_CLASS mod_class, "quilt", true, "src/main/java/PACKAGE_DIR/quilt/ExampleModQuilt.java", "src/main/java/PACKAGE_DIR/quilt/MAIN_CLASS_NAMEQuilt.java");
 
 super::file_list!(pub all_files,
     build_gradle

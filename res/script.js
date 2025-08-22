@@ -3,14 +3,17 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import init, {
+    arch_api_supports_forge,
     create_state,
     generate,
+    is_valid_main_class_name,
     is_valid_mod_id,
     list_all_minecraft_versions,
+    sanitize_class_name,
     supports_forge,
     supports_neoforge,
-    arch_api_supports_forge,
     to_mod_id,
+    validate_java_class_name,
     validate_mod_id
 } from "./templateer.js";
 await init();
@@ -53,14 +56,17 @@ refreshFabricLikeCheckbox();
 // Add generated mod id placeholder when not specified manually
 const modNameInput = document.getElementById("mod-name-input");
 const modIdInput = document.getElementById("mod-id-input");
+const mainClassNameInput = document.getElementById("main-class-name-input");
 
 modNameInput.oninput = () => {
-    refreshModIdPlaceholder();
+    refreshPlaceholders();
     validateModId();
+    validateMainClassName();
 };
 
-function refreshModIdPlaceholder() {
+function refreshPlaceholders() {
     modIdInput.placeholder = to_mod_id(modNameInput.value) ?? "";
+    mainClassNameInput.placeholder = sanitize_class_name(modNameInput.value);
 }
 
 // Validate mod ids
@@ -89,6 +95,26 @@ function getModId() {
     return value;
 }
 
+const mainClassNameLabel = document.querySelector("label[for='main-class-name-input']");
+mainClassNameInput.oninput = validateMainClassName;
+
+function validateMainClassName() {
+  const [ok, msg] = validate_java_class_name(getMainClassName());
+  if (ok) {
+    mainClassNameLabel.removeAttribute("error");
+  } else {
+    mainClassNameLabel.setAttribute("error", msg);
+  }
+}
+
+function isMainClassNameValid() {
+    return is_valid_main_class_name(getMainClassName());
+}
+
+function getMainClassName() {
+  return mainClassNameInput.value || mainClassNameInput.placeholder;
+}
+
 function getProjectType() {
     for (const input of projectTypeToggles) {
         if (input.checked) {
@@ -108,6 +134,7 @@ function getMappingSet() {
 
 function updateState() {
     state.mod_name = modNameInput.value;
+    state.main_class_name = getMainClassName();
     state.mod_id = getModId();
     state.package_name = document.getElementById("package-input").value;
     state.game_version = mcSelect.value;
@@ -214,6 +241,9 @@ document.getElementById("generate-button").onclick = async () => {
     } else if (!isModIdValid()) {
         showError("Mod ID is not valid");
         return;
+    } else if (!isMainClassNameValid()) {
+        showError("Main class name is not valid");
+        return;
     } else if (state.package_name === "") {
         showError("Package name is empty");
         return;
@@ -229,7 +259,8 @@ document.getElementById("generate-button").onclick = async () => {
 // Apply initial state
 modNameInput.value = state.mod_name;
 modIdInput.value = state.mod_id;
-refreshModIdPlaceholder();
+mainClassNameInput.value = state.main_class_name;
+refreshPlaceholders();
 refreshAvailablePlatforms();
 document.getElementById("package-input").value = state.package_name;
 document.getElementById("architectury-api-input").checked = state.dependencies.architectury_api;

@@ -66,26 +66,28 @@ impl Default for Dependencies {
 #[derive(Serialize, Deserialize)]
 pub struct GeneratorApp {
     pub mod_name: String,
-    pub mod_id: String,
     pub package_name: String,
     pub game_version: String,
     pub project_type: ProjectType,
     pub subprojects: Subprojects,
     pub mapping_set: MappingSet,
     pub dependencies: Dependencies,
+    pub mod_id: String,
+    pub main_class_name: String,
 }
 
 impl GeneratorApp {
     pub fn new(list: &MinecraftVersionList) -> Self {
         Self {
             mod_name: "Example Mod".to_owned(),
-            mod_id: String::new(),
             package_name: "com.example".to_owned(),
             game_version: list.latest_version.clone(),
             project_type: Default::default(),
             subprojects: Default::default(),
             mapping_set: Default::default(),
             dependencies: Default::default(),
+            mod_id: String::new(),
+            main_class_name: String::new(),
         }
     }
 

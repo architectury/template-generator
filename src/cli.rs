@@ -112,6 +112,11 @@ fn prompt(default_name: Option<&str>, version_list: &MinecraftVersionList) -> Re
         .validate_interactively(ModIdValidate)
         .interact()?;
 
+    let main_class_name: String = input("Main class name")
+        .default_input(&crate::class_names::sanitize_class_name(&mod_name))
+        .validate_interactively(JavaClassNameValidate)
+        .interact()?;
+
     let package_name: String = input("Package name")
         .interact()?;
 
@@ -179,13 +184,14 @@ fn prompt(default_name: Option<&str>, version_list: &MinecraftVersionList) -> Re
 
     let generator = GeneratorApp {
         mod_name,
-        mod_id,
         package_name,
         game_version: game_version.version.clone(),
         project_type,
         subprojects,
         mapping_set,
-        dependencies
+        dependencies,
+        mod_id,
+        main_class_name
     };
     Ok(generator)
 }
@@ -203,6 +209,16 @@ impl cliclack::Validate<String> for ModIdValidate {
 
     fn validate(&self, input: &String) -> Result<()> {
         crate::mod_ids::validate_mod_id(input)
+    }
+}
+
+struct JavaClassNameValidate;
+
+impl cliclack::Validate<String> for JavaClassNameValidate {
+    type Err = crate::result::Error;
+
+    fn validate(&self, input: &String) -> Result<()> {
+        crate::class_names::validate_name(input)
     }
 }
 

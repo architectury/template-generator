@@ -24,6 +24,8 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
     context.put("MOD_ID", mod_id);
     let escaped_name = escape_json_and_toml(&app.mod_name);
     context.put("MOD_NAME", escaped_name);
+    let escaped_main_class_name = escape_json_and_toml(&app.main_class_name);
+    context.put("MAIN_CLASS_NAME", escaped_main_class_name);
 
     // Game version-specific
     let game_version = version_list.versions.iter()

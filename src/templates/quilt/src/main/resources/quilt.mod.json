@@ -15,7 +15,7 @@
     "intermediate_mappings": "net.fabricmc:intermediary",
     "entrypoints": {
       "init": [
-        "%PACKAGE_NAME%.quilt.ExampleModQuilt"
+        "%PACKAGE_NAME%.quilt.%MAIN_CLASS_NAME%Quilt"
       ]
     },
     "depends": [

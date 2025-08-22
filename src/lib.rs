@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 pub mod app;
+pub mod class_names;
 #[cfg(not(target_family = "wasm"))]
 pub mod cli;
 pub mod filer;

@@ -7,8 +7,8 @@ super::file_data!(BUILD_GRADLE build_gradle, "fabric", true, "build.gradle");
 
 // Code
 super::file_data!(FABRIC_MOD_JSON fabric_mod_json, "fabric", true, "src/main/resources/fabric.mod.json");
-super::file_data!(MOD_CLASS mod_class, "fabric", true, "src/main/java/PACKAGE_DIR/fabric/ExampleModFabric.java");
-super::file_data!(CLIENT_MOD_CLASS client_mod_class, "fabric", true, "src/main/java/PACKAGE_DIR/fabric/client/ExampleModFabricClient.java");
+super::file_data_with_target!(MOD_CLASS mod_class, "fabric", true, "src/main/java/PACKAGE_DIR/fabric/ExampleModFabric.java", "src/main/java/PACKAGE_DIR/fabric/MAIN_CLASS_NAMEFabric.java");
+super::file_data_with_target!(CLIENT_MOD_CLASS client_mod_class, "fabric", true, "src/main/java/PACKAGE_DIR/fabric/client/ExampleModFabricClient.java", "src/main/java/PACKAGE_DIR/fabric/client/MAIN_CLASS_NAMEFabricClient.java");
 
 super::file_list!(pub all_files,
     build_gradle
