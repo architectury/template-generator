@@ -1,5 +1,5 @@
 {
-  "latest_version": "1.21.8",
+  "latest_version": "1.21.9",
   "versions": [
     {
       "version": "1.16.5",
@@ -317,6 +317,18 @@
       "neoforge": {
         "loader_major_version": "9",
         "neoforge_major_version": "21.8",
+        "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "1.21.9",
+      "java_version": 21,
+      "architectury": {
+        "api_version": null
+      },
+      "neoforge": {
+        "loader_major_version": "10",
+        "neoforge_major_version": "21.9",
         "yarn_patch_version": "1.21"
       }
     }
