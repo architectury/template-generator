@@ -35,7 +35,7 @@ impl VersionIndex {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Versions {
-    pub architectury_api: String,
+    pub architectury_api: Option<String>,
     pub forge: Option<String>,
     pub neoforge: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -47,12 +47,16 @@ impl Versions {
         client: &reqwest::Client,
         game_version: &MinecraftVersion,
     ) -> Result<Self> {
-        let architectury_api = resolve_matching_version(
-            &client,
-            MavenLibrary::architectury_api(game_version),
-            |version| version.starts_with(&format!("{}.", game_version.architectury.api_version)),
-        )
-        .await?;
+        let architectury_api = if let Some(arch_api) = &game_version.architectury.api_version {
+            Some(resolve_matching_version(
+                &client,
+                MavenLibrary::architectury_api(game_version),
+                |version| version.starts_with(&format!("{}.", arch_api)),
+            )
+            .await?)
+        } else {
+            None
+        };
 
         let forge = if let Some(forge) = &game_version.forge {
             Some(resolve_matching_version(

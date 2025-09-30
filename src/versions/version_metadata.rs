@@ -55,7 +55,7 @@ pub struct MinecraftVersion {
 
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ArchitecturyMetadata {
-    pub api_version: String,
+    pub api_version: Option<String>,
     #[serde(default = "default_architectury_package")]
     pub package: String,
     #[serde(default = "default_architectury_package")]

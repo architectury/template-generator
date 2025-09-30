@@ -173,10 +173,12 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
 
             if app.dependencies.architectury_api {
                 context.define("architectury_api");
-                variables.push(Box::pin(add_key(
-                    "ARCHITECTURY_API_VERSION",
-                    std::future::ready(Ok(versions.architectury_api)),
-                )));
+                if let Some(version) = versions.architectury_api {
+                    variables.push(Box::pin(add_key(
+                        "ARCHITECTURY_API_VERSION",
+                        std::future::ready(Ok(version)),
+                    )));
+                }
             }
         }
         ProjectType::NeoForge => {

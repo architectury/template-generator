@@ -79,6 +79,12 @@ async fn generate_inner(state: JsValue, version_list: JsValue) -> Result<(), JsV
 }
 
 #[wasm_bindgen]
+pub fn supports_arch_api(game_version: JsValue) -> Result<bool, JsValue> {
+    let game_version: MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
+    Ok(game_version.architectury.api_version.is_some())
+}
+
+#[wasm_bindgen]
 pub fn supports_neoforge(game_version: JsValue) -> Result<bool, JsValue> {
     let game_version: MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
     Ok(game_version.neoforge.is_some())
