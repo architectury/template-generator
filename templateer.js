@@ -315,6 +315,26 @@ export function generate(state, version_list) {
 * @param {any} game_version
 * @returns {boolean}
 */
+export function supports_arch_api(game_version) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.supports_arch_api(retptr, addHeapObject(game_version));
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var r2 = getInt32Memory0()[retptr / 4 + 2];
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return r0 !== 0;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+* @param {any} game_version
+* @returns {boolean}
+*/
 export function supports_neoforge(game_version) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -378,7 +398,7 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_183(arg0, arg1, arg2, arg3) {
+function __wbg_adapter_184(arg0, arg1, arg2, arg3) {
     wasm.wasm_bindgen__convert__closures__invoke2_mut__hb11479c441163adf(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
@@ -831,7 +851,7 @@ function __wbg_get_imports() {
                 const a = state0.a;
                 state0.a = 0;
                 try {
-                    return __wbg_adapter_183(a, state0.b, arg0, arg1);
+                    return __wbg_adapter_184(a, state0.b, arg0, arg1);
                 } finally {
                     state0.a = a;
                 }

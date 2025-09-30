@@ -7,6 +7,7 @@ import init, {
     generate,
     is_valid_mod_id,
     list_all_minecraft_versions,
+    supports_arch_api,
     supports_forge,
     supports_neoforge,
     arch_api_supports_forge,
@@ -159,7 +160,9 @@ function isForgeAvailable() {
 
 function isArchitecturyApiAvailable() {
     const version = mcSelect.value;
-    if (document.getElementById("forge-loader-input").checked) {
+    if (!supports_arch_api(versionsByName[version])) {
+        return false;
+    } else if (document.getElementById("forge-loader-input").checked) {
         return arch_api_supports_forge(versionsByName[version]);
     } else {
         return true;
