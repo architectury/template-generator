@@ -1,7 +1,12 @@
 plugins {
+//% if unobfuscated
+    // This version of Minecraft is not obfuscated, so Loom is set up without remapping.
+    id 'dev.architectury.loom-no-remap' version '%LOOM_VERSION%' apply false
+//% else
     id 'dev.architectury.loom' version '%LOOM_VERSION%' apply false
+//% end
     id 'architectury-plugin' version '%PLUGIN_VERSION%'
-    id 'com.gradleup.shadow' version '8.3.6' apply false
+    id 'com.gradleup.shadow' version '9.4.3' apply false
 }
 
 architectury {
@@ -14,7 +19,11 @@ allprojects {
 }
 
 subprojects {
+//% if unobfuscated
+    apply plugin: 'dev.architectury.loom-no-remap'
+//% else
     apply plugin: 'dev.architectury.loom'
+//% end
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
 

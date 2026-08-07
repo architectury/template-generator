@@ -9,7 +9,9 @@ import init, {
     list_all_minecraft_versions,
     supports_arch_api,
     supports_forge,
+    supports_mappings,
     supports_neoforge,
+    supports_quilt,
     arch_api_supports_forge,
     to_mod_id,
     validate_mod_id
@@ -117,7 +119,7 @@ function updateState() {
     state.subprojects.fabric = document.getElementById("fabric-loader-input").checked;
     state.subprojects.forge = document.getElementById("forge-loader-input").checked && isForgeAvailable();
     state.subprojects.neoforge = document.getElementById("neoforge-loader-input").checked && isNeoForgeAvailable();
-    state.subprojects.quilt = document.getElementById("quilt-loader-input").checked;
+    state.subprojects.quilt = document.getElementById("quilt-loader-input").checked && isQuiltAvailable();
     state.subprojects.fabric_likes = document.getElementById("fabric-like-input").checked && isFabricLikeAvailable();
     state.dependencies.architectury_api = document.getElementById("architectury-api-input").checked && isArchitecturyApiAvailable();
 }
@@ -158,6 +160,17 @@ function isForgeAvailable() {
     return supports_forge(versionsByName[version]);
 }
 
+function isQuiltAvailable() {
+    const version = mcSelect.value;
+    return supports_quilt(versionsByName[version]);
+}
+
+// Unobfuscated game versions have no mapping set to choose from.
+function areMappingsAvailable() {
+    const version = mcSelect.value;
+    return supports_mappings(versionsByName[version]);
+}
+
 function isArchitecturyApiAvailable() {
     const version = mcSelect.value;
     if (!supports_arch_api(versionsByName[version])) {
@@ -172,7 +185,30 @@ function isArchitecturyApiAvailable() {
 function refreshAvailablePlatforms() {
     refreshForgeLikePlatform(isNeoForgeAvailable(), "neoforge");
     refreshForgeLikePlatform(isForgeAvailable(), "forge");
+    refreshQuiltPlatform();
+    refreshMappingsSection();
     refreshArchitecturySupport();
+}
+
+function refreshQuiltPlatform() {
+    const available = isQuiltAvailable();
+    const loaderInput = document.getElementById("quilt-loader-input");
+    loaderInput.disabled = !available;
+
+    if (!available && loaderInput.checked) {
+        loaderInput.checked = false;
+    }
+
+    refreshFabricLikeCheckbox();
+}
+
+function refreshMappingsSection() {
+    const section = document.getElementById("mappings-section");
+    if (areMappingsAvailable()) {
+        section.classList.remove("hidden");
+    } else {
+        section.classList.add("hidden");
+    }
 }
 
 function refreshForgeLikePlatform(available, id) {
