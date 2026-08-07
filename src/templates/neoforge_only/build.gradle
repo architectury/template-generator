@@ -1,5 +1,10 @@
 plugins {
+//% if unobfuscated
+    // This version of Minecraft is not obfuscated, so Loom is set up without remapping.
+    id 'dev.architectury.loom-no-remap' version '%LOOM_VERSION%'
+//% else
     id 'dev.architectury.loom' version '%LOOM_VERSION%'
+//% end
     id 'maven-publish'
 }
 
