@@ -125,14 +125,19 @@ fn prompt(default_name: Option<&str>, version_list: &MinecraftVersionList) -> Re
         .items(&versions)
         .interact()?;
 
-    let mapping_sets: Vec<_> = MappingSet::iter()
-        .map(|set| {
-            (set, set.name(), set.description())
-        })
-        .collect();
-    let mapping_set = select("Mappings")
-        .items(&mapping_sets)
-        .interact()?;
+    // Unobfuscated game versions have no mapping set to choose from.
+    let mapping_set = if game_version.unobfuscated {
+        MappingSet::default()
+    } else {
+        let mapping_sets: Vec<_> = MappingSet::iter()
+            .map(|set| {
+                (set, set.name(), set.description())
+            })
+            .collect();
+        select("Mappings")
+            .items(&mapping_sets)
+            .interact()?
+    };
 
     let mut project_types = vec![
         (ProjectType::Multiplatform, "Multiplatform", ""),
@@ -219,6 +224,7 @@ impl Subproject {
         match self {
             Self::Forge => game_version.forge.is_some(),
             Self::NeoForge => game_version.neoforge.is_some(),
+            Self::Quilt => game_version.quilt,
             _ => true,
         }
     }

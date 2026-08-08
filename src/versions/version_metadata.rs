@@ -46,11 +46,21 @@ pub struct MinecraftVersionList {
 pub struct MinecraftVersion {
     pub version: String,
     pub java_version: u32,
+    /// Whether this version ships unobfuscated. Unobfuscated versions have no mapping set at all,
+    /// so Loom is set up without remapping.
+    #[serde(default)]
+    pub unobfuscated: bool,
     pub architectury: ArchitecturyMetadata,
     #[serde(default)]
     pub fabric: FabricMetadata,
     pub forge: Option<ForgeMetadata>,
     pub neoforge: Option<NeoForgeMetadata>,
+    #[serde(default = "default_quilt")]
+    pub quilt: bool,
+}
+
+fn default_quilt() -> bool {
+    true
 }
 
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]

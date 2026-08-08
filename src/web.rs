@@ -97,6 +97,20 @@ pub fn supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
 }
 
 #[wasm_bindgen]
+pub fn supports_quilt(game_version: JsValue) -> Result<bool, JsValue> {
+    let game_version: MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
+    Ok(game_version.quilt)
+}
+
+/// Whether the game version has a mapping set to choose from.
+/// Unobfuscated versions do not.
+#[wasm_bindgen]
+pub fn supports_mappings(game_version: JsValue) -> Result<bool, JsValue> {
+    let game_version: MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
+    Ok(!game_version.unobfuscated)
+}
+
+#[wasm_bindgen]
 pub fn arch_api_supports_forge(game_version: JsValue) -> Result<bool, JsValue> {
     let game_version: MinecraftVersion = serde_wasm_bindgen::from_value(game_version)?;
     if let Some(forge) = game_version.forge {

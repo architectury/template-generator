@@ -1,5 +1,5 @@
 {
-  "latest_version": "1.21.11",
+  "latest_version": "26.2",
   "versions": [
     {
       "version": "1.16.5",
@@ -354,6 +354,32 @@
         "loader_major_version": "1",
         "neoforge_major_version": "21.11",
         "yarn_patch_version": "1.21"
+      }
+    },
+    {
+      "version": "26.1.2",
+      "java_version": 25,
+      "unobfuscated": true,
+      "quilt": false,
+      "architectury": {
+        "api_version": "20"
+      },
+      "neoforge": {
+        "loader_major_version": "1",
+        "neoforge_major_version": "26.1.2"
+      }
+    },
+    {
+      "version": "26.2",
+      "java_version": 25,
+      "unobfuscated": true,
+      "quilt": false,
+      "architectury": {
+        "api_version": "21"
+      },
+      "neoforge": {
+        "loader_major_version": "1",
+        "neoforge_major_version": "26.2.0"
       }
     }
   ]

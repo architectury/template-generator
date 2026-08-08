@@ -31,21 +31,23 @@
             <select id="minecraft-version-select">
             </select>
 
-            <h2>Mappings</h2>
-            <span class="property-description">The set of names used for Minecraft code.</span>
-            <div>
-                <input type="radio" name="mappings" id="mojang-mappings-input" mappingset="Mojang" checked>
-                <label for="mojang-mappings-input">
-                    <span class="label-heading">Official Mojang mappings</span>
-                    <span class="property-description">The official obfuscation maps published by Mojang.</span>
-                </label>
-            </div>
-            <div>
-                <input type="radio" name="mappings" mappingset="Yarn" id="yarn-input">
-                <label for="yarn-input">
-                    <span class="label-heading">Yarn</span>
-                    <span class="property-description">A libre mapping set maintained by FabricMC.</span>
-                </label>
+            <div id="mappings-section">
+                <h2>Mappings</h2>
+                <span class="property-description">The set of names used for Minecraft code.</span>
+                <div>
+                    <input type="radio" name="mappings" id="mojang-mappings-input" mappingset="Mojang" checked>
+                    <label for="mojang-mappings-input">
+                        <span class="label-heading">Official Mojang mappings</span>
+                        <span class="property-description">The official obfuscation maps published by Mojang.</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="radio" name="mappings" mappingset="Yarn" id="yarn-input">
+                    <label for="yarn-input">
+                        <span class="label-heading">Yarn</span>
+                        <span class="property-description">A libre mapping set maintained by FabricMC.</span>
+                    </label>
+                </div>
             </div>
         </fieldset>
 

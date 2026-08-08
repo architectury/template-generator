@@ -6,8 +6,8 @@ pub mod index;
 mod version_metadata;
 pub use version_metadata::*;
 
-pub const LOOM_VERSION: &'static str = "1.13-SNAPSHOT";
-pub const PLUGIN_VERSION: &'static str = "3.4-SNAPSHOT";
+pub const LOOM_VERSION: &'static str = "1.17-SNAPSHOT";
+pub const PLUGIN_VERSION: &'static str = "3.5-SNAPSHOT";
 
 #[cfg(target_family = "wasm")]
 pub async fn load_minecraft_version_list(client: std::sync::Arc<reqwest::Client>) -> crate::Result<String> {

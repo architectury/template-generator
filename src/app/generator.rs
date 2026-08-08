@@ -80,16 +80,21 @@ pub async fn generate(app: &super::GeneratorApp, version_list: &MinecraftVersion
     let mut variables: Vec<Pin<Box<dyn Future<Output = Result<(String, String)>>>>> = Vec::new();
 
     // Mappings
-    match app.mapping_set {
-        MappingSet::Mojang => context.define("mojang_mappings"),
-        MappingSet::Yarn => {
-            context.define("yarn");
-            variables.push(Box::pin(add_key(
-                "YARN_MAPPINGS",
-                resolve_matching_version(&client, MavenLibrary::yarn(), |version| {
-                    version.starts_with(&format!("{}+", game_version.version))
-                }),
-            )));
+    if game_version.unobfuscated {
+        // Unobfuscated versions have no mapping set at all; Loom runs without remapping.
+        context.define("unobfuscated");
+    } else {
+        match app.mapping_set {
+            MappingSet::Mojang => context.define("mojang_mappings"),
+            MappingSet::Yarn => {
+                context.define("yarn");
+                variables.push(Box::pin(add_key(
+                    "YARN_MAPPINGS",
+                    resolve_matching_version(&client, MavenLibrary::yarn(), |version| {
+                        version.starts_with(&format!("{}+", game_version.version))
+                    }),
+                )));
+            }
         }
     }
 

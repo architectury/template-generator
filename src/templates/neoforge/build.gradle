@@ -36,10 +36,18 @@ dependencies {
 //% if architectury_api
 
     // Architectury API. This is optional, and you can comment it out if you don't need it.
+//% if unobfuscated
+    implementation "%ARCHITECTURY_GROUP%:architectury-neoforge:$rootProject.architectury_api_version"
+//% else
     modImplementation "%ARCHITECTURY_GROUP%:architectury-neoforge:$rootProject.architectury_api_version"
 //% end
+//% end
 
+//% if unobfuscated
+    common(project(path: ':common')) { transitive = false }
+//% else
     common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
+//% end
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
 }
 
@@ -51,6 +59,31 @@ processResources {
     }
 }
 
+//% if unobfuscated
+// Minecraft is not obfuscated on this version, so there is no remapJar task.
+// The shaded jar is the mod jar that ships.
+jar {
+    archiveClassifier = 'dev'
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = null
+}
+
+assemble.dependsOn shadowJar
+
+configurations {
+    apiElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+    runtimeElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+}
+//% else
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
@@ -59,3 +92,4 @@ shadowJar {
 remapJar {
     inputFile.set shadowJar.archiveFile
 }
+//% end
