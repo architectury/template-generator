@@ -1,5 +1,5 @@
 {
-  "latest_version": "26.2",
+  "latest_version": "26.3",
   "versions": [
     {
       "version": "1.16.5",
@@ -380,6 +380,19 @@
       "neoforge": {
         "loader_major_version": "1",
         "neoforge_major_version": "26.2.0"
+      }
+    },
+    {
+      "version": "26.3",
+      "java_version": 25,
+      "unobfuscated": true,
+      "quilt": false,
+      "architectury": {
+        "api_version": "22"
+      },
+      "neoforge": {
+        "loader_major_version": "1",
+        "neoforge_major_version": "26.3.0"
       }
     }
   ]
